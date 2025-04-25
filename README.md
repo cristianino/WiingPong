@@ -1,59 +1,66 @@
-# Wii Basic Homebrew Template
+# WiingPong 🎮
 
-🎮 Plantilla base para crear aplicaciones y juegos Homebrew para la consola Nintendo Wii utilizando C++ y `devkitPro`.
-
-Esta plantilla incluye una estructura de proyecto limpia y moderna con soporte para:
-- GRRLIB
-- PNGU
-- PNG, JPEG, TTF
-- Entrada desde Wiimote
-- Un Makefile completo y portable
-- Separación clara de `include/`, `source/`, `data/` y `build/`
+**WiingPong** es un juego tipo Pong desarrollado como homebrew para la consola Nintendo Wii. Este proyecto tiene fines educativos y está construido desde cero usando C++, GRRLIB y devkitPro.
 
 ---
-
-## 📦 Estructura del proyecto
-
-```
-wii-basic-homebrew/
-├── include/               # Archivos de encabezado (headers)
-│   └── WiimoteManager.h
-├── source/                # Archivos fuente C++
-│   ├── main.cpp
-│   └── WiimoteManager.cpp
-├── build/                 # Archivos de compilación (generados)
-├── data/                  # Recursos como imágenes y fuentes (opcional)
-└── Makefile               # Makefile compatible con devkitPPC y GRRLIB
-```
-
 
 ## 🧰 Requisitos
 
-- [devkitPro](https://devkitpro.org/wiki/Getting_Started) (incluyendo `devkitPPC`)
-- `GRRLIB`, `libpng`, `libjpeg`, `freetype`, `libfat`, `wiiuse`, `libogc`, entre otras (puedes instalar con pacman de devkitPro)
-
-```bash
-sudo dkp-pacman -S wii-dev
-```
+- [devkitPro](https://devkitpro.org/) con `devkitPPC`
+- Paquete `wii-dev` con todas las librerías necesarias:
+  ```bash
+  sudo dkp-pacman -S wii-dev
+  ```
+- Emulador Dolphin o consola Wii con Homebrew Channel para ejecutar `.dol`
 
 ---
 
-## 🛠 Compilación
+## 🚀 Compilación
+
+Desde la terminal de devkitPro:
 
 ```bash
 make
 ```
 
-El resultado será un archivo `.dol` que puedes ejecutar en tu Wii con USB Loader GX, Dolphin o cualquier otro loader.
+Esto generará un archivo `wiingpong.dol` ejecutable para la consola Wii.
 
 ---
 
-## 📄 Créditos
+## 🎯 Objetivo del Juego
 
-Desarrollado por [Cristian Niño](https://github.com/cristianino)
+Controla tu paleta con el Wiimote y evita que la pelota pase. Rebótala para marcar puntos. ¡Juego clásico estilo Pong, pero en tu Wii!
 
 ---
 
-## 🌀 Licencia
+## 📁 Estructura del Proyecto
 
-Este proyecto está bajo la licencia MIT. Puedes usarlo, modificarlo y distribuirlo libremente.
+- `source/` – Código fuente en C++
+- `include/` – Archivos de cabecera
+- `data/` – Recursos (imágenes, fuentes, sonidos)
+- `build/` – Salida de compilación
+- `Makefile` – Script de construcción
+
+---
+
+## 👾 Estado del Desarrollo
+
+✅ Inicializado el bucle principal  
+🔲 Paletas dibujadas  
+🔲 Movimiento de jugador  
+🔲 Lógica de la pelota  
+🔲 Puntajes y UI  
+🔲 Mejora con sonido y sprites
+
+---
+
+## 📜 Licencia
+
+MIT – ¡Haz lo que quieras mientras compartas mejoras!
+
+---
+
+## 🙌 Autor
+
+Desarrollado con cariño por [Tu Nombre], guiado paso a paso por ChatGPT 🤖
+
