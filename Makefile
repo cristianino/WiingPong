@@ -21,6 +21,10 @@ SOURCES     := source
 DATA        := data
 INCLUDES    := include
 
+# Enable FAT and device support
+HAVE_FAT := 1
+LIBSD := 1
+
 #---------------------------------------------------------------------------------
 # Compilation flags
 #---------------------------------------------------------------------------------
@@ -31,7 +35,7 @@ LDFLAGS     := -g $(MACHDEP) -Wl,-Map,$(notdir $@).map
 #---------------------------------------------------------------------------------
 # External libraries
 #---------------------------------------------------------------------------------
-LIBS := -lgrrlib -lpngu -lpng -ljpeg -lfreetype -lwiiuse -lbte -logc -lm -lfat
+LIBS := -lfreetype -lpng -lz -lbz2 -lgrrlib -lpngu -ljpeg -lwiiuse -lbte -logc -lm -lfat -lasnd
 LIBDIRS := $(PORTLIBS)
 
 #---------------------------------------------------------------------------------
