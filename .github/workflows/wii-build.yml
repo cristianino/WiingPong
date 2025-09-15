@@ -16,24 +16,19 @@ jobs:
     - name: Install devkitPro
       run: |
         sudo apt update
-        sudo apt install -y wget curl build-essential
-        # Use the official installation script with error handling
-        wget -O install-devkitpro-pacman https://apt.devkitpro.org/install-devkitpro-pacman || \
-        curl -o install-devkitpro-pacman https://apt.devkitpro.org/install-devkitpro-pacman
-        chmod +x install-devkitpro-pacman
-        sudo ./install-devkitpro-pacman || {
-          # Fallback: try alternative method if script fails
-          echo "Script failed, trying alternative installation..."
-          sudo apt install -y software-properties-common
-          wget -qO- https://apt.devkitpro.org/devkitpro-pub.gpg | sudo tee /etc/apt/trusted.gpg.d/devkitpro.asc > /dev/null || true
-          echo "deb https://apt.devkitpro.org stable main" | sudo tee /etc/apt/sources.list.d/devkitpro.list
-          sudo apt update
-          sudo apt install -y devkitpro-pacman || {
-            echo "All installation methods failed, exiting..."
-            exit 1
-          }
-        }
-        # Verify installation and install packages
+        sudo apt install -y wget curl build-essential software-properties-common
+        
+        # Import devkitPro public key correctly
+        wget -qO- https://apt.devkitpro.org/devkitpro-pub.gpg | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/devkitpro.gpg
+        
+        # Add devkitPro repository
+        echo "deb https://apt.devkitpro.org stable main" | sudo tee /etc/apt/sources.list.d/devkitpro.list
+        
+        # Update and install devkitpro-pacman
+        sudo apt update
+        sudo apt install -y devkitpro-pacman
+        
+        # Verify installation and install development packages
         which dkp-pacman || { echo "dkp-pacman not found after installation"; exit 1; }
         sudo dkp-pacman -Sy
         sudo dkp-pacman -S --noconfirm devkitPPC libogc grrlib
