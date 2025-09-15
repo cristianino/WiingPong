@@ -57,18 +57,11 @@ jobs:
         #define __GCCORE_H__
         #include "gctypes.h"
         
-        // System functions
+        // Video functions
         inline void VIDEO_Init(void) {}
         inline void VIDEO_SetBlack(int) {}
         inline void VIDEO_Flush(void) {}
         inline void VIDEO_WaitVSync(void) {}
-        inline void SYS_SetResetCallback(void (*)(void)) {}
-        inline void SYS_SetPowerCallback(void (*)(void)) {}
-        inline void SYS_ResetSystem(int, u32, int) {}
-        
-        #define SYS_RETURNTOMENU 0
-        #define SYS_POWEROFF 1
-        #define SYS_RESTART 2
         
         // FAT filesystem
         typedef struct DISC_INTERFACE DISC_INTERFACE;
@@ -116,9 +109,26 @@ jobs:
         inline int WPAD_Init(void) { return 0; }
         inline int WPAD_ScanPads(void) { return 0; }
         inline int WPAD_Shutdown(void) { return 0; }
-        inline u32 WPAD_ButtonsDown(int chan) { return 0; }
-        inline u32 WPAD_ButtonsHeld(int chan) { return 0; }
-        inline int WPAD_SetDataFormat(int chan, int fmt) { return 0; }
+        inline u32 WPAD_ButtonsDown(int /*chan*/) { return 0; }
+        inline u32 WPAD_ButtonsHeld(int /*chan*/) { return 0; }
+        inline int WPAD_SetDataFormat(int /*chan*/, int /*fmt*/) { return 0; }
+        #endif
+        EOF
+        
+        # OGC System headers
+        cat > mock_includes/ogcsys.h << 'EOF'
+        #ifndef __OGCSYS_H__
+        #define __OGCSYS_H__
+        #include "gctypes.h"
+        
+        // System callback functions
+        inline void SYS_SetResetCallback(void (*)(void)) {}
+        inline void SYS_SetPowerCallback(void (*)(void)) {}
+        inline void SYS_ResetSystem(int, u32, int) {}
+        
+        #define SYS_RETURNTOMENU 0
+        #define SYS_POWEROFF 1
+        #define SYS_RESTART 2
         #endif
         EOF
         
