@@ -15,14 +15,19 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
     
-    - name: Install additional packages
+    - name: Install basic dependencies
       run: |
         dkp-pacman -Sy --noconfirm
-        dkp-pacman -S --noconfirm ppc-grrlib
         dkp-pacman -S --noconfirm ppc-libpng
         dkp-pacman -S --noconfirm ppc-freetype
         dkp-pacman -S --noconfirm ppc-zlib
         dkp-pacman -S --noconfirm ppc-bzip2
+    
+    - name: Install GRRLIB manually
+      run: |
+        git clone https://github.com/GRRLIB/GRRLIB.git
+        cd GRRLIB/GRRLIB
+        make clean all install
     
     - name: Build project
       run: |
