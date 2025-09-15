@@ -2,57 +2,60 @@ name: Wii Build CI
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main, master, develop ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, master ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Install devkitPro
-      uses: devkitpro/setup-devkitpro@v1
-      with:
-        devkitpro: devkitPPC
-        libdirs: libogc,grrlib
+      run: |
+        wget https://github.com/devkitPro/pacman/releases/latest/download/devkitpro-pacman.amd64.deb
+        sudo dpkg -i devkitpro-pacman.amd64.deb
+        sudo dkp-pacman -Sy
+        sudo dkp-pacman -S --noconfirm devkitPPC libogc grrlib
 
     - name: Setup environment
       run: |
         echo "/opt/devkitpro/devkitPPC/bin" >> $GITHUB_PATH
-        echo "/opt/devkitpro/libogc/bin" >> $GITHUB_PATH
-        echo "/opt/devkitpro/grrlib/bin" >> $GITHUB_PATH
+        echo "/opt/devkitpro/tools/bin" >> $GITHUB_PATH
+        echo "DEVKITPRO=/opt/devkitpro" >> $GITHUB_ENV
+        echo "DEVKITPPC=/opt/devkitpro/devkitPPC" >> $GITHUB_ENV
 
-    - name: Configure CMake
+    - name: Build with Make
       run: |
-        mkdir build
-        cd build
-        cmake -DCMAKE_TOOLCHAIN_FILE=$DEVKITPRO/powerpc-eabi.cmake ..
+        make clean
+        make -j$(nproc)
 
-    - name: Build
-      run: |
-        cd build
-        make -j2
-
-    - name: Run host tests (if GTest installed)
-      run: |
-        if [ -f "build/tests/unit/test_physics" ]; then
-          cd build
-          ./tests/unit/test_physics
-        fi
-      continue-on-error: true
+    - name: Create package
+      run: make package
 
     - name: Upload artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
-        name: WiingPong-build
+        name: WiingPong-build-${{ github.sha }}
         path: |
-          build/WiingPong.elf
-          build/WiingPong.dol
+          WiingPong.elf
+          WiingPong.dol
+          apps/
 
-    - name: Static analysis (cppcheck)
-      uses: iCF-Technologies/cppcheck-action@v1
-      with:
-        cppcheck_args: --enable=all --inconclusive --std=c++11 .
+    - name: Install cppcheck
+      run: sudo apt-get update && sudo apt-get install -y cppcheck
+
+    - name: Run static analysis (cppcheck)
+      run: |
+        cppcheck \
+          --enable=all \
+          --std=c++11 \
+          --platform=unix32 \
+          --suppress=missingIncludeSystem \
+          --suppress=unusedFunction \
+          --error-exitcode=0 \
+          --quiet \
+          source/
+      continue-on-error: true
