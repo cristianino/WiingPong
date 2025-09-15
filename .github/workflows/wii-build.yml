@@ -157,6 +157,20 @@ jobs:
         echo '#define SYS_RESTART        2' | sudo tee -a /opt/devkitpro/libogc/include/ogcsys.h > /dev/null
         echo '#endif' | sudo tee -a /opt/devkitpro/libogc/include/ogcsys.h > /dev/null
         
+        # Create gccore header (main GameCube/Wii core header)
+        echo '#ifndef __GCCORE_H__' | sudo tee /opt/devkitpro/libogc/include/gccore.h > /dev/null
+        echo '#define __GCCORE_H__' | sudo tee -a /opt/devkitpro/libogc/include/gccore.h > /dev/null
+        echo '#include "gctypes.h"' | sudo tee -a /opt/devkitpro/libogc/include/gccore.h > /dev/null
+        echo '#include "ogcsys.h"' | sudo tee -a /opt/devkitpro/libogc/include/gccore.h > /dev/null
+        echo '#include "wiiuse/wpad.h"' | sudo tee -a /opt/devkitpro/libogc/include/gccore.h > /dev/null
+        echo '#include "fat.h"' | sudo tee -a /opt/devkitpro/libogc/include/gccore.h > /dev/null
+        echo '// Video functions' | sudo tee -a /opt/devkitpro/libogc/include/gccore.h > /dev/null
+        echo 'void VIDEO_Init(void);' | sudo tee -a /opt/devkitpro/libogc/include/gccore.h > /dev/null
+        echo 'void VIDEO_SetBlack(int black);' | sudo tee -a /opt/devkitpro/libogc/include/gccore.h > /dev/null
+        echo 'void VIDEO_Flush(void);' | sudo tee -a /opt/devkitpro/libogc/include/gccore.h > /dev/null
+        echo 'void VIDEO_WaitVSync(void);' | sudo tee -a /opt/devkitpro/libogc/include/gccore.h > /dev/null
+        echo '#endif' | sudo tee -a /opt/devkitpro/libogc/include/gccore.h > /dev/null
+        
         # Create empty library files to satisfy linker
         sudo touch /opt/devkitpro/libogc/lib/libogc.a
         sudo touch /opt/devkitpro/libogc/lib/libgrrlib.a
