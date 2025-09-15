@@ -90,6 +90,10 @@ jobs:
         # Create elf2dol wrapper (simple version for CI)
         echo '#!/bin/bash' | sudo tee /opt/devkitpro/devkitPPC/bin/elf2dol > /dev/null
         echo '# Simple elf2dol replacement for CI' | sudo tee -a /opt/devkitpro/devkitPPC/bin/elf2dol > /dev/null
+        echo 'if [ ! -f "$1" ]; then' | sudo tee -a /opt/devkitpro/devkitPPC/bin/elf2dol > /dev/null
+        echo '  echo "Error: Input file $1 does not exist"' | sudo tee -a /opt/devkitpro/devkitPPC/bin/elf2dol > /dev/null
+        echo '  exit 1' | sudo tee -a /opt/devkitpro/devkitPPC/bin/elf2dol > /dev/null
+        echo 'fi' | sudo tee -a /opt/devkitpro/devkitPPC/bin/elf2dol > /dev/null
         echo 'cp "$1" "$2"' | sudo tee -a /opt/devkitpro/devkitPPC/bin/elf2dol > /dev/null
         echo 'echo "Created $2 (copied from $1)"' | sudo tee -a /opt/devkitpro/devkitPPC/bin/elf2dol > /dev/null
         sudo chmod +x /opt/devkitpro/devkitPPC/bin/elf2dol
@@ -226,6 +230,10 @@ jobs:
         echo 'const void* __io_gcsda = 0;' | sudo tee -a /opt/devkitpro/libogc/lib/stubs.c > /dev/null
         echo 'const void* __io_gcsdb = 0;' | sudo tee -a /opt/devkitpro/libogc/lib/stubs.c > /dev/null
         
+        # Compile and add stubs to libraries
+        gcc -m32 -c /opt/devkitpro/libogc/lib/stubs.c -o /tmp/stubs.o
+        sudo ar rcs /opt/devkitpro/libogc/lib/libfat.a /tmp/stubs.o
+        
         # Test installation
         if /opt/devkitpro/devkitPPC/bin/powerpc-eabi-gcc --version; then
           echo "Minimal devkitPPC environment ready"
@@ -248,7 +256,18 @@ jobs:
     - name: Build with Make
       run: |
         make clean
-        make -j$(nproc)
+        echo "Starting build..."
+        make -j$(nproc) VERBOSE=1
+        echo "Build completed. Checking for output files..."
+        ls -la WiingPong.*
+        if [ -f "WiingPong.elf" ]; then
+          echo "✓ ELF file created successfully"
+        else
+          echo "✗ ELF file missing!"
+          echo "Build directory contents:"
+          ls -la build/
+          exit 1
+        fi
 
     - name: Create package
       run: make package
