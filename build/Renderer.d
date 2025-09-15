@@ -1,10 +1,10 @@
-main.o: /home/cristian/Documentos/WiingPong/source/main.cpp \
- /opt/devkitpro/libogc/include/fat.h /opt/devkitpro/libogc/include/dvm.h \
- /opt/devkitpro/libogc/include/ogc/disc_io.h \
- /opt/devkitpro/libogc/include/gctypes.h \
- /opt/devkitpro/libogc/include/ogcsys.h \
+Renderer.o: \
+ /home/cristian/Documentos/WiingPong/source/rendering/Renderer.cpp \
+ /home/cristian/Documentos/WiingPong/include/rendering/Renderer.h \
+ /opt/devkitpro/portlibs/wii/include/grrlib.h \
  /opt/devkitpro/libogc/include/gccore.h \
  /opt/devkitpro/libogc/include/ogc/dsp.h \
+ /opt/devkitpro/libogc/include/gctypes.h \
  /opt/devkitpro/libogc/include/ogc/aram.h \
  /opt/devkitpro/libogc/include/gcbool.h \
  /opt/devkitpro/libogc/include/ogc/arqueue.h \
@@ -19,6 +19,7 @@ main.o: /home/cristian/Documentos/WiingPong/source/main.cpp \
  /opt/devkitpro/libogc/include/ogc/consol.h \
  /opt/devkitpro/libogc/include/ogc/gx_struct.h \
  /opt/devkitpro/libogc/include/ogc/dvd.h \
+ /opt/devkitpro/libogc/include/ogc/disc_io.h \
  /opt/devkitpro/libogc/include/ogc/exi.h \
  /opt/devkitpro/libogc/include/ogc/gu.h \
  /opt/devkitpro/libogc/include/ogc/gx.h \
@@ -55,15 +56,6 @@ main.o: /home/cristian/Documentos/WiingPong/source/main.cpp \
  /opt/devkitpro/libogc/include/ogc/mutex.h \
  /opt/devkitpro/libogc/include/ogc/system.h \
  /opt/devkitpro/libogc/include/ogc/wiilaunch.h \
- /home/cristian/Documentos/WiingPong/include/input/InputManager.h \
- /opt/devkitpro/libogc/include/wiiuse/wpad.h \
- /opt/devkitpro/libogc/include/wiiuse/wiiuse.h \
- /opt/devkitpro/libogc/include/bte/bte.h \
- /opt/devkitpro/libogc/include/bte/bd_addr.h \
- /home/cristian/Documentos/WiingPong/include/physics/PhysicsEngine.h \
- /home/cristian/Documentos/WiingPong/include/physics/Components.h \
- /home/cristian/Documentos/WiingPong/include/rendering/Renderer.h \
- /opt/devkitpro/portlibs/wii/include/grrlib.h \
  /opt/devkitpro/portlibs/wii/include/grrlib/GRRLIB__lib.h \
  /opt/devkitpro/portlibs/wii/include/grrlib/GRRLIB__inline.h \
  /opt/devkitpro/portlibs/wii/include/grrlib/GRRLIB_clipping.h \
@@ -74,14 +66,14 @@ main.o: /home/cristian/Documentos/WiingPong/source/main.cpp \
  /opt/devkitpro/portlibs/wii/include/grrlib/GRRLIB_handle.h \
  /opt/devkitpro/portlibs/wii/include/grrlib/GRRLIB_pixel.h \
  /opt/devkitpro/portlibs/wii/include/grrlib/GRRLIB_settings.h \
- /opt/devkitpro/portlibs/wii/include/grrlib/GRRLIB_texSetup.h
-/opt/devkitpro/libogc/include/fat.h:
-/opt/devkitpro/libogc/include/dvm.h:
-/opt/devkitpro/libogc/include/ogc/disc_io.h:
-/opt/devkitpro/libogc/include/gctypes.h:
-/opt/devkitpro/libogc/include/ogcsys.h:
+ /opt/devkitpro/portlibs/wii/include/grrlib/GRRLIB_texSetup.h \
+ /home/cristian/Documentos/WiingPong/include/rendering/../physics/PhysicsEngine.h \
+ /home/cristian/Documentos/WiingPong/include/rendering/../physics/Components.h
+/home/cristian/Documentos/WiingPong/include/rendering/Renderer.h:
+/opt/devkitpro/portlibs/wii/include/grrlib.h:
 /opt/devkitpro/libogc/include/gccore.h:
 /opt/devkitpro/libogc/include/ogc/dsp.h:
+/opt/devkitpro/libogc/include/gctypes.h:
 /opt/devkitpro/libogc/include/ogc/aram.h:
 /opt/devkitpro/libogc/include/gcbool.h:
 /opt/devkitpro/libogc/include/ogc/arqueue.h:
@@ -96,6 +88,7 @@ main.o: /home/cristian/Documentos/WiingPong/source/main.cpp \
 /opt/devkitpro/libogc/include/ogc/consol.h:
 /opt/devkitpro/libogc/include/ogc/gx_struct.h:
 /opt/devkitpro/libogc/include/ogc/dvd.h:
+/opt/devkitpro/libogc/include/ogc/disc_io.h:
 /opt/devkitpro/libogc/include/ogc/exi.h:
 /opt/devkitpro/libogc/include/ogc/gu.h:
 /opt/devkitpro/libogc/include/ogc/gx.h:
@@ -132,15 +125,6 @@ main.o: /home/cristian/Documentos/WiingPong/source/main.cpp \
 /opt/devkitpro/libogc/include/ogc/mutex.h:
 /opt/devkitpro/libogc/include/ogc/system.h:
 /opt/devkitpro/libogc/include/ogc/wiilaunch.h:
-/home/cristian/Documentos/WiingPong/include/input/InputManager.h:
-/opt/devkitpro/libogc/include/wiiuse/wpad.h:
-/opt/devkitpro/libogc/include/wiiuse/wiiuse.h:
-/opt/devkitpro/libogc/include/bte/bte.h:
-/opt/devkitpro/libogc/include/bte/bd_addr.h:
-/home/cristian/Documentos/WiingPong/include/physics/PhysicsEngine.h:
-/home/cristian/Documentos/WiingPong/include/physics/Components.h:
-/home/cristian/Documentos/WiingPong/include/rendering/Renderer.h:
-/opt/devkitpro/portlibs/wii/include/grrlib.h:
 /opt/devkitpro/portlibs/wii/include/grrlib/GRRLIB__lib.h:
 /opt/devkitpro/portlibs/wii/include/grrlib/GRRLIB__inline.h:
 /opt/devkitpro/portlibs/wii/include/grrlib/GRRLIB_clipping.h:
@@ -152,3 +136,5 @@ main.o: /home/cristian/Documentos/WiingPong/source/main.cpp \
 /opt/devkitpro/portlibs/wii/include/grrlib/GRRLIB_pixel.h:
 /opt/devkitpro/portlibs/wii/include/grrlib/GRRLIB_settings.h:
 /opt/devkitpro/portlibs/wii/include/grrlib/GRRLIB_texSetup.h:
+/home/cristian/Documentos/WiingPong/include/rendering/../physics/PhysicsEngine.h:
+/home/cristian/Documentos/WiingPong/include/rendering/../physics/Components.h:

@@ -1,0 +1,58 @@
+name: Wii Build CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Install devkitPro
+      uses: devkitpro/setup-devkitpro@v1
+      with:
+        devkitpro: devkitPPC
+        libdirs: libogc,grrlib
+
+    - name: Setup environment
+      run: |
+        echo "/opt/devkitpro/devkitPPC/bin" >> $GITHUB_PATH
+        echo "/opt/devkitpro/libogc/bin" >> $GITHUB_PATH
+        echo "/opt/devkitpro/grrlib/bin" >> $GITHUB_PATH
+
+    - name: Configure CMake
+      run: |
+        mkdir build
+        cd build
+        cmake -DCMAKE_TOOLCHAIN_FILE=$DEVKITPRO/powerpc-eabi.cmake ..
+
+    - name: Build
+      run: |
+        cd build
+        make -j2
+
+    - name: Run host tests (if GTest installed)
+      run: |
+        if [ -f "build/tests/unit/test_physics" ]; then
+          cd build
+          ./tests/unit/test_physics
+        fi
+      continue-on-error: true
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: WiingPong-build
+        path: |
+          build/WiingPong.elf
+          build/WiingPong.dol
+
+    - name: Static analysis (cppcheck)
+      uses: iCF-Technologies/cppcheck-action@v1
+      with:
+        cppcheck_args: --enable=all --inconclusive --std=c++11 .
