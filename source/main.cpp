@@ -12,6 +12,8 @@ extern DISC_INTERFACE __io_gcsdb;
 #include "input/InputManager.h"
 #include "physics/PhysicsEngine.h"
 #include "rendering/Renderer.h"
+#include "audio/AudioManager.h"
+#include "assets/AssetManager.h"
 
 int main() {
     fatInitDefault();
@@ -21,11 +23,25 @@ int main() {
     InputManager input;
     PhysicsEngine physics;
     Renderer renderer;
+    AudioManager audio;
+    AssetManager& assets = AssetManager::getInstance();
 
     // Initialize modules
+    printf("Initializing WiingPong...\n");
+    
+    assets.init();
     input.init();
     physics.init();
     renderer.init();
+    audio.init();
+
+    // Load audio assets
+    printf("Loading audio...\n");
+    assets.loadAudio(audio);
+    
+    // Play intro sound
+    printf("Playing intro sound...\n");
+    audio.playSound(SoundID::Intro);
 
     bool running = true;
     while (running) {
@@ -65,5 +81,6 @@ int main() {
     }
 
     // Cleanup (handled in destructors)
+    printf("Shutting down WiingPong...\n");
     return 0;
 }

@@ -35,7 +35,7 @@ LDFLAGS     := -g $(MACHDEP) -Wl,-Map,$(notdir $@).map
 #---------------------------------------------------------------------------------
 # External libraries
 #---------------------------------------------------------------------------------
-LIBS := -lgrrlib -lfreetype -lpngu -lpng -ljpeg -lz -lbz2 -lfat -lwiiuse -lbte -logc -lm -lasnd
+LIBS := -lgrrlib -lfreetype -lpngu -lpng -ljpeg -lz -lbz2 -lfat -lwiiuse -lbte -lasnd -logc -lm
 LIBDIRS := $(PORTLIBS)
 
 #---------------------------------------------------------------------------------
@@ -102,6 +102,8 @@ package: $(BUILD)
 	@echo "Creating SD package..."
 	@mkdir -p apps/$(TARGET)
 	@cp $(OUTPUT).dol apps/$(TARGET)/boot.dol
+	@echo "Copying data files..."
+	@if [ -d "data" ]; then cp -r data apps/$(TARGET)/; fi
 	@echo "Creating meta.xml..."
 	@echo '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' > apps/$(TARGET)/meta.xml
 	@echo '<app version="1">' >> apps/$(TARGET)/meta.xml

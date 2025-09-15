@@ -3,6 +3,7 @@
 #include <grrlib.h>
 #include <fat.h>
 #include <sdcard/wiisd_io.h>
+#include <stdio.h>
 
 AssetManager& AssetManager::getInstance() {
     static AssetManager instance;
@@ -24,8 +25,25 @@ void AssetManager::init() {
 }
 
 void AssetManager::loadAllAssets() {
-    // Stub: Load textures, sounds, fonts from /assets/ on SD
-    // For now, do nothing; return defaults in getters
+    // Stub: Load textures, fonts from /assets/ on SD
+    // Audio is loaded separately via loadAudio()
+}
+
+void AssetManager::loadAudio(AudioManager& audioManager) {
+    if (!initialized) return;
+    
+    printf("Loading audio assets...\n");
+    
+    // Load intro.pcm from data/sounds/
+    if (audioManager.loadPCM(SoundID::Intro, "data/sounds/intro.pcm")) {
+        printf("Successfully loaded intro.pcm\n");
+    } else {
+        printf("Failed to load intro.pcm\n");
+    }
+    
+    // Add more audio files here as needed
+    // audioManager.loadPCM(SoundID::Hit, "data/sounds/hit.pcm");
+    // audioManager.loadPCM(SoundID::Score, "data/sounds/score.pcm");
 }
 
 GRRLIB_texImg* AssetManager::getTexture(const char* name) const {

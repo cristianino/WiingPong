@@ -68,6 +68,7 @@ AssetManager.o: \
  /opt/devkitpro/portlibs/wii/include/grrlib/GRRLIB_settings.h \
  /opt/devkitpro/portlibs/wii/include/grrlib/GRRLIB_texSetup.h \
  /opt/devkitpro/libogc/include/fat.h /opt/devkitpro/libogc/include/dvm.h \
+ /home/cristian/Documentos/WiingPong/include/audio/AudioManager.h \
  /opt/devkitpro/libogc/include/sdcard/wiisd_io.h
 /home/cristian/Documentos/WiingPong/include/assets/AssetManager.h:
 /opt/devkitpro/portlibs/wii/include/grrlib.h:
@@ -138,4 +139,5 @@ AssetManager.o: \
 /opt/devkitpro/portlibs/wii/include/grrlib/GRRLIB_texSetup.h:
 /opt/devkitpro/libogc/include/fat.h:
 /opt/devkitpro/libogc/include/dvm.h:
+/home/cristian/Documentos/WiingPong/include/audio/AudioManager.h:
 /opt/devkitpro/libogc/include/sdcard/wiisd_io.h:

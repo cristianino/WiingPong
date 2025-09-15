@@ -2,9 +2,10 @@
 
 #include <grrlib.h>
 #include <fat.h>
+#include "audio/AudioManager.h"
 
 // Simple singleton for asset management
-// Stubs for textures, sounds, fonts; load from SD card via fat.h
+// Load textures, sounds, fonts from SD card via fat.h
 
 class AssetManager {
 public:
@@ -12,6 +13,7 @@ public:
 
     void init();
     void loadAllAssets();  // Preload game assets
+    void loadAudio(AudioManager& audioManager);  // Load audio files
 
     // Stubs for getters; return nullptr or default
     GRRLIB_texImg* getTexture(const char* name) const;
