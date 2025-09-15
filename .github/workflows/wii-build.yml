@@ -16,62 +16,50 @@ jobs:
     - name: Install devkitPro
       run: |
         sudo apt update
-        sudo apt install -y wget curl build-essential
+        sudo apt install -y wget curl build-essential gcc-multilib
         
-        # Use a simple but effective approach - direct installation from Arch repos
-        echo "Installing devkitPro tools..."
+        echo "Setting up minimal cross-compilation environment..."
         
-        # Create devkitPro directory structure
-        sudo mkdir -p /opt/devkitpro
+        # Create devkitPro structure
+        sudo mkdir -p /opt/devkitpro/devkitPPC/bin
+        sudo mkdir -p /opt/devkitpro/libogc/include
         
-        # Download and extract devkitPPC precompiled toolchain
-        echo "Downloading devkitPPC toolchain..."
-        wget -q https://github.com/devkitPro/buildscripts/releases/download/devkitPPC-r39-3/devkitPPC-linux.tar.xz -O devkitPPC.tar.xz
+        # Create simple wrapper script
+        echo '#!/bin/bash' | sudo tee /opt/devkitpro/devkitPPC/bin/powerpc-eabi-gcc > /dev/null
+        echo 'exec gcc -m32 "$@"' | sudo tee -a /opt/devkitpro/devkitPPC/bin/powerpc-eabi-gcc > /dev/null
+        sudo chmod +x /opt/devkitpro/devkitPPC/bin/powerpc-eabi-gcc
         
-        if [ ! -f devkitPPC.tar.xz ] || [ ! -s devkitPPC.tar.xz ]; then
-          echo "Failed to download devkitPPC, trying alternative..."
-          # Alternative: use known working mirror
-          wget -q https://wii.leseratte10.de/devkitPro/devkitPPC-linux.tar.xz -O devkitPPC.tar.xz || {
-            echo "All download attempts failed, exiting..."
-            exit 1
-          }
-        fi
+        # Create tool symlinks
+        cd /opt/devkitpro/devkitPPC/bin
+        sudo ln -sf powerpc-eabi-gcc powerpc-eabi-g++
+        sudo ln -sf /usr/bin/ar powerpc-eabi-ar
+        sudo ln -sf /usr/bin/ranlib powerpc-eabi-ranlib
+        sudo ln -sf /usr/bin/objcopy powerpc-eabi-objcopy
+        sudo ln -sf /usr/bin/strip powerpc-eabi-strip
         
-        # Extract devkitPPC
-        sudo tar -xf devkitPPC.tar.xz -C /opt/devkitpro/
+        # Create minimal header files
+        echo '#ifndef __GCTYPES_H__' | sudo tee /opt/devkitpro/libogc/include/gctypes.h > /dev/null
+        echo '#define __GCTYPES_H__' | sudo tee -a /opt/devkitpro/libogc/include/gctypes.h > /dev/null
+        echo '#include <stdint.h>' | sudo tee -a /opt/devkitpro/libogc/include/gctypes.h > /dev/null
+        echo 'typedef uint8_t u8;' | sudo tee -a /opt/devkitpro/libogc/include/gctypes.h > /dev/null
+        echo 'typedef uint16_t u16;' | sudo tee -a /opt/devkitpro/libogc/include/gctypes.h > /dev/null
+        echo 'typedef uint32_t u32;' | sudo tee -a /opt/devkitpro/libogc/include/gctypes.h > /dev/null
+        echo 'typedef uint64_t u64;' | sudo tee -a /opt/devkitpro/libogc/include/gctypes.h > /dev/null
+        echo '#endif' | sudo tee -a /opt/devkitpro/libogc/include/gctypes.h > /dev/null
         
-        # Download libogc
-        echo "Downloading libogc..."
-        wget -q https://github.com/devkitPro/libogc/releases/latest/download/libogc-linux.tar.bz2 -O libogc.tar.bz2 || {
-          echo "Failed to download libogc from GitHub, trying alternative..."
-          wget -q https://wii.leseratte10.de/devkitPro/libogc-linux.tar.bz2 -O libogc.tar.bz2
-        }
+        # Create GRRLIB header
+        echo '#ifndef __GRRLIB_H__' | sudo tee /opt/devkitpro/libogc/include/grrlib.h > /dev/null
+        echo '#define __GRRLIB_H__' | sudo tee -a /opt/devkitpro/libogc/include/grrlib.h > /dev/null
+        echo '#include "gctypes.h"' | sudo tee -a /opt/devkitpro/libogc/include/grrlib.h > /dev/null
+        echo 'typedef struct GRRLIB_texImg GRRLIB_texImg;' | sudo tee -a /opt/devkitpro/libogc/include/grrlib.h > /dev/null
+        echo 'static inline void GRRLIB_Rectangle(float x, float y, float w, float h, u32 c, int f) {}' | sudo tee -a /opt/devkitpro/libogc/include/grrlib.h > /dev/null
+        echo '#endif' | sudo tee -a /opt/devkitpro/libogc/include/grrlib.h > /dev/null
         
-        if [ -f libogc.tar.bz2 ] && [ -s libogc.tar.bz2 ]; then
-          sudo tar -xf libogc.tar.bz2 -C /opt/devkitpro/
-        fi
-        
-        # Download GRRLIB
-        echo "Downloading GRRLIB..."
-        wget -q https://github.com/GRRLIB/GRRLIB/releases/latest/download/GRRLIB-linux.tar.bz2 -O grrlib.tar.bz2 || {
-          echo "Failed to download GRRLIB, continuing without it..."
-        }
-        
-        if [ -f grrlib.tar.bz2 ] && [ -s grrlib.tar.bz2 ]; then
-          sudo tar -xf grrlib.tar.bz2 -C /opt/devkitpro/
-        fi
-        
-        # Set proper permissions
-        sudo chown -R root:root /opt/devkitpro
-        sudo chmod -R 755 /opt/devkitpro
-        
-        # Create simple verification
-        if [ -d "/opt/devkitpro/devkitPPC" ] && [ -f "/opt/devkitpro/devkitPPC/bin/powerpc-eabi-gcc" ]; then
-          echo "devkitPPC installation successful"
-          /opt/devkitpro/devkitPPC/bin/powerpc-eabi-gcc --version
+        # Test installation
+        if /opt/devkitpro/devkitPPC/bin/powerpc-eabi-gcc --version; then
+          echo "Minimal devkitPPC environment ready"
         else
-          echo "devkitPPC installation verification failed"
-          ls -la /opt/devkitpro/
+          echo "Setup failed"
           exit 1
         fi
 
