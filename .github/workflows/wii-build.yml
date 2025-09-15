@@ -189,6 +189,20 @@ jobs:
         echo '#define VOICE_STEREO16 1' | sudo tee -a /opt/devkitpro/libogc/include/asndlib.h > /dev/null
         echo '#endif' | sudo tee -a /opt/devkitpro/libogc/include/asndlib.h > /dev/null
         
+        # Create sdcard directory and wiisd_io header
+        sudo mkdir -p /opt/devkitpro/libogc/include/sdcard
+        echo '#ifndef __WIISD_IO_H__' | sudo tee /opt/devkitpro/libogc/include/sdcard/wiisd_io.h > /dev/null
+        echo '#define __WIISD_IO_H__' | sudo tee -a /opt/devkitpro/libogc/include/sdcard/wiisd_io.h > /dev/null
+        echo '#include "../gctypes.h"' | sudo tee -a /opt/devkitpro/libogc/include/sdcard/wiisd_io.h > /dev/null
+        echo '#include "../fat.h"' | sudo tee -a /opt/devkitpro/libogc/include/sdcard/wiisd_io.h > /dev/null
+        echo '// SD card interface' | sudo tee -a /opt/devkitpro/libogc/include/sdcard/wiisd_io.h > /dev/null
+        echo 'extern const DISC_INTERFACE __io_wiisd;' | sudo tee -a /opt/devkitpro/libogc/include/sdcard/wiisd_io.h > /dev/null
+        echo 'bool wiisd_Initialize(void);' | sudo tee -a /opt/devkitpro/libogc/include/sdcard/wiisd_io.h > /dev/null
+        echo 'bool wiisd_IsInserted(void);' | sudo tee -a /opt/devkitpro/libogc/include/sdcard/wiisd_io.h > /dev/null
+        echo 'bool wiisd_ReadSectors(u32 sector, u32 numSectors, void* buffer);' | sudo tee -a /opt/devkitpro/libogc/include/sdcard/wiisd_io.h > /dev/null
+        echo 'bool wiisd_WriteSectors(u32 sector, u32 numSectors, const void* buffer);' | sudo tee -a /opt/devkitpro/libogc/include/sdcard/wiisd_io.h > /dev/null
+        echo '#endif' | sudo tee -a /opt/devkitpro/libogc/include/sdcard/wiisd_io.h > /dev/null
+        
         # Create empty library files to satisfy linker
         sudo touch /opt/devkitpro/libogc/lib/libogc.a
         sudo touch /opt/devkitpro/libogc/lib/libgrrlib.a
