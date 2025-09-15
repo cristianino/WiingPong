@@ -129,11 +129,24 @@ jobs:
         echo '#define WPAD_BUTTON_B     0x0004' | sudo tee -a /opt/devkitpro/libogc/include/wiiuse/wpad.h > /dev/null
         echo '#define WPAD_BUTTON_1     0x0002' | sudo tee -a /opt/devkitpro/libogc/include/wiiuse/wpad.h > /dev/null
         echo '#define WPAD_BUTTON_2     0x0001' | sudo tee -a /opt/devkitpro/libogc/include/wiiuse/wpad.h > /dev/null
+        echo '#define WPAD_BUTTON_HOME  0x0080' | sudo tee -a /opt/devkitpro/libogc/include/wiiuse/wpad.h > /dev/null
         echo 'typedef struct WPADData WPADData;' | sudo tee -a /opt/devkitpro/libogc/include/wiiuse/wpad.h > /dev/null
         echo 'int WPAD_Init(void);' | sudo tee -a /opt/devkitpro/libogc/include/wiiuse/wpad.h > /dev/null
         echo 'int WPAD_ScanPads(void);' | sudo tee -a /opt/devkitpro/libogc/include/wiiuse/wpad.h > /dev/null
         echo 'u32 WPAD_ButtonsDown(int chan);' | sudo tee -a /opt/devkitpro/libogc/include/wiiuse/wpad.h > /dev/null
         echo '#endif' | sudo tee -a /opt/devkitpro/libogc/include/wiiuse/wpad.h > /dev/null
+        
+        # Create ogcsys header
+        echo '#ifndef __OGCSYS_H__' | sudo tee /opt/devkitpro/libogc/include/ogcsys.h > /dev/null
+        echo '#define __OGCSYS_H__' | sudo tee -a /opt/devkitpro/libogc/include/ogcsys.h > /dev/null
+        echo '#include "gctypes.h"' | sudo tee -a /opt/devkitpro/libogc/include/ogcsys.h > /dev/null
+        echo 'void SYS_SetResetCallback(void (*callback)(void));' | sudo tee -a /opt/devkitpro/libogc/include/ogcsys.h > /dev/null
+        echo 'void SYS_SetPowerCallback(void (*callback)(void));' | sudo tee -a /opt/devkitpro/libogc/include/ogcsys.h > /dev/null
+        echo 'void SYS_ResetSystem(int reset, u32 resetType, int forceMenu);' | sudo tee -a /opt/devkitpro/libogc/include/ogcsys.h > /dev/null
+        echo '#define SYS_RETURNTOMENU   0' | sudo tee -a /opt/devkitpro/libogc/include/ogcsys.h > /dev/null
+        echo '#define SYS_POWEROFF       1' | sudo tee -a /opt/devkitpro/libogc/include/ogcsys.h > /dev/null
+        echo '#define SYS_RESTART        2' | sudo tee -a /opt/devkitpro/libogc/include/ogcsys.h > /dev/null
+        echo '#endif' | sudo tee -a /opt/devkitpro/libogc/include/ogcsys.h > /dev/null
         
         # Create empty library files to satisfy linker
         sudo touch /opt/devkitpro/libogc/lib/libogc.a
