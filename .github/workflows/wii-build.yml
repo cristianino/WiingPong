@@ -18,60 +18,55 @@ jobs:
         sudo apt update
         sudo apt install -y wget curl build-essential
         
-        # Use a working devkitPro installation method
-        # First, let's check what releases are actually available
-        echo "Checking available devkitPro pacman releases..."
-        curl -s https://api.github.com/repos/devkitPro/pacman/releases/latest | grep "browser_download_url.*\.deb" | head -5
-        
-        # Try the most common working versions
-        VERSIONS=("6.0.1" "6.0.0" "1.0.2" "1.0.1" "1.0.0")
-        INSTALLED=false
-        
-        for version in "${VERSIONS[@]}"; do
-          echo "Trying version $version..."
-          
-          # Try different URL patterns
-          for pattern in "devkitpro-pacman_${version}_amd64.deb" "devkitpro-pacman_${version}-1_amd64.deb" "devkitpro-pacman_${version}-2_amd64.deb"; do
-            url="https://github.com/devkitPro/pacman/releases/download/v${version}/${pattern}"
-            echo "Attempting download: $url"
+        # Method 1: Try official installation script
+        echo "Attempting official devkitPro installation..."
+        if wget -q https://apt.devkitpro.org/install-devkitpro-pacman.sh -O install-devkitpro-pacman.sh; then
+          if bash install-devkitpro-pacman.sh; then
+            echo "Official installation succeeded"
+            sudo dkp-pacman -Sy --noconfirm
+            sudo dkp-pacman -S --noconfirm devkitPPC libogc grrlib
+          else
+            echo "Official script failed, trying Docker approach..."
+            # Method 2: Use Docker to extract devkitPro
+            sudo apt install -y docker.io
+            sudo systemctl start docker
             
-            if curl -L --fail "$url" -o devkitpro-pacman.deb; then
-              # Verify the download is valid
-              if [ -f devkitpro-pacman.deb ] && [ -s devkitpro-pacman.deb ] && file devkitpro-pacman.deb | grep -q "Debian"; then
-                echo "Successfully downloaded $pattern"
-                sudo dpkg -i devkitpro-pacman.deb && INSTALLED=true && break 2
-              else
-                echo "Downloaded file is not a valid .deb package"
-                rm -f devkitpro-pacman.deb
-              fi
-            fi
-          done
-        done
-        
-        # If all versions failed, try manual installation
-        if [ "$INSTALLED" = false ]; then
-          echo "All package installations failed, trying manual setup..."
-          
-          # Create basic pacman structure
-          sudo mkdir -p /opt/devkitpro/pacman/bin
-          
-          # Download and install devkitPPC manually from known working source
-          wget -q https://wii.leseratte10.de/devkitPro/devkitPPC_r39-3_amd64.deb -O devkitppc.deb || {
-            echo "Manual installation also failed, exiting..."
-            exit 1
-          }
-          
-          sudo dpkg -i devkitppc.deb || sudo apt-get install -f -y
-          
-          # Set up environment manually
-          export DEVKITPRO=/opt/devkitpro
-          export DEVKITPPC=/opt/devkitpro/devkitPPC
-          echo "Manual installation completed"
+            # Pull devkitPro Docker image and extract tools
+            sudo docker pull devkitpro/devkitppc:latest
+            
+            # Create container and copy devkitPro files
+            sudo docker create --name devkit-temp devkitpro/devkitppc:latest
+            sudo docker cp devkit-temp:/opt/devkitpro /opt/
+            sudo docker rm devkit-temp
+            
+            # Set proper permissions
+            sudo chown -R root:root /opt/devkitpro
+            sudo chmod -R 755 /opt/devkitpro
+            
+            echo "Docker extraction completed"
+          fi
         else
-          # Verify pacman installation and install packages
-          which dkp-pacman || { echo "dkp-pacman not found after installation"; exit 1; }
-          sudo dkp-pacman -Sy --noconfirm
-          sudo dkp-pacman -S --noconfirm devkitPPC libogc grrlib
+          echo "Could not download official script, using Docker method..."
+          # Method 2: Docker approach (fallback)
+          sudo apt install -y docker.io
+          sudo systemctl start docker
+          
+          sudo docker pull devkitpro/devkitppc:latest
+          sudo docker create --name devkit-temp devkitpro/devkitppc:latest
+          sudo docker cp devkit-temp:/opt/devkitpro /opt/
+          sudo docker rm devkit-temp
+          sudo chown -R root:root /opt/devkitpro
+          sudo chmod -R 755 /opt/devkitpro
+          
+          echo "Docker installation completed"
+        fi
+        
+        # Verify installation
+        if [ -d "/opt/devkitpro/devkitPPC" ]; then
+          echo "devkitPPC installation verified"
+        else
+          echo "devkitPPC installation failed"
+          exit 1
         fi
 
     - name: Setup environment
