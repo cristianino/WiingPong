@@ -7,6 +7,12 @@ on:
   pull_request:
     branches: [ main, master ]
 
+# Add permissions for the workflow
+permissions:
+  contents: write  # Required for creating releases
+  actions: read
+  checks: write
+
 jobs:
   syntax-check:
     runs-on: ubuntu-latest
@@ -476,8 +482,68 @@ jobs:
           **Documentation**: See `docs/` folder for detailed setup and audio integration guides
         draft: false
         prerelease: false
+        token: ${{ secrets.GITHUB_TOKEN }}
+        fail_on_unmatched_files: false
+      continue-on-error: true
+      
+    - name: Create Release (Alternative method)
+      if: failure()
+      run: |
+        echo "Primary release creation failed, attempting alternative method..."
+        
+        # Create release using GitHub CLI as fallback
+        if command -v gh &> /dev/null; then
+          echo "Using GitHub CLI..."
+          
+          # Install GitHub CLI if not available
+          if ! command -v gh &> /dev/null; then
+            echo "Installing GitHub CLI..."
+            curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+            echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+            sudo apt update && sudo apt install gh -y
+          fi
+          
+          # Try to create release with gh
+          gh release create ${{ github.ref_name }} \
+            --title "WiingPong ${{ github.ref_name }}" \
+            --notes-file release-info.txt \
+            WiingPong-${{ github.ref_name }}-source.tar.gz \
+            || echo "GitHub CLI release creation also failed"
+        else
+          echo "GitHub CLI not available, manual release creation required"
+          
+          # Create a summary with instructions
+          cat >> $GITHUB_STEP_SUMMARY << EOF
+          ## ⚠️ Release Creation Failed
+          
+          The automatic release creation failed due to permission issues.
+          
+          ### Manual Release Instructions:
+          1. Go to: https://github.com/cristianino/WiingPong/releases/new
+          2. Tag: \`${{ github.ref_name }}\`
+          3. Title: \`WiingPong ${{ github.ref_name }}\`
+          4. Upload the generated files from the artifacts
+          5. Use the content from \`release-info.txt\` as description
+          
+          ### Generated Files:
+          - \`WiingPong-${{ github.ref_name }}-source.tar.gz\`
+          - \`release-info.txt\`
+          
+          These files are available in the workflow artifacts.
+          EOF
+        fi
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: Upload Release Artifacts (Always)
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: release-${{ github.ref_name }}
+        path: |
+          WiingPong-${{ github.ref_name }}-source.tar.gz
+          release-info.txt
+        retention-days: 30
 
   docker-build-attempt:
     runs-on: ubuntu-latest
