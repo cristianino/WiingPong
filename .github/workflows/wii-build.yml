@@ -111,6 +111,10 @@ jobs:
         echo 'typedef struct GRRLIB_texImg GRRLIB_texImg;' | sudo tee -a /opt/devkitpro/libogc/include/grrlib.h > /dev/null
         echo 'static inline void GRRLIB_Rectangle(float x, float y, float w, float h, u32 c, int f) {}' | sudo tee -a /opt/devkitpro/libogc/include/grrlib.h > /dev/null
         echo 'static inline void GRRLIB_Render(void) {}' | sudo tee -a /opt/devkitpro/libogc/include/grrlib.h > /dev/null
+        echo 'static inline void GRRLIB_Init(void) {}' | sudo tee -a /opt/devkitpro/libogc/include/grrlib.h > /dev/null
+        echo 'static inline void GRRLIB_Exit(void) {}' | sudo tee -a /opt/devkitpro/libogc/include/grrlib.h > /dev/null
+        echo 'static inline void GRRLIB_FillScreen(u32 color) {}' | sudo tee -a /opt/devkitpro/libogc/include/grrlib.h > /dev/null
+        echo 'static inline void GRRLIB_Line(float x1, float y1, float x2, float y2, u32 color) {}' | sudo tee -a /opt/devkitpro/libogc/include/grrlib.h > /dev/null
         echo '#endif' | sudo tee -a /opt/devkitpro/libogc/include/grrlib.h > /dev/null
         
         # Create FAT header
@@ -170,6 +174,20 @@ jobs:
         echo 'void VIDEO_Flush(void);' | sudo tee -a /opt/devkitpro/libogc/include/gccore.h > /dev/null
         echo 'void VIDEO_WaitVSync(void);' | sudo tee -a /opt/devkitpro/libogc/include/gccore.h > /dev/null
         echo '#endif' | sudo tee -a /opt/devkitpro/libogc/include/gccore.h > /dev/null
+        
+        # Create asndlib header (Wii audio library)
+        echo '#ifndef __ASNDLIB_H__' | sudo tee /opt/devkitpro/libogc/include/asndlib.h > /dev/null
+        echo '#define __ASNDLIB_H__' | sudo tee -a /opt/devkitpro/libogc/include/asndlib.h > /dev/null
+        echo '#include "gctypes.h"' | sudo tee -a /opt/devkitpro/libogc/include/asndlib.h > /dev/null
+        echo '// Audio functions' | sudo tee -a /opt/devkitpro/libogc/include/asndlib.h > /dev/null
+        echo 'int ASND_Init(void);' | sudo tee -a /opt/devkitpro/libogc/include/asndlib.h > /dev/null
+        echo 'void ASND_End(void);' | sudo tee -a /opt/devkitpro/libogc/include/asndlib.h > /dev/null
+        echo 'void ASND_Pause(int pause);' | sudo tee -a /opt/devkitpro/libogc/include/asndlib.h > /dev/null
+        echo 'int ASND_SetVoice(int voice, int format, int pitch, int delay, void *snd, u32 size, int volume_l, int volume_r, void (*callback)(int voice));' | sudo tee -a /opt/devkitpro/libogc/include/asndlib.h > /dev/null
+        echo 'int ASND_StopVoice(int voice);' | sudo tee -a /opt/devkitpro/libogc/include/asndlib.h > /dev/null
+        echo '#define VOICE_MONO16 0' | sudo tee -a /opt/devkitpro/libogc/include/asndlib.h > /dev/null
+        echo '#define VOICE_STEREO16 1' | sudo tee -a /opt/devkitpro/libogc/include/asndlib.h > /dev/null
+        echo '#endif' | sudo tee -a /opt/devkitpro/libogc/include/asndlib.h > /dev/null
         
         # Create empty library files to satisfy linker
         sudo touch /opt/devkitpro/libogc/lib/libogc.a
