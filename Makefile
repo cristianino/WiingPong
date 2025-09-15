@@ -35,7 +35,7 @@ LDFLAGS     := -g $(MACHDEP) -Wl,-Map,$(notdir $@).map
 #---------------------------------------------------------------------------------
 # External libraries
 #---------------------------------------------------------------------------------
-LIBS := -lfreetype -lpng -lz -lbz2 -lgrrlib -lpngu -ljpeg -lwiiuse -lbte -logc -lm -lfat -lasnd
+LIBS := -lgrrlib -lfreetype -lpngu -lpng -ljpeg -lz -lbz2 -lfat -lwiiuse -lbte -logc -lm -lasnd
 LIBDIRS := $(PORTLIBS)
 
 #---------------------------------------------------------------------------------

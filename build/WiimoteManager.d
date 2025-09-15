@@ -1,6 +1,6 @@
 WiimoteManager.o: \
- /home/cristian/projects/WiingPong/source/WiimoteManager.cpp \
- /home/cristian/projects/WiingPong/include/WiimoteManager.h \
+ /home/cristian/Documentos/WiingPong/source/WiimoteManager.cpp \
+ /home/cristian/Documentos/WiingPong/include/WiimoteManager.h \
  /opt/devkitpro/libogc/include/wiiuse/wpad.h \
  /opt/devkitpro/libogc/include/gctypes.h \
  /opt/devkitpro/libogc/include/wiiuse/wiiuse.h \
@@ -59,7 +59,7 @@ WiimoteManager.o: \
  /opt/devkitpro/libogc/include/ogc/system.h \
  /opt/devkitpro/libogc/include/ogc/wiilaunch.h \
  /opt/devkitpro/libogc/include/bte/bd_addr.h
-/home/cristian/projects/WiingPong/include/WiimoteManager.h:
+/home/cristian/Documentos/WiingPong/include/WiimoteManager.h:
 /opt/devkitpro/libogc/include/wiiuse/wpad.h:
 /opt/devkitpro/libogc/include/gctypes.h:
 /opt/devkitpro/libogc/include/wiiuse/wiiuse.h:

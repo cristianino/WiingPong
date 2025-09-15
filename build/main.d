@@ -1,4 +1,4 @@
-main.o: /home/cristian/projects/WiingPong/source/main.cpp \
+main.o: /home/cristian/Documentos/WiingPong/source/main.cpp \
  /opt/devkitpro/libogc/include/fat.h /opt/devkitpro/libogc/include/dvm.h \
  /opt/devkitpro/libogc/include/ogc/disc_io.h \
  /opt/devkitpro/libogc/include/gctypes.h \
