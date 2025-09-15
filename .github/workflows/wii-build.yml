@@ -204,19 +204,27 @@ jobs:
         echo 'bool wiisd_WriteSectors(u32 sector, u32 numSectors, const void* buffer);' | sudo tee -a /opt/devkitpro/libogc/include/sdcard/wiisd_io.h > /dev/null
         echo '#endif' | sudo tee -a /opt/devkitpro/libogc/include/sdcard/wiisd_io.h > /dev/null
         
-        # Create empty library files to satisfy linker
-        sudo touch /opt/devkitpro/libogc/lib/libogc.a
-        sudo touch /opt/devkitpro/libogc/lib/libgrrlib.a
-        sudo touch /opt/devkitpro/portlibs/ppc/lib/libfreetype.a
-        sudo touch /opt/devkitpro/portlibs/ppc/lib/libpngu.a
-        sudo touch /opt/devkitpro/portlibs/ppc/lib/libpng.a
-        sudo touch /opt/devkitpro/portlibs/ppc/lib/libjpeg.a
-        sudo touch /opt/devkitpro/portlibs/ppc/lib/libz.a
-        sudo touch /opt/devkitpro/portlibs/ppc/lib/libbz2.a
-        sudo touch /opt/devkitpro/libogc/lib/libfat.a
-        sudo touch /opt/devkitpro/libogc/lib/libwiiuse.a
-        sudo touch /opt/devkitpro/libogc/lib/libbte.a
-        sudo touch /opt/devkitpro/libogc/lib/libasnd.a
+        # Create minimal library files with some stub content to satisfy linker
+        echo 'void __dummy_function() {}' | sudo tee /tmp/dummy.c > /dev/null
+        gcc -m32 -c /tmp/dummy.c -o /tmp/dummy.o
+        sudo ar rcs /opt/devkitpro/libogc/lib/libogc.a /tmp/dummy.o
+        sudo ar rcs /opt/devkitpro/libogc/lib/libgrrlib.a /tmp/dummy.o
+        sudo ar rcs /opt/devkitpro/portlibs/ppc/lib/libfreetype.a /tmp/dummy.o
+        sudo ar rcs /opt/devkitpro/portlibs/ppc/lib/libpngu.a /tmp/dummy.o
+        sudo ar rcs /opt/devkitpro/portlibs/ppc/lib/libpng.a /tmp/dummy.o
+        sudo ar rcs /opt/devkitpro/portlibs/ppc/lib/libjpeg.a /tmp/dummy.o
+        sudo ar rcs /opt/devkitpro/portlibs/ppc/lib/libz.a /tmp/dummy.o
+        sudo ar rcs /opt/devkitpro/portlibs/ppc/lib/libbz2.a /tmp/dummy.o
+        sudo ar rcs /opt/devkitpro/libogc/lib/libfat.a /tmp/dummy.o
+        sudo ar rcs /opt/devkitpro/libogc/lib/libwiiuse.a /tmp/dummy.o
+        sudo ar rcs /opt/devkitpro/libogc/lib/libbte.a /tmp/dummy.o
+        sudo ar rcs /opt/devkitpro/libogc/lib/libasnd.a /tmp/dummy.o
+        
+        # Create stub implementations for external symbols
+        echo 'const void* __io_wiisd = 0;' | sudo tee /opt/devkitpro/libogc/lib/stubs.c > /dev/null
+        echo 'const void* __io_usbstorage = 0;' | sudo tee -a /opt/devkitpro/libogc/lib/stubs.c > /dev/null
+        echo 'const void* __io_gcsda = 0;' | sudo tee -a /opt/devkitpro/libogc/lib/stubs.c > /dev/null
+        echo 'const void* __io_gcsdb = 0;' | sudo tee -a /opt/devkitpro/libogc/lib/stubs.c > /dev/null
         
         # Test installation
         if /opt/devkitpro/devkitPPC/bin/powerpc-eabi-gcc --version; then
