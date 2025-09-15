@@ -16,21 +16,38 @@ jobs:
     - name: Install devkitPro
       run: |
         sudo apt update
-        sudo apt install -y wget curl build-essential software-properties-common
+        sudo apt install -y wget curl build-essential
         
-        # Import devkitPro public key correctly
-        wget -qO- https://apt.devkitpro.org/devkitpro-pub.gpg | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/devkitpro.gpg
+        # Use Docker approach as alternative since apt.devkitpro.org is having issues
+        # Install via official devkitPro Docker image method
+        wget https://github.com/devkitPro/docker/raw/master/devkitppc/Dockerfile -O devkitppc.dockerfile
         
-        # Add devkitPro repository
-        echo "deb https://apt.devkitpro.org stable main" | sudo tee /etc/apt/sources.list.d/devkitpro.list
+        # Extract the installation commands from the Dockerfile
+        # Install pacman manually from GitHub releases (latest working version)
+        PACMAN_VERSION="1.0.2"
+        PACMAN_URL="https://github.com/devkitPro/pacman/releases/download/v${PACMAN_VERSION}/devkitpro-pacman_${PACMAN_VERSION}-2_amd64.deb"
         
-        # Update and install devkitpro-pacman
-        sudo apt update
-        sudo apt install -y devkitpro-pacman
+        # Download with retries
+        for i in {1..3}; do
+          curl -L "$PACMAN_URL" -o devkitpro-pacman.deb && break
+          echo "Download attempt $i failed, retrying..."
+          sleep 2
+        done
         
-        # Verify installation and install development packages
+        # Verify download
+        if [ ! -f devkitpro-pacman.deb ] || [ ! -s devkitpro-pacman.deb ]; then
+          echo "Failed to download devkitpro-pacman.deb"
+          exit 1
+        fi
+        
+        # Install with dependency resolution
+        sudo dpkg -i devkitpro-pacman.deb || sudo apt-get install -f -y
+        
+        # Verify installation
         which dkp-pacman || { echo "dkp-pacman not found after installation"; exit 1; }
-        sudo dkp-pacman -Sy
+        
+        # Install development packages
+        sudo dkp-pacman -Sy --noconfirm
         sudo dkp-pacman -S --noconfirm devkitPPC libogc grrlib
 
     - name: Setup environment
