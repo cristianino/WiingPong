@@ -124,6 +124,7 @@ jobs:
         echo 'typedef struct DISC_INTERFACE DISC_INTERFACE;' | sudo tee -a /opt/devkitpro/libogc/include/fat.h > /dev/null
         echo 'bool fatInitDefault(void);' | sudo tee -a /opt/devkitpro/libogc/include/fat.h > /dev/null
         echo 'bool fatUnmount(const char* name);' | sudo tee -a /opt/devkitpro/libogc/include/fat.h > /dev/null
+        echo 'bool fatMount(const char* name, const DISC_INTERFACE* interface, u32 startSector, u32 cacheSize, u32 SectorsPerPage);' | sudo tee -a /opt/devkitpro/libogc/include/fat.h > /dev/null
         echo '#endif' | sudo tee -a /opt/devkitpro/libogc/include/fat.h > /dev/null
         
         # Create wiiuse directory and headers
