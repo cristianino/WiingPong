@@ -16,7 +16,7 @@ jobs:
     - name: Install devkitPro
       run: |
         sudo apt update
-        sudo apt install -y wget curl build-essential gcc-multilib
+        sudo apt install -y wget curl build-essential gcc-multilib g++-multilib libc6-dev-i386
         
         echo "Setting up minimal cross-compilation environment..."
         
@@ -111,6 +111,29 @@ jobs:
         echo 'typedef struct GRRLIB_texImg GRRLIB_texImg;' | sudo tee -a /opt/devkitpro/libogc/include/grrlib.h > /dev/null
         echo 'static inline void GRRLIB_Rectangle(float x, float y, float w, float h, u32 c, int f) {}' | sudo tee -a /opt/devkitpro/libogc/include/grrlib.h > /dev/null
         echo '#endif' | sudo tee -a /opt/devkitpro/libogc/include/grrlib.h > /dev/null
+        
+        # Create FAT header
+        echo '#ifndef __FAT_H__' | sudo tee /opt/devkitpro/libogc/include/fat.h > /dev/null
+        echo '#define __FAT_H__' | sudo tee -a /opt/devkitpro/libogc/include/fat.h > /dev/null
+        echo '#include "gctypes.h"' | sudo tee -a /opt/devkitpro/libogc/include/fat.h > /dev/null
+        echo 'bool fatInitDefault(void);' | sudo tee -a /opt/devkitpro/libogc/include/fat.h > /dev/null
+        echo 'bool fatUnmount(const char* name);' | sudo tee -a /opt/devkitpro/libogc/include/fat.h > /dev/null
+        echo '#endif' | sudo tee -a /opt/devkitpro/libogc/include/fat.h > /dev/null
+        
+        # Create wiiuse directory and headers
+        sudo mkdir -p /opt/devkitpro/libogc/include/wiiuse
+        echo '#ifndef __WPAD_H__' | sudo tee /opt/devkitpro/libogc/include/wiiuse/wpad.h > /dev/null
+        echo '#define __WPAD_H__' | sudo tee -a /opt/devkitpro/libogc/include/wiiuse/wpad.h > /dev/null
+        echo '#include "../gctypes.h"' | sudo tee -a /opt/devkitpro/libogc/include/wiiuse/wpad.h > /dev/null
+        echo '#define WPAD_BUTTON_A     0x0008' | sudo tee -a /opt/devkitpro/libogc/include/wiiuse/wpad.h > /dev/null
+        echo '#define WPAD_BUTTON_B     0x0004' | sudo tee -a /opt/devkitpro/libogc/include/wiiuse/wpad.h > /dev/null
+        echo '#define WPAD_BUTTON_1     0x0002' | sudo tee -a /opt/devkitpro/libogc/include/wiiuse/wpad.h > /dev/null
+        echo '#define WPAD_BUTTON_2     0x0001' | sudo tee -a /opt/devkitpro/libogc/include/wiiuse/wpad.h > /dev/null
+        echo 'typedef struct WPADData WPADData;' | sudo tee -a /opt/devkitpro/libogc/include/wiiuse/wpad.h > /dev/null
+        echo 'int WPAD_Init(void);' | sudo tee -a /opt/devkitpro/libogc/include/wiiuse/wpad.h > /dev/null
+        echo 'int WPAD_ScanPads(void);' | sudo tee -a /opt/devkitpro/libogc/include/wiiuse/wpad.h > /dev/null
+        echo 'u32 WPAD_ButtonsDown(int chan);' | sudo tee -a /opt/devkitpro/libogc/include/wiiuse/wpad.h > /dev/null
+        echo '#endif' | sudo tee -a /opt/devkitpro/libogc/include/wiiuse/wpad.h > /dev/null
         
         # Create empty library files to satisfy linker
         sudo touch /opt/devkitpro/libogc/lib/libogc.a
