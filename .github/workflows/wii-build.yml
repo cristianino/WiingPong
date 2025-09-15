@@ -18,54 +18,60 @@ jobs:
         sudo apt update
         sudo apt install -y wget curl build-essential
         
-        # Method 1: Try official installation script
-        echo "Attempting official devkitPro installation..."
-        if wget -q https://apt.devkitpro.org/install-devkitpro-pacman.sh -O install-devkitpro-pacman.sh; then
-          if bash install-devkitpro-pacman.sh; then
-            echo "Official installation succeeded"
-            sudo dkp-pacman -Sy --noconfirm
-            sudo dkp-pacman -S --noconfirm devkitPPC libogc grrlib
-          else
-            echo "Official script failed, trying Docker approach..."
-            # Method 2: Use Docker to extract devkitPro
-            sudo apt install -y docker.io
-            sudo systemctl start docker
-            
-            # Pull devkitPro Docker image and extract tools
-            sudo docker pull devkitpro/devkitppc:latest
-            
-            # Create container and copy devkitPro files
-            sudo docker create --name devkit-temp devkitpro/devkitppc:latest
-            sudo docker cp devkit-temp:/opt/devkitpro /opt/
-            sudo docker rm devkit-temp
-            
-            # Set proper permissions
-            sudo chown -R root:root /opt/devkitpro
-            sudo chmod -R 755 /opt/devkitpro
-            
-            echo "Docker extraction completed"
-          fi
-        else
-          echo "Could not download official script, using Docker method..."
-          # Method 2: Docker approach (fallback)
-          sudo apt install -y docker.io
-          sudo systemctl start docker
-          
-          sudo docker pull devkitpro/devkitppc:latest
-          sudo docker create --name devkit-temp devkitpro/devkitppc:latest
-          sudo docker cp devkit-temp:/opt/devkitpro /opt/
-          sudo docker rm devkit-temp
-          sudo chown -R root:root /opt/devkitpro
-          sudo chmod -R 755 /opt/devkitpro
-          
-          echo "Docker installation completed"
+        # Use a simple but effective approach - direct installation from Arch repos
+        echo "Installing devkitPro tools..."
+        
+        # Create devkitPro directory structure
+        sudo mkdir -p /opt/devkitpro
+        
+        # Download and extract devkitPPC precompiled toolchain
+        echo "Downloading devkitPPC toolchain..."
+        wget -q https://github.com/devkitPro/buildscripts/releases/download/devkitPPC-r39-3/devkitPPC-linux.tar.xz -O devkitPPC.tar.xz
+        
+        if [ ! -f devkitPPC.tar.xz ] || [ ! -s devkitPPC.tar.xz ]; then
+          echo "Failed to download devkitPPC, trying alternative..."
+          # Alternative: use known working mirror
+          wget -q https://wii.leseratte10.de/devkitPro/devkitPPC-linux.tar.xz -O devkitPPC.tar.xz || {
+            echo "All download attempts failed, exiting..."
+            exit 1
+          }
         fi
         
-        # Verify installation
-        if [ -d "/opt/devkitpro/devkitPPC" ]; then
-          echo "devkitPPC installation verified"
+        # Extract devkitPPC
+        sudo tar -xf devkitPPC.tar.xz -C /opt/devkitpro/
+        
+        # Download libogc
+        echo "Downloading libogc..."
+        wget -q https://github.com/devkitPro/libogc/releases/latest/download/libogc-linux.tar.bz2 -O libogc.tar.bz2 || {
+          echo "Failed to download libogc from GitHub, trying alternative..."
+          wget -q https://wii.leseratte10.de/devkitPro/libogc-linux.tar.bz2 -O libogc.tar.bz2
+        }
+        
+        if [ -f libogc.tar.bz2 ] && [ -s libogc.tar.bz2 ]; then
+          sudo tar -xf libogc.tar.bz2 -C /opt/devkitpro/
+        fi
+        
+        # Download GRRLIB
+        echo "Downloading GRRLIB..."
+        wget -q https://github.com/GRRLIB/GRRLIB/releases/latest/download/GRRLIB-linux.tar.bz2 -O grrlib.tar.bz2 || {
+          echo "Failed to download GRRLIB, continuing without it..."
+        }
+        
+        if [ -f grrlib.tar.bz2 ] && [ -s grrlib.tar.bz2 ]; then
+          sudo tar -xf grrlib.tar.bz2 -C /opt/devkitpro/
+        fi
+        
+        # Set proper permissions
+        sudo chown -R root:root /opt/devkitpro
+        sudo chmod -R 755 /opt/devkitpro
+        
+        # Create simple verification
+        if [ -d "/opt/devkitpro/devkitPPC" ] && [ -f "/opt/devkitpro/devkitPPC/bin/powerpc-eabi-gcc" ]; then
+          echo "devkitPPC installation successful"
+          /opt/devkitpro/devkitPPC/bin/powerpc-eabi-gcc --version
         else
-          echo "devkitPPC installation failed"
+          echo "devkitPPC installation verification failed"
+          ls -la /opt/devkitpro/
           exit 1
         fi
 
