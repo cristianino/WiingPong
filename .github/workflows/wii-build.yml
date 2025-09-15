@@ -62,12 +62,6 @@ jobs:
         inline void VIDEO_SetBlack(int) {}
         inline void VIDEO_Flush(void) {}
         inline void VIDEO_WaitVSync(void) {}
-        
-        // FAT filesystem
-        typedef struct DISC_INTERFACE DISC_INTERFACE;
-        inline bool fatInitDefault(void) { return true; }
-        inline bool fatUnmount(const char*) { return true; }
-        inline bool fatMount(const char*, const DISC_INTERFACE*, u32, u32, u32) { return true; }
         #endif
         EOF
         
@@ -129,6 +123,22 @@ jobs:
         #define SYS_RETURNTOMENU 0
         #define SYS_POWEROFF 1
         #define SYS_RESTART 2
+        #endif
+        EOF
+        
+        # FAT filesystem header
+        cat > mock_includes/fat.h << 'EOF'
+        #ifndef __FAT_H__
+        #define __FAT_H__
+        #include "gctypes.h"
+        #include <stdbool.h>
+        
+        // FAT filesystem interface
+        typedef struct DISC_INTERFACE DISC_INTERFACE;
+        
+        inline bool fatInitDefault(void) { return true; }
+        inline bool fatUnmount(const char* /*name*/) { return true; }
+        inline bool fatMount(const char* /*name*/, const DISC_INTERFACE* /*interface*/, u32 /*startSector*/, u32 /*cacheSize*/, u32 /*SectorsPerPage*/) { return true; }
         #endif
         EOF
         
