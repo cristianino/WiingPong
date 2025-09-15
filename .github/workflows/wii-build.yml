@@ -42,12 +42,12 @@ jobs:
         #define __GRRLIB_H__
         #include "gctypes.h"
         typedef struct { u8 data[4]; } GRRLIB_texImg;
-        inline void GRRLIB_Rectangle(float x, float y, float w, float h, u32 c, int f) {}
+        inline void GRRLIB_Rectangle(float /*x*/, float /*y*/, float /*w*/, float /*h*/, u32 /*c*/, int /*f*/) {}
         inline void GRRLIB_Render(void) {}
         inline void GRRLIB_Init(void) {}
         inline void GRRLIB_Exit(void) {}
-        inline void GRRLIB_FillScreen(u32 color) {}
-        inline void GRRLIB_Line(float x1, float y1, float x2, float y2, u32 color) {}
+        inline void GRRLIB_FillScreen(u32 /*color*/) {}
+        inline void GRRLIB_Line(float /*x1*/, float /*y1*/, float /*x2*/, float /*y2*/, u32 /*color*/) {}
         #endif
         EOF
         
@@ -134,7 +134,9 @@ jobs:
         #include <stdbool.h>
         
         // FAT filesystem interface
-        typedef struct DISC_INTERFACE DISC_INTERFACE;
+        typedef struct DISC_INTERFACE {
+            u32 dummy;
+        } DISC_INTERFACE;
         
         inline bool fatInitDefault(void) { return true; }
         inline bool fatUnmount(const char* /*name*/) { return true; }
@@ -148,7 +150,9 @@ jobs:
         #ifndef __WIISD_IO_H__
         #define __WIISD_IO_H__
         #include "../gctypes.h"
-        extern const void* __io_wiisd;
+        #include "../fat.h"
+        
+        extern const DISC_INTERFACE __io_wiisd;
         inline bool wiisd_Initialize(void) { return true; }
         inline bool wiisd_IsInserted(void) { return true; }
         inline bool wiisd_ReadSectors(u32, u32, void*) { return true; }
