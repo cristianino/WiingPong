@@ -78,7 +78,7 @@ export INCLUDE  := $(foreach dir,$(INCLUDES),-I$(CURDIR)/$(dir)) \
 export LIBPATHS := $(foreach dir,$(LIBDIRS),-L$(dir)/lib) \
                    -L$(LIBOGC_LIB)
 
-.PHONY: $(BUILD) clean
+.PHONY: $(BUILD) clean package release
 
 %.ttf.o:
 	@echo "Embedding $<..."
@@ -96,11 +96,44 @@ $(BUILD):
 	@$(MAKE) --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile
 
 #---------------------------------------------------------------------------------
+# Package for SD card
+#---------------------------------------------------------------------------------
+package: $(BUILD)
+	@echo "Creating SD package..."
+	@mkdir -p apps/$(TARGET)
+	@cp $(OUTPUT).dol apps/$(TARGET)/boot.dol
+	@echo "Creating meta.xml..."
+	@echo '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' > apps/$(TARGET)/meta.xml
+	@echo '<app version="1">' >> apps/$(TARGET)/meta.xml
+	@echo '  <name>$(TARGET)</name>' >> apps/$(TARGET)/meta.xml
+	@echo '  <coder>cristianino</coder>' >> apps/$(TARGET)/meta.xml
+	@echo '  <version>1.0.0</version>' >> apps/$(TARGET)/meta.xml
+	@echo '  <release_date>$(shell date +%Y%m%d)</release_date>' >> apps/$(TARGET)/meta.xml
+	@echo '  <short_description>Pong game for Nintendo Wii</short_description>' >> apps/$(TARGET)/meta.xml
+	@echo '  <long_description>A classic Pong game implementation for Nintendo Wii using Wiimote controls.</long_description>' >> apps/$(TARGET)/meta.xml
+	@echo '  <ahb_access/>' >> apps/$(TARGET)/meta.xml
+	@echo '</app>' >> apps/$(TARGET)/meta.xml
+	@echo "Package created in apps/$(TARGET)/"
+	@echo "Copy the 'apps' folder to the root of your SD card"
+
+#---------------------------------------------------------------------------------
+# Create release package
+#---------------------------------------------------------------------------------
+release: package
+	@echo "Creating release package..."
+	@mkdir -p release
+	@tar -czf release/$(TARGET)-$(shell date +%Y%m%d).tar.gz apps/
+	@zip -r release/$(TARGET)-$(shell date +%Y%m%d).zip apps/
+	@echo "Release packages created:"
+	@echo "  - release/$(TARGET)-$(shell date +%Y%m%d).tar.gz"
+	@echo "  - release/$(TARGET)-$(shell date +%Y%m%d).zip"
+
+#---------------------------------------------------------------------------------
 # Clean rule
 #---------------------------------------------------------------------------------
 clean:
 	@echo clean ...
-	@rm -fr $(BUILD) $(OUTPUT).elf $(OUTPUT).dol
+	@rm -fr $(BUILD) $(OUTPUT).elf $(OUTPUT).dol apps/ release/
 
 else
 
