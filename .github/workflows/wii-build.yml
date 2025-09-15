@@ -70,25 +70,6 @@ jobs:
         #define SYS_POWEROFF 1
         #define SYS_RESTART 2
         
-        // WPAD (Wiimote) definitions
-        #define WPAD_BUTTON_A 0x0008
-        #define WPAD_BUTTON_B 0x0004
-        #define WPAD_BUTTON_1 0x0002
-        #define WPAD_BUTTON_2 0x0001
-        #define WPAD_BUTTON_HOME 0x0080
-        #define WPAD_BUTTON_PLUS 0x0010
-        #define WPAD_BUTTON_MINUS 0x1000
-        #define WPAD_CHAN_ALL 0xFF
-        #define WPAD_FMT_BTNS_ACC_IR 0
-        
-        typedef struct WPADData WPADData;
-        inline int WPAD_Init(void) { return 0; }
-        inline int WPAD_ScanPads(void) { return 0; }
-        inline int WPAD_Shutdown(void) { return 0; }
-        inline u32 WPAD_ButtonsDown(int) { return 0; }
-        inline u32 WPAD_ButtonsHeld(int) { return 0; }
-        inline int WPAD_SetDataFormat(int, int) { return 0; }
-        
         // FAT filesystem
         typedef struct DISC_INTERFACE DISC_INTERFACE;
         inline bool fatInitDefault(void) { return true; }
@@ -109,6 +90,35 @@ jobs:
         inline int ASND_StopVoice(int) { return 0; }
         #define VOICE_MONO16 0
         #define VOICE_STEREO16 1
+        #endif
+        EOF
+        
+        # Wiiuse/WPAD headers (separate structure for compatibility)
+        mkdir -p mock_includes/wiiuse
+        cat > mock_includes/wiiuse/wpad.h << 'EOF'
+        #ifndef __WPAD_H__
+        #define __WPAD_H__
+        #include "../gctypes.h"
+        
+        // WPAD (Wiimote) definitions
+        #define WPAD_BUTTON_A 0x0008
+        #define WPAD_BUTTON_B 0x0004
+        #define WPAD_BUTTON_1 0x0002
+        #define WPAD_BUTTON_2 0x0001
+        #define WPAD_BUTTON_HOME 0x0080
+        #define WPAD_BUTTON_PLUS 0x0010
+        #define WPAD_BUTTON_MINUS 0x1000
+        #define WPAD_CHAN_ALL 0xFF
+        #define WPAD_FMT_BTNS_ACC_IR 0
+        
+        typedef struct WPADData WPADData;
+        
+        inline int WPAD_Init(void) { return 0; }
+        inline int WPAD_ScanPads(void) { return 0; }
+        inline int WPAD_Shutdown(void) { return 0; }
+        inline u32 WPAD_ButtonsDown(int chan) { return 0; }
+        inline u32 WPAD_ButtonsHeld(int chan) { return 0; }
+        inline int WPAD_SetDataFormat(int chan, int fmt) { return 0; }
         #endif
         EOF
         
