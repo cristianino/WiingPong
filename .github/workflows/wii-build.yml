@@ -15,9 +15,12 @@ jobs:
 
     - name: Install devkitPro
       run: |
-        wget https://apt.devkitpro.org/install-devkitpro-pacman
-        chmod +x ./install-devkitpro-pacman
-        sudo ./install-devkitpro-pacman
+        sudo apt update
+        sudo apt install -y wget gnupg2
+        wget -O- https://apt.devkitpro.org/devkitpro-pub.gpg | sudo gpg --dearmor -o /usr/share/keyrings/devkitpro-archive-keyring.gpg
+        echo "deb [signed-by=/usr/share/keyrings/devkitpro-archive-keyring.gpg] https://apt.devkitpro.org stable main" | sudo tee /etc/apt/sources.list.d/devkitpro.list
+        sudo apt update
+        sudo apt install -y devkitpro-pacman
         sudo dkp-pacman -Sy
         sudo dkp-pacman -S --noconfirm devkitPPC libogc grrlib
 
