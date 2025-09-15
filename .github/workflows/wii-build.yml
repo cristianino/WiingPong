@@ -28,9 +28,21 @@ jobs:
         sudo mkdir -p /opt/devkitpro/portlibs/ppc/include
         sudo mkdir -p /opt/devkitpro/portlibs/ppc/lib
         
-        # Create simple wrapper script
+        # Create simple wrapper script that filters out PowerPC-specific flags
         echo '#!/bin/bash' | sudo tee /opt/devkitpro/devkitPPC/bin/powerpc-eabi-gcc > /dev/null
-        echo 'exec gcc -m32 "$@"' | sudo tee -a /opt/devkitpro/devkitPPC/bin/powerpc-eabi-gcc > /dev/null
+        echo '# Filter out PowerPC-specific flags that regular GCC does not understand' | sudo tee -a /opt/devkitpro/devkitPPC/bin/powerpc-eabi-gcc > /dev/null
+        echo 'args=()' | sudo tee -a /opt/devkitpro/devkitPPC/bin/powerpc-eabi-gcc > /dev/null
+        echo 'for arg in "$@"; do' | sudo tee -a /opt/devkitpro/devkitPPC/bin/powerpc-eabi-gcc > /dev/null
+        echo '  case "$arg" in' | sudo tee -a /opt/devkitpro/devkitPPC/bin/powerpc-eabi-gcc > /dev/null
+        echo '    -mcpu=750|-meabi|-mhard-float|-DGEKKO)' | sudo tee -a /opt/devkitpro/devkitPPC/bin/powerpc-eabi-gcc > /dev/null
+        echo '      # Skip PowerPC-specific flags' | sudo tee -a /opt/devkitpro/devkitPPC/bin/powerpc-eabi-gcc > /dev/null
+        echo '      ;;' | sudo tee -a /opt/devkitpro/devkitPPC/bin/powerpc-eabi-gcc > /dev/null
+        echo '    *)' | sudo tee -a /opt/devkitpro/devkitPPC/bin/powerpc-eabi-gcc > /dev/null
+        echo '      args+=("$arg")' | sudo tee -a /opt/devkitpro/devkitPPC/bin/powerpc-eabi-gcc > /dev/null
+        echo '      ;;' | sudo tee -a /opt/devkitpro/devkitPPC/bin/powerpc-eabi-gcc > /dev/null
+        echo '  esac' | sudo tee -a /opt/devkitpro/devkitPPC/bin/powerpc-eabi-gcc > /dev/null
+        echo 'done' | sudo tee -a /opt/devkitpro/devkitPPC/bin/powerpc-eabi-gcc > /dev/null
+        echo 'exec gcc -m32 "${args[@]}"' | sudo tee -a /opt/devkitpro/devkitPPC/bin/powerpc-eabi-gcc > /dev/null
         sudo chmod +x /opt/devkitpro/devkitPPC/bin/powerpc-eabi-gcc
         
         # Create tool symlinks
@@ -53,7 +65,7 @@ jobs:
         echo '# Minimal wii_rules for CI build' | sudo tee /opt/devkitpro/devkitPPC/wii_rules > /dev/null
         echo 'LIBOGC_INC := /opt/devkitpro/libogc/include' | sudo tee -a /opt/devkitpro/devkitPPC/wii_rules > /dev/null
         echo 'LIBOGC_LIB := /opt/devkitpro/libogc/lib' | sudo tee -a /opt/devkitpro/devkitPPC/wii_rules > /dev/null
-        echo 'MACHDEP := -DGEKKO -mcpu=750 -meabi -mhard-float' | sudo tee -a /opt/devkitpro/devkitPPC/wii_rules > /dev/null
+        echo 'MACHDEP := -DGEKKO' | sudo tee -a /opt/devkitpro/devkitPPC/wii_rules > /dev/null
         echo 'CC := $(DEVKITPPC)/bin/powerpc-eabi-gcc' | sudo tee -a /opt/devkitpro/devkitPPC/wii_rules > /dev/null
         echo 'CXX := $(DEVKITPPC)/bin/powerpc-eabi-g++' | sudo tee -a /opt/devkitpro/devkitPPC/wii_rules > /dev/null
         echo 'AR := $(DEVKITPPC)/bin/powerpc-eabi-ar' | sudo tee -a /opt/devkitpro/devkitPPC/wii_rules > /dev/null
