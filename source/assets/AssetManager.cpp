@@ -48,15 +48,18 @@ void AssetManager::loadAudio(AudioManager& audioManager) {
 
 GRRLIB_texImg* AssetManager::getTexture(const char* name) const {
     // Stub: Return nullptr; rendering uses primitives
+    (void)name; // Suppress unused parameter warning
     return nullptr;
 }
 
 void* AssetManager::getSound(const char* name) const {
     // Stub for audio buffer
+    (void)name; // Suppress unused parameter warning
     return nullptr;
 }
 
 GRRLIB_texImg* AssetManager::getFont(const char* name) const {
     // Stub: Return nullptr; use primitive text later
+    (void)name; // Suppress unused parameter warning
     return nullptr;
 }

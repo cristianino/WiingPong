@@ -5,13 +5,21 @@
 #include <stdlib.h>
 #include <string.h>
 
+// Define constants if not already defined (for compatibility)
+#ifndef VOICE_MONO16
+#define VOICE_MONO16 0
+#endif
+#ifndef VOICE_STEREO16  
+#define VOICE_STEREO16 1
+#endif
+
 AudioManager::AudioManager() : initialized(false) {
     // Initialize audio buffers
     for (int i = 0; i < 5; i++) {
         audioBuffers[i].data = nullptr;
         audioBuffers[i].size = 0;
         audioBuffers[i].frequency = 22050;  // Default frequency
-        audioBuffers[i].format = VOICE_MONO_16BIT;  // Default format
+        audioBuffers[i].format = VOICE_MONO16;  // Default format
     }
 }
 
@@ -81,7 +89,9 @@ void AudioManager::playSound(SoundID id) {
     if (!buffer->data) return;
     
     // Play sound using ASND
-    ASND_SetVoice(ASND_GetFirstUnusedVoice(), 
+    // Use voice 1-3 for sound effects (voice 0 reserved for music)
+    int voice = 1;  // Simple voice allocation, could be improved
+    ASND_SetVoice(voice, 
                   buffer->format, 
                   buffer->frequency, 
                   0,  // delay
@@ -113,12 +123,14 @@ void AudioManager::playMusic(SoundID id, bool loop) {
     
     // Note: ASND doesn't have built-in looping, would need custom callback
     // For now, just play once
+    (void)loop; // Suppress unused parameter warning
 }
 
 void AudioManager::setVolume(float volume) {
     if (!initialized) return;
     // ASND doesn't have a global volume, this is a stub
     // Individual voices can have their volume set when played
+    (void)volume; // Suppress unused parameter warning
 }
 
 void AudioManager::stopAll() {

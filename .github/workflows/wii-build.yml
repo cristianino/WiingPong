@@ -70,13 +70,23 @@ jobs:
         #ifndef __ASNDLIB_H__
         #define __ASNDLIB_H__
         #include "gctypes.h"
+        
+        // ASND Voice formats
+        #define VOICE_MONO16 0
+        #define VOICE_STEREO16 1
+        #define VOICE_MONO8 2
+        #define VOICE_STEREO8 3
+        
+        // ASND Functions
         inline int ASND_Init(void) { return 0; }
         inline void ASND_End(void) {}
         inline void ASND_Pause(int) {}
-        inline int ASND_SetVoice(int, int, int, int, void*, u32, int, int, void (*)(int)) { return 0; }
-        inline int ASND_StopVoice(int) { return 0; }
-        #define VOICE_MONO16 0
-        #define VOICE_STEREO16 1
+        inline int ASND_SetVoice(int voice, int format, int frequency, int delay, void* data, u32 size, int volume_l, int volume_r, void (*callback)(int)) { 
+            (void)voice; (void)format; (void)frequency; (void)delay; (void)data; (void)size; (void)volume_l; (void)volume_r; (void)callback;
+            return 0; 
+        }
+        inline int ASND_StopVoice(int voice) { (void)voice; return 0; }
+        inline int ASND_GetFirstUnusedVoice(void) { return 1; }
         #endif
         EOF
         
@@ -166,7 +176,7 @@ jobs:
         
         for cpp_file in $(find source -name "*.cpp"); do
           echo "Checking $cpp_file..."
-          g++ -std=c++11 -Wall -Wextra -I./include -I./mock_includes \
+          g++ -std=c++11 -Wall -Wextra -Wno-unused-parameter -I./include -I./mock_includes \
               -DGEKKO -c "$cpp_file" -o "/tmp/$(basename $cpp_file .cpp).o" || exit 1
         done
         
