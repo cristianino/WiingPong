@@ -108,18 +108,23 @@ jobs:
 
     - name: Check for merge conflicts
       run: |
+        echo "Fetching base branch..."
         git fetch origin ${{ github.event.pull_request.base.ref }}
-        if ! git merge-tree $(git merge-base HEAD origin/${{ github.event.pull_request.base.ref }}) HEAD origin/${{ github.event.pull_request.base.ref }} | grep -q "<<<<<<< "; then
-          echo "✅ No merge conflicts detected"
-        else
+        
+        echo "Checking for merge conflicts..."
+        BASE_REF="origin/${{ github.event.pull_request.base.ref }}"
+        
+        if git merge-tree "$(git merge-base HEAD "$BASE_REF")" HEAD "$BASE_REF" | grep -q "<<<<<<< "; then
           echo "❌ Merge conflicts detected!"
           exit 1
+        else
+          echo "✅ No merge conflicts detected"
         fi
 
     - name: Validate git-flow branch naming
       run: |
-        BRANCH_NAME="${{ github.event.pull_request.head.ref }}"
-        BASE_BRANCH="${{ github.event.pull_request.base.ref }}"
+        BRANCH_NAME='${{ github.event.pull_request.head.ref }}'
+        BASE_BRANCH='${{ github.event.pull_request.base.ref }}'
         
         echo "PR from: $BRANCH_NAME to: $BASE_BRANCH"
         
@@ -142,12 +147,14 @@ jobs:
 
     - name: Analyze changed files
       run: |
+        BASE_REF="origin/${{ github.event.pull_request.base.ref }}"
+        
         echo "Files changed in this PR:"
-        git diff --name-only origin/${{ github.event.pull_request.base.ref }}...HEAD
+        git diff --name-only "$BASE_REF"...HEAD
         
         echo ""
         echo "Lines changed:"
-        git diff --stat origin/${{ github.event.pull_request.base.ref }}...HEAD
+        git diff --stat "$BASE_REF"...HEAD
 
     - name: Comment on PR
       if: github.event.action == 'opened'
