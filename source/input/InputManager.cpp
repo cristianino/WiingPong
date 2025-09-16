@@ -115,9 +115,11 @@ void InputManager::update() {
     // Normal paddle movement (always enabled with this method)
     if (heldButtons & WPAD_BUTTON_A) {
         events.push_back({InputEventType::PaddleUp});
+        printf("[INPUT] A pressed - PaddleUp event generated\n");
     }
     if (heldButtons & WPAD_BUTTON_B) {
         events.push_back({InputEventType::PaddleDown});
+        printf("[INPUT] B pressed - PaddleDown event generated\n");
     }
     
     #elif WIINGPONG_DEBUG_TOGGLE_METHOD == 0
@@ -129,9 +131,11 @@ void InputManager::update() {
     // Normal paddle movement
     if (heldButtons & WPAD_BUTTON_A) {
         events.push_back({InputEventType::PaddleUp});
+        printf("[INPUT] A pressed - PaddleUp event generated (method 0)\n");
     }
     if (heldButtons & WPAD_BUTTON_B) {
         events.push_back({InputEventType::PaddleDown});
+        printf("[INPUT] B pressed - PaddleDown event generated (method 0)\n");
     }
     #endif
     
@@ -139,9 +143,11 @@ void InputManager::update() {
     // Debug disabled - normal paddle movement only
     if (heldButtons & WPAD_BUTTON_A) {
         events.push_back({InputEventType::PaddleUp});
+        printf("[INPUT] A pressed - PaddleUp event generated (debug disabled)\n");
     }
     if (heldButtons & WPAD_BUTTON_B) {
         events.push_back({InputEventType::PaddleDown});
+        printf("[INPUT] B pressed - PaddleDown event generated (debug disabled)\n");
     }
 #endif
 

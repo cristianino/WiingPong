@@ -3,6 +3,7 @@
 #include "audio/AudioManager.h"
 #include "WiimoteManager.h"
 #include <cstdlib>  // for rand
+#include <cstdio>   // for printf
 #include <time.h>
 
 PhysicsEngine::PhysicsEngine() : playerScore(0), cpuScore(0), audioManager(nullptr), wiimoteManager(nullptr) {
@@ -46,14 +47,18 @@ void PhysicsEngine::setWiimoteManager(WiimoteManager* wiimoteManager) {
 }
 
 void PhysicsEngine::update() {
-    // Note: For now, no input events passed; player movement will be integrated later
-    // Temporary: No player movement; set dy to 0
-    velocities[PLAYER_PADDLE].dy = 0;
-
+    // Player movement is now handled externally via velocities[PLAYER_PADDLE].dy
+    // No need to override player paddle velocity here
+    
     // Update positions for all entities
     for (unsigned int i = 0; i < MAX_ENTITIES; ++i) {
         if (i == BALL) continue;  // Ball updated separately
         positions[i].y += velocities[i].dy;
+        
+        // Debug: Print player paddle updates
+        if (i == PLAYER_PADDLE && velocities[i].dy != 0) {
+            printf("[PHYSICS] Player paddle: pos.y=%d, vel.dy=%d\n", positions[i].y, velocities[i].dy);
+        }
     }
 
     updateAI();

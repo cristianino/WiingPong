@@ -71,8 +71,10 @@ int main() {
         for (const auto& event : events) {
             if (event.type == InputEventType::PaddleUp) {
                 paddleUp = true;
+                printf("[MAIN] PaddleUp event processed - paddleUp = true\n");
             } else if (event.type == InputEventType::PaddleDown) {
                 paddleDown = true;
+                printf("[MAIN] PaddleDown event processed - paddleDown = true\n");
             } else if (event.type == InputEventType::Home) {
                 running = false;
                 break;
@@ -88,8 +90,10 @@ int main() {
         // Apply player movement to physics
         if (paddleUp) {
             physics.velocities[PLAYER_PADDLE].dy = -WIINGPONG_PADDLE_SPEED;  // Use config
+            printf("[MAIN] Applied paddleUp - velocity.dy = %d\n", -WIINGPONG_PADDLE_SPEED);
         } else if (paddleDown) {
             physics.velocities[PLAYER_PADDLE].dy = WIINGPONG_PADDLE_SPEED;
+            printf("[MAIN] Applied paddleDown - velocity.dy = %d\n", WIINGPONG_PADDLE_SPEED);
         } else {
             physics.velocities[PLAYER_PADDLE].dy = 0;
         }
