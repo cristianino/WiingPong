@@ -1,10 +1,11 @@
 // source/physics/PhysicsEngine.cpp
 #include "physics/PhysicsEngine.h"
 #include "audio/AudioManager.h"
+#include "WiimoteManager.h"
 #include <cstdlib>  // for rand
 #include <time.h>
 
-PhysicsEngine::PhysicsEngine() : playerScore(0), cpuScore(0), audioManager(nullptr) {
+PhysicsEngine::PhysicsEngine() : playerScore(0), cpuScore(0), audioManager(nullptr), wiimoteManager(nullptr) {
     // Initialize components
     // Player paddle
     positions[PLAYER_PADDLE] = {20, 200};
@@ -38,6 +39,10 @@ void PhysicsEngine::init() {
 
 void PhysicsEngine::setAudioManager(AudioManager* audioManager) {
     this->audioManager = audioManager;
+}
+
+void PhysicsEngine::setWiimoteManager(WiimoteManager* wiimoteManager) {
+    this->wiimoteManager = wiimoteManager;
 }
 
 void PhysicsEngine::update() {
@@ -85,7 +90,7 @@ void PhysicsEngine::checkCollisions() {
     // Wall collisions (top/bottom)
     if (positions[BALL].y <= 0 || positions[BALL].y >= 470) {
         velocities[BALL].dy = -velocities[BALL].dy;
-        // Play wall hit sound effect
+        // Play wall hit sound effect on TV only
         if (audioManager) {
             audioManager->playSound(SoundID::WallHit);
         }
@@ -102,9 +107,14 @@ void PhysicsEngine::checkCollisions() {
         if (velocities[BALL].dy > 5) velocities[BALL].dy = 5;
         if (velocities[BALL].dy < -5) velocities[BALL].dy = -5;
         
-        // Play paddle hit sound effect
+        // Play paddle hit sound effect on TV
         if (audioManager) {
             audioManager->playSound(SoundID::PaddleHit);
+        }
+        
+        // Play specific sound on Wiimote for player hits only
+        if (hitPlayer && wiimoteManager) {
+            wiimoteManager->playWiimoteSound(WiimoteSoundID::PlayerPaddleHit, 0);
         }
     }
 }
@@ -124,16 +134,21 @@ bool PhysicsEngine::checkAABBCollision(EntityID a, EntityID b) {
 }
 
 void PhysicsEngine::checkScoring() {
-    if (positions[BALL].x < 0) {  // CPU scores
+    if (positions[BALL].x < 0) {  // CPU scores, player loses
         ++cpuScore;
         positions[BALL].x = 320;
         positions[BALL].y = 240;
         velocities[BALL].dx = 3;
         velocities[BALL].dy = (rand() % 5) - 2;
         
-        // Play score sound effect
+        // Play score sound effect on TV
         if (audioManager) {
             audioManager->playSound(SoundID::Score);
+        }
+        
+        // Play loss sound on player's Wiimote
+        if (wiimoteManager) {
+            wiimoteManager->playWiimoteSound(WiimoteSoundID::PlayerLoss, 0);
         }
     } else if (positions[BALL].x > 640) {  // Player scores
         ++playerScore;
@@ -142,9 +157,14 @@ void PhysicsEngine::checkScoring() {
         velocities[BALL].dx = -3;
         velocities[BALL].dy = (rand() % 5) - 2;
         
-        // Play score sound effect
+        // Play score sound effect on TV
         if (audioManager) {
             audioManager->playSound(SoundID::Score);
+        }
+        
+        // Play victory sound on player's Wiimote
+        if (wiimoteManager) {
+            wiimoteManager->playWiimoteSound(WiimoteSoundID::PlayerScore, 0);
         }
     }
 }

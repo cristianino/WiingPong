@@ -14,6 +14,7 @@ extern DISC_INTERFACE __io_gcsdb;
 #include "rendering/Renderer.h"
 #include "audio/AudioManager.h"
 #include "assets/AssetManager.h"
+#include "WiimoteManager.h"
 
 int main() {
     fatInitDefault();
@@ -24,6 +25,7 @@ int main() {
     PhysicsEngine physics;
     Renderer renderer;
     AudioManager audio;
+    WiimoteManager wiimote;
     AssetManager& assets = AssetManager::getInstance();
 
     // Initialize modules
@@ -34,13 +36,23 @@ int main() {
     physics.init();
     renderer.init();
     audio.init();
+    wiimote.init();
 
-    // Connect audio to physics engine for sound effects
+    // Connect audio and Wiimote to physics engine for sound effects
     physics.setAudioManager(&audio);
+    physics.setWiimoteManager(&wiimote);
 
     // Load audio assets
     printf("Loading audio...\n");
     assets.loadAudio(audio);
+    
+    // Load Wiimote audio assets
+    printf("Loading Wiimote audio...\n");
+    assets.loadWiimoteAudio(wiimote);
+    
+    // Initialize Wiimote speaker
+    printf("Initializing Wiimote speaker...\n");
+    wiimote.initSpeaker(0);
     
     // Play intro sound
     printf("Playing intro sound...\n");

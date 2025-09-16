@@ -69,6 +69,11 @@ AssetManager.o: \
  /opt/devkitpro/portlibs/wii/include/grrlib/GRRLIB_texSetup.h \
  /opt/devkitpro/libogc/include/fat.h /opt/devkitpro/libogc/include/dvm.h \
  /home/cristian/Documentos/WiingPong/include/audio/AudioManager.h \
+ /home/cristian/Documentos/WiingPong/include/WiimoteManager.h \
+ /opt/devkitpro/libogc/include/wiiuse/wpad.h \
+ /opt/devkitpro/libogc/include/wiiuse/wiiuse.h \
+ /opt/devkitpro/libogc/include/bte/bte.h \
+ /opt/devkitpro/libogc/include/bte/bd_addr.h \
  /opt/devkitpro/libogc/include/sdcard/wiisd_io.h
 /home/cristian/Documentos/WiingPong/include/assets/AssetManager.h:
 /opt/devkitpro/portlibs/wii/include/grrlib.h:
@@ -140,4 +145,9 @@ AssetManager.o: \
 /opt/devkitpro/libogc/include/fat.h:
 /opt/devkitpro/libogc/include/dvm.h:
 /home/cristian/Documentos/WiingPong/include/audio/AudioManager.h:
+/home/cristian/Documentos/WiingPong/include/WiimoteManager.h:
+/opt/devkitpro/libogc/include/wiiuse/wpad.h:
+/opt/devkitpro/libogc/include/wiiuse/wiiuse.h:
+/opt/devkitpro/libogc/include/bte/bte.h:
+/opt/devkitpro/libogc/include/bte/bd_addr.h:
 /opt/devkitpro/libogc/include/sdcard/wiisd_io.h:

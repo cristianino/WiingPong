@@ -1,5 +1,6 @@
 // source/assets/AssetManager.cpp
 #include "assets/AssetManager.h"
+#include "WiimoteManager.h"
 #include <grrlib.h>
 #include <fat.h>
 #include <sdcard/wiisd_io.h>
@@ -58,6 +59,31 @@ void AssetManager::loadAudio(AudioManager& audioManager) {
         printf("Successfully loaded score.pcm\n");
     } else {
         printf("Failed to load score.pcm\n");
+    }
+}
+
+void AssetManager::loadWiimoteAudio(WiimoteManager& wiimoteManager) {
+    if (!initialized) return;
+    
+    printf("Loading Wiimote audio assets...\n");
+    
+    // Load Wiimote sound effects
+    if (wiimoteManager.loadWiimoteSound(WiimoteSoundID::PlayerPaddleHit, "data/sounds/wiimote/player_paddle_hit.pcm")) {
+        printf("Successfully loaded player_paddle_hit.pcm for Wiimote\n");
+    } else {
+        printf("Failed to load player_paddle_hit.pcm for Wiimote\n");
+    }
+    
+    if (wiimoteManager.loadWiimoteSound(WiimoteSoundID::PlayerScore, "data/sounds/wiimote/player_score.pcm")) {
+        printf("Successfully loaded player_score.pcm for Wiimote\n");
+    } else {
+        printf("Failed to load player_score.pcm for Wiimote\n");
+    }
+    
+    if (wiimoteManager.loadWiimoteSound(WiimoteSoundID::PlayerLoss, "data/sounds/wiimote/player_loss.pcm")) {
+        printf("Successfully loaded player_loss.pcm for Wiimote\n");
+    } else {
+        printf("Failed to load player_loss.pcm for Wiimote\n");
     }
 }
 

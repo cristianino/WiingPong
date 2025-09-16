@@ -124,10 +124,37 @@ make release
 
 ## 🎯 Resultado Final
 
-**¡El proyecto WiingPong ahora tiene audio funcional!** 
+**¡El proyecto WiingPong ahora tiene un sistema de audio DUAL completo!** 
 
-El archivo `intro.pcm` se reproduce automáticamente cada vez que se inicia el juego, proporcionando una experiencia más inmersiva para los jugadores. El sistema está diseñado para ser fácilmente extensible, permitiendo agregar más sonidos en el futuro.
+### Sistema de Audio Implementado:
+- ✅ **Audio en TV**: Todos los efectos del juego se reproducen en el sistema principal
+- ✅ **Audio en Wiimote**: Efectos personalizados se reproducen en el speaker del Wiimote
+- ✅ **Contexto inteligente**: Solo el jugador humano escucha efectos en su Wiimote
+- ✅ **Optimización completa**: Archivos PCM optimizados para cada plataforma
 
-El código está limpio, bien documentado y pasa todas las validaciones de CI/CD. Los paquetes de distribución incluyen automáticamente todos los archivos necesarios para una instalación sin problemas en cualquier Nintendo Wii con Homebrew Channel.
+### Efectos de Sonido Completos:
+1. **Intro del juego** → TV únicamente
+2. **Pelota golpea paleta del jugador** → TV + Wiimote
+3. **Pelota golpea paleta del CPU** → TV únicamente  
+4. **Pelota golpea pared** → TV únicamente
+5. **Jugador anota punto** → TV + Wiimote (sonido de victoria)
+6. **CPU anota punto** → TV + Wiimote (sonido de derrota)
+
+### Archivos de Audio:
+```
+data/sounds/
+├── intro.pcm (394KB)           # Sonido de introducción
+├── paddle_hit.pcm (6.6KB)     # Golpes de paleta (TV)
+├── wall_hit.pcm (4.4KB)       # Rebotes en pared (TV)  
+├── score.pcm (22KB)           # Puntuaciones (TV)
+└── wiimote/
+    ├── player_paddle_hit.pcm (1.2KB)  # Golpe personal
+    ├── player_score.pcm (3.6KB)       # Victoria personal
+    └── player_loss.pcm (4.8KB)        # Derrota personal
+```
+
+El sistema está diseñado para ser fácilmente extensible y proporciona la experiencia de audio más inmersiva posible en Nintendo Wii. Los efectos del Wiimote crean una conexión personal única entre el jugador y el juego.
+
+El código está limpio, bien documentado y pasa todas las validaciones de CI/CD. Los paquetes de distribución incluyen automáticamente todos los archivos necesarios para una experiencia completa.
 
 ## Fecha de Completación: 15 de septiembre de 2025

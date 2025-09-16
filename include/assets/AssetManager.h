@@ -4,6 +4,9 @@
 #include <fat.h>
 #include "audio/AudioManager.h"
 
+// Forward declaration
+class WiimoteManager;
+
 // Simple singleton for asset management
 // Load textures, sounds, fonts from SD card via fat.h
 
@@ -13,7 +16,8 @@ public:
 
     void init();
     void loadAllAssets();  // Preload game assets
-    void loadAudio(AudioManager& audioManager);  // Load audio files
+    void loadAudio(AudioManager& audioManager);  // Load audio assets
+    void loadWiimoteAudio(WiimoteManager& wiimoteManager);  // Load Wiimote audio assets
 
     // Stubs for getters; return nullptr or default
     GRRLIB_texImg* getTexture(const char* name) const;
@@ -28,5 +32,4 @@ private:
     AssetManager& operator=(const AssetManager&) = delete;
 
     bool initialized;
-    // Maps or arrays for assets; stubs as nullptr
 };

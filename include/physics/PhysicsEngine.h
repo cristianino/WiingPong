@@ -4,8 +4,9 @@
 #include "Components.h"
 #include <vector>
 
-// Forward declaration
+// Forward declarations
 class AudioManager;
+class WiimoteManager;
 
 // Lite ECS Entity ID (fixed for simplicity: 0=player paddle, 1=CPU paddle, 2=ball)
 typedef unsigned int EntityID;
@@ -22,6 +23,7 @@ public:
 
     void init();
     void setAudioManager(AudioManager* audioManager);  // Set audio manager reference
+    void setWiimoteManager(WiimoteManager* wiimoteManager);  // Set Wiimote manager reference
     void update();  // Updates positions, velocities, collisions, AI
 
     // Accessors for components (public for simplicity; later encapsulate)
@@ -37,6 +39,7 @@ public:
 
 private:
     AudioManager* audioManager;  // Reference to audio manager for sound effects
+    WiimoteManager* wiimoteManager;  // Reference to Wiimote manager for speaker effects
     
     void updateAI();
     void updateBall();
