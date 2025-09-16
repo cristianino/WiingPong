@@ -8,6 +8,7 @@ enum class InputEventType {
     PaddleUp,      // A button held for player movement up
     PaddleDown,    // B button held for player movement down
     Home,          // HOME button pressed to exit/pause
+    ToggleDebug,   // 1 button pressed to toggle debug view
     None
 };
 

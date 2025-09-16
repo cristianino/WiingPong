@@ -4,7 +4,7 @@
 #include <stdio.h>   // For snprintf
 #include <wiiuse/wpad.h>  // For WPAD button constants
 
-Renderer::Renderer() : initialized(false), font(nullptr) {
+Renderer::Renderer() : initialized(false), debugVisible(false), font(nullptr) {
 }
 
 Renderer::~Renderer() {
@@ -71,7 +71,7 @@ void Renderer::drawText(const char* text, int x, int y, u32 color) {
 }
 
 void Renderer::renderDebugInfo(const InputManager& input) {
-    if (!initialized) return;
+    if (!initialized || !debugVisible) return;
 
     // Draw debug background
     GRRLIB_Rectangle(10, 400, 620, 70, 0x000000CC, true);
@@ -125,4 +125,10 @@ void Renderer::renderDebugInfo(const InputManager& input) {
         u32 bitColor = (pressed & (1 << i)) ? 0xFFFFFFFF : 0x111111FF;
         GRRLIB_Rectangle(200 + i * 8, 425, 6, 10, bitColor, true);
     }
+    
+    // Add a small indicator for button 1 (toggle debug) - small white dot in corner
+    u32 button1Color = (held & WPAD_BUTTON_1) ? 0xFFFFFFFF : 0x666666FF;
+    GRRLIB_Rectangle(590, 410, 8, 8, button1Color, true);
+    // Small border around the toggle indicator
+    GRRLIB_Rectangle(590, 410, 8, 8, 0xFFFFFFFF, false);
 }

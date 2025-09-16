@@ -60,6 +60,11 @@ void InputManager::update() {
     if (pressedButtons & WPAD_BUTTON_HOME) {
         events.push_back({InputEventType::Home});
     }
+    
+    // Toggle debug view with button 1 (pressed once)
+    if (pressedButtons & WPAD_BUTTON_1) {
+        events.push_back({InputEventType::ToggleDebug});
+    }
 }
 
 std::vector<InputEvent> InputManager::getEvents() const {

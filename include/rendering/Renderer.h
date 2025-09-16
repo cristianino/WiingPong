@@ -15,9 +15,12 @@ public:
     void init();
     void render(const PhysicsEngine& physics);  // Draw from physics components
     void renderDebugInfo(const InputManager& input);  // Debug overlay
+    void setDebugVisible(bool visible) { debugVisible = visible; }
+    bool isDebugVisible() const { return debugVisible; }
 
 private:
     bool initialized;
+    bool debugVisible;  // Control debug visibility
     GRRLIB_texImg* font;  // For future text; placeholder for now
 
     void drawPaddle(const Position& pos, const Size& size, u32 color);

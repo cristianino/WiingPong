@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<app version="1">
+  <name>WiingPong</name>
+  <coder>cristianino</coder>
+  <version>1.1.0</version>
+  <release_date>20250915</release_date>
+  <short_description>Pong game for Nintendo Wii with debug tools</short_description>
+  <long_description>A classic Pong game for Nintendo Wii with Wiimote controls and optional debug view.
+
+Controls:
+- A Button: Move paddle up
+- B Button: Move paddle down
+- Button 1: Toggle debug view
+- HOME Button: Exit game
+
+Features:
+- Audio feedback on TV and Wiimote speakers
+- AI opponent
+- Visual debug overlay (togglable)
+- Wiimote button state monitoring
+
+Debug view shows real-time button states, WPAD status, and bit-level input visualization for troubleshooting connectivity issues.</long_description>
+  <ahb_access/>
+</app>

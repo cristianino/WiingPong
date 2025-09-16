@@ -75,6 +75,10 @@ int main() {
             } else if (event.type == InputEventType::Home) {
                 running = false;
                 break;
+            } else if (event.type == InputEventType::ToggleDebug) {
+                // Toggle debug visibility
+                renderer.setDebugVisible(!renderer.isDebugVisible());
+                printf("Debug view %s\n", renderer.isDebugVisible() ? "enabled" : "disabled");
             }
         }
 
