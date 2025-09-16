@@ -86,6 +86,40 @@ void InputManager::update() {
         }
     }
     
+    #elif WIINGPONG_DEBUG_TOGGLE_METHOD == 2
+    // PLUS+MINUS hold method for debug toggle
+    bool currentPMPressed = (heldButtons & WPAD_BUTTON_PLUS) && (heldButtons & WPAD_BUTTON_MINUS);
+    
+    if (currentPMPressed) {
+        if (!wasABPressed) {
+            // Just started pressing PLUS+MINUS
+            debugToggleTimer = 0;
+            wasABPressed = true;
+        } else {
+            // Continue holding PLUS+MINUS
+            debugToggleTimer++;
+            if (debugToggleTimer >= DEBUG_TOGGLE_DURATION) {
+                // Held for configured duration, trigger debug toggle
+                events.push_back({InputEventType::ToggleDebug});
+                debugToggleTimer = 0; // Reset to prevent multiple triggers
+            }
+        }
+    } else {
+        // Not holding PLUS+MINUS anymore
+        if (wasABPressed) {
+            debugToggleTimer = 0;
+        }
+        wasABPressed = false;
+    }
+    
+    // Normal paddle movement (always enabled with this method)
+    if (heldButtons & WPAD_BUTTON_A) {
+        events.push_back({InputEventType::PaddleUp});
+    }
+    if (heldButtons & WPAD_BUTTON_B) {
+        events.push_back({InputEventType::PaddleDown});
+    }
+    
     #elif WIINGPONG_DEBUG_TOGGLE_METHOD == 0
     // Single button press method for debug toggle
     if (pressedButtons & WIINGPONG_DEBUG_TOGGLE_BUTTON) {

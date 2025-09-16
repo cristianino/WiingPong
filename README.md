@@ -27,10 +27,11 @@
 - **HOME**: Salir del juego
 
 ### Controles de Debug
-- **A + B (mantener 4 segundos)**: Activar/desactivar ventana de debug
+- **PLUS + MINUS (mantener 4 segundos)**: Activar/desactivar ventana de debug
   - Aparece barra de progreso visual
-  - Indicadores laterales A (verde) y B (azul)
+  - Indicadores laterales A (verde) y B (azul)  
   - Se completa en amarillo al 80%
+  - ⚠️ **Nota**: Cambiado de A+B para no interferir con el gameplay
 
 ### Ventana de Debug
 Cuando está activada, muestra:
@@ -175,16 +176,18 @@ WiingPong/
 - **Wiimote Speaker**: Sonidos especiales para el jugador
 - **Audio dinámico**: Diferentes sonidos para eventos específicos
 
-### Troubleshooting con Debug
+### Troubleshooting con Debug  
 Si tienes problemas con los controles:
 
-1. **Activa debug**: Mantén **A+B durante 4 segundos**
+1. **Activa debug**: Mantén **PLUS+MINUS durante 4 segundos**
 2. **Observa la barra de progreso** (verde → amarillo)
 3. **Verifica la ventana de debug**:
    - ✅ Cuadrado verde = WPAD inicializado
    - 🎯 Cuadrados de colores = estado de botones
    - 📊 Barras de bits = valores hexadecimales
-4. **Desactiva debug**: Repite A+B por 4 segundos
+4. **Desactiva debug**: Repite PLUS+MINUS por 4 segundos
+
+⚠️ **IMPORTANTE**: Si el paddle no se mueve pero el debug funciona, revisa que no estés presionando A+B simultáneamente (versión anterior del debug toggle).
 
 ### Controles Detallados
 

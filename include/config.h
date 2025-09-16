@@ -14,7 +14,8 @@
 // Debug toggle method (when WIINGPONG_DEBUG_ENABLED = 1)
 // 0 = Single button press (Button 1)
 // 1 = A+B hold for specified duration
-#define WIINGPONG_DEBUG_TOGGLE_METHOD 1
+// 2 = PLUS+MINUS hold for specified duration (recommended for gameplay)
+#define WIINGPONG_DEBUG_TOGGLE_METHOD 2
 
 // Duration for A+B hold method (in frames at 60fps)
 // 240 frames = 4 seconds
@@ -61,8 +62,8 @@
 // CONFIGURATION VALIDATION
 // =============================================================================
 
-#if WIINGPONG_DEBUG_ENABLED && (WIINGPONG_DEBUG_TOGGLE_METHOD < 0 || WIINGPONG_DEBUG_TOGGLE_METHOD > 1)
-#error "WIINGPONG_DEBUG_TOGGLE_METHOD must be 0 or 1"
+#if WIINGPONG_DEBUG_ENABLED && (WIINGPONG_DEBUG_TOGGLE_METHOD < 0 || WIINGPONG_DEBUG_TOGGLE_METHOD > 2)
+#error "WIINGPONG_DEBUG_TOGGLE_METHOD must be 0, 1, or 2"
 #endif
 
 #if WIINGPONG_DEBUG_ENABLED && WIINGPONG_DEBUG_TOGGLE_DURATION_FRAMES < 60
