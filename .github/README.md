@@ -82,8 +82,16 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container: devkitpro/devkitppc:latest
+    env:
+      DEVKITPRO: /opt/devkitpro
+      DEVKITPPC: /opt/devkitpro/devkitPPC
     steps:
       - uses: actions/checkout@v4
+      - name: Setup environment
+        run: |
+          echo "/opt/devkitpro/devkitPPC/bin" >> $GITHUB_PATH
+          echo "/opt/devkitpro/tools/bin" >> $GITHUB_PATH
+          echo "/opt/devkitpro/pacman/bin" >> $GITHUB_PATH
       - name: Build
         run: make
 ```
@@ -92,11 +100,13 @@ jobs:
 According to [DevkitPro's official guidance](https://github.com/devkitPro/pacman/releases):
 > "Please do not use pacman on your CI workflows. We provide docker images for this purpose at https://hub.docker.com/u/devkitpro"
 
-### Environment Variables (Pre-configured)
-The Docker container automatically provides:
-- `DEVKITPRO=/opt/devkitpro`
-- `DEVKITPPC=/opt/devkitpro/devkitPPC`
-- `PATH` includes all required tool directories
+### Environment Variables (Required Setup)
+The Docker container provides DevkitPro tools but requires PATH configuration:
+- `DEVKITPRO=/opt/devkitpro` (set at job level)
+- `DEVKITPPC=/opt/devkitpro/devkitPPC` (set at job level)
+- `/opt/devkitpro/devkitPPC/bin` (add to PATH for PowerPC compiler)
+- `/opt/devkitpro/tools/bin` (add to PATH for general tools)
+- `/opt/devkitpro/pacman/bin` (add to PATH for package manager)
 
 ### Available Tools
 - `dkp-pacman` - Package manager
