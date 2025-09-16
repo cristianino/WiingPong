@@ -97,8 +97,11 @@ int main() {
         // Render
         renderer.render(physics);
         
-        // Render debug info
+        // Render debug info if enabled
         renderer.renderDebugInfo(input);
+        
+        // Always render debug toggle progress (A+B indicator)
+        renderer.renderDebugToggleProgress(input);
         
         GRRLIB_Render();
     }

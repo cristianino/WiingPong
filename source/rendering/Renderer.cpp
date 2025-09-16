@@ -132,3 +132,41 @@ void Renderer::renderDebugInfo(const InputManager& input) {
     // Small border around the toggle indicator
     GRRLIB_Rectangle(590, 410, 8, 8, 0xFFFFFFFF, false);
 }
+
+void Renderer::renderDebugToggleProgress(const InputManager& input) {
+    if (!initialized) return;
+
+    float progress = input.getDebugToggleProgress();
+    
+    if (progress > 0.0f) {
+        // Draw progress bar background
+        int barWidth = 200;
+        int barHeight = 20;
+        int barX = (640 - barWidth) / 2; // Center horizontally
+        int barY = 100; // Near top of screen
+        
+        // Background
+        GRRLIB_Rectangle(barX, barY, barWidth, barHeight, 0x000000CC, true);
+        GRRLIB_Rectangle(barX, barY, barWidth, barHeight, 0xFFFFFFFF, false);
+        
+        // Progress fill
+        int fillWidth = (int)(barWidth * progress);
+        u32 fillColor = 0x00FF00FF; // Green
+        if (progress > 0.8f) {
+            fillColor = 0xFFFF00FF; // Yellow when almost ready
+        }
+        GRRLIB_Rectangle(barX + 2, barY + 2, fillWidth - 4, barHeight - 4, fillColor, true);
+        
+        // A+B indicators on the sides
+        u32 buttonAColor = (input.getHeldButtons() & WPAD_BUTTON_A) ? 0x00FF00FF : 0x333333FF;
+        u32 buttonBColor = (input.getHeldButtons() & WPAD_BUTTON_B) ? 0x0000FFFF : 0x333333FF;
+        
+        // A button indicator (left)
+        GRRLIB_Rectangle(barX - 30, barY, 20, 20, buttonAColor, true);
+        GRRLIB_Rectangle(barX - 30, barY, 20, 20, 0xFFFFFFFF, false);
+        
+        // B button indicator (right)
+        GRRLIB_Rectangle(barX + barWidth + 10, barY, 20, 20, buttonBColor, true);
+        GRRLIB_Rectangle(barX + barWidth + 10, barY, 20, 20, 0xFFFFFFFF, false);
+    }
+}

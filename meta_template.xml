@@ -10,15 +10,16 @@
 Controls:
 - A Button: Move paddle up
 - B Button: Move paddle down
-- Button 1: Toggle debug view
+- A + B (hold 4 seconds): Toggle debug view
 - HOME Button: Exit game
 
 Features:
 - Audio feedback on TV and Wiimote speakers
 - AI opponent
-- Visual debug overlay (togglable)
+- Visual debug overlay with progress indicator
 - Wiimote button state monitoring
+- 4-second hold protection against accidental activation
 
-Debug view shows real-time button states, WPAD status, and bit-level input visualization for troubleshooting connectivity issues.</long_description>
+Debug view shows real-time button states, WPAD status, and bit-level input visualization for troubleshooting connectivity issues. Activation requires deliberately holding A+B for 4 seconds with visual progress feedback.</long_description>
   <ahb_access/>
 </app>

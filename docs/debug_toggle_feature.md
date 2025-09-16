@@ -1,18 +1,18 @@
-# Toggle de Debug View - WiingPong
+# Toggle de Debug View con A+B - WiingPong
 
 ## Nueva Funcionalidad Implementada
 
-Se añadió la capacidad de habilitar/deshabilitar la ventana de debug durante el juego usando el **Botón 1** del Wiimote.
+Se añadió la capacidad de habilitar/deshabilitar la ventana de debug durante el juego manteniendo presionados **A+B durante 4 segundos**.
 
 ## Controles Actualizados
 
 ### Controles de Juego:
-- **Botón A**: Mover barra hacia arriba
-- **Botón B**: Mover barra hacia abajo  
+- **Botón A**: Mover barra hacia arriba (cuando no se usa para debug)
+- **Botón B**: Mover barra hacia abajo (cuando no se usa para debug)
 - **Botón HOME**: Salir del juego
 
 ### Controles de Debug:
-- **Botón 1**: Toggle (habilitar/deshabilitar) ventana de debug
+- **A + B (mantener 4 segundos)**: Toggle (habilitar/deshabilitar) ventana de debug
 
 ## Cómo Funciona
 
@@ -21,59 +21,70 @@ Se añadió la capacidad de habilitar/deshabilitar la ventana de debug durante e
 - El juego se ve limpio sin elementos de debug
 
 ### Activar Debug
-1. Presiona el **Botón 1** del Wiimote
-2. La ventana de debug aparece en la esquina inferior izquierda
-3. Se muestra un mensaje en consola: "Debug view enabled"
+1. **Mantén presionados A+B** simultáneamente
+2. Aparece una **barra de progreso** en la parte superior de la pantalla
+3. **Indicadores laterales** muestran que A y B están presionados (verde/azul)
+4. Después de **4 segundos**, la ventana de debug aparece
+5. Se muestra mensaje en consola: "Debug view enabled"
 
 ### Desactivar Debug
-1. Presiona el **Botón 1** del Wiimote nuevamente
-2. La ventana de debug desaparece
-3. Se muestra un mensaje en consola: "Debug view disabled"
+1. **Mantén presionados A+B** nuevamente durante 4 segundos
+2. La barra de progreso aparece otra vez
+3. Al completarse, la ventana de debug desaparece
+4. Se muestra mensaje en consola: "Debug view disabled"
 
-## Indicador Visual
+## Indicadores Visuales
 
-Cuando la ventana de debug está visible, hay un pequeño indicador en la esquina superior derecha:
-- **Cuadrado gris** - Botón 1 no presionado
-- **Cuadrado blanco** - Botón 1 presionado (momento del toggle)
-- **Borde blanco** - Indica que es el botón de toggle
+### Barra de Progreso
+Cuando mantienes A+B, aparece en la parte superior:
+- **Fondo negro** con borde blanco
+- **Barra verde** que se llena progresivamente
+- **Barra amarilla** cuando está a punto de completarse (80%+)
+- **Indicador A** (lado izquierdo) - verde cuando presionado
+- **Indicador B** (lado derecho) - azul cuando presionado
+
+### Durante el Progreso
+- Los controles de movimiento del paddle se **desactivan** mientras mantienes A+B
+- Esto previene movimientos accidentales durante la activación del debug
 
 ## Implementación Técnica
 
-### Cambios en el Código:
+### Timing System:
+- **240 frames** a 60fps = 4 segundos exactos
+- **Timer reset** si sueltas cualquier botón antes de completar
+- **Prevención de triggers múltiples** con reset automático
 
-1. **InputManager**: 
-   - Añadido `InputEventType::ToggleDebug`
-   - Detección de `WPAD_BUTTON_1`
+### Estados del Sistema:
+1. **Normal**: A y B funcionan como controles individuales
+2. **Detectando**: A+B presionados, iniciando timer
+3. **Progresando**: Mostrando barra de progreso
+4. **Completado**: Toggle ejecutado, reset del timer
 
-2. **Renderer**:
-   - Variable `debugVisible` para controlar visibilidad
-   - Funciones `setDebugVisible()` e `isDebugVisible()`
-   - Indicador visual del botón toggle
+### Visual Feedback:
+- **Tiempo real**: La barra se llena conforme pasa el tiempo
+- **Estado de botones**: Indicadores laterales cambian de color
+- **Prevención accidental**: Requiere acción deliberada y sostenida
 
-3. **Main Loop**:
-   - Procesamiento del evento `ToggleDebug`
-   - Mensajes de estado en consola
+## Beneficios del Nuevo Sistema
 
-### Flujo de Ejecución:
-1. Se presiona Botón 1
-2. Se genera evento `ToggleDebug`
-3. Se invierte el estado de `debugVisible`
-4. Se muestra/oculta la ventana en el siguiente frame
+### Prevención de Activación Accidental:
+- **4 segundos** es tiempo suficiente para ser intencional
+- **Barra de progreso** da feedback claro del proceso
+- **Combinación A+B** es menos probable de presionar por accidente
 
-## Beneficios
+### Experiencia de Usuario:
+- **Feedback visual inmediato** cuando se detecta A+B
+- **Control preciso** del timing del toggle
+- **No interfiere** con los controles normales del juego
 
-### Para Desarrollo:
-- Debug disponible cuando se necesita
-- Juego limpio para presentación/distribución
-- Toggle rápido sin reiniciar
-
-### Para Usuarios:
-- Interfaz limpia por defecto
-- Opción de ver información técnica si es necesario
-- Control total sobre la experiencia visual
+### Robustez:
+- **Reset automático** si se sueltan los botones antes de tiempo
+- **Una sola función** por combinación completa
+- **Estado claro** del progreso en todo momento
 
 ## Uso Recomendado
 
-- **Durante desarrollo**: Habilitar debug para diagnosticar problemas
-- **Para release**: Los usuarios pueden activarlo si tienen problemas de conectividad
-- **Presentaciones**: Mantener deshabilitado para experiencia limpia
+- **Durante juego normal**: Los botones A/B funcionan normalmente para el paddle
+- **Para debug**: Mantén A+B deliberadamente por 4 segundos
+- **Troubleshooting**: Activar cuando hay problemas de conectividad
+- **Desarrollo**: Toggle cuando necesites diagnosticar el estado del Wiimote

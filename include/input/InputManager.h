@@ -8,7 +8,7 @@ enum class InputEventType {
     PaddleUp,      // A button held for player movement up
     PaddleDown,    // B button held for player movement down
     Home,          // HOME button pressed to exit/pause
-    ToggleDebug,   // 1 button pressed to toggle debug view
+    ToggleDebug,   // A+B held for 4 seconds to toggle debug view
     None
 };
 
@@ -31,6 +31,7 @@ public:
     u32 getHeldButtons() const { return heldButtons; }
     u32 getPressedButtons() const { return pressedButtons; }
     bool isWiimoteConnected() const { return wiimoteConnected; }
+    float getDebugToggleProgress() const { return wasABPressed ? (float)debugToggleTimer / DEBUG_TOGGLE_DURATION : 0.0f; }
 
 private:
     bool initialized;
@@ -38,4 +39,9 @@ private:
     u32 heldButtons;
     u32 pressedButtons;
     bool wiimoteConnected;
+    
+    // Debug toggle timing
+    u32 debugToggleTimer;
+    bool wasABPressed;
+    static const u32 DEBUG_TOGGLE_DURATION = 240; // 4 seconds at 60fps
 };

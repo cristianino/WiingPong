@@ -4,7 +4,8 @@
 #include <stdio.h>
 #include <unistd.h>  // For usleep
 
-InputManager::InputManager() : initialized(false), heldButtons(0), pressedButtons(0), wiimoteConnected(false) {
+InputManager::InputManager() : initialized(false), heldButtons(0), pressedButtons(0), wiimoteConnected(false), 
+                               debugToggleTimer(0), wasABPressed(false) {
     events.clear();
 }
 
@@ -48,22 +49,42 @@ void InputManager::update() {
     // For now, assume connected if initialized (will show in debug)
     wiimoteConnected = initialized;
 
-    // Generate events for paddle movement (held for continuous)
-    if (heldButtons & WPAD_BUTTON_A) {
-        events.push_back({InputEventType::PaddleUp});
-    }
-    if (heldButtons & WPAD_BUTTON_B) {
-        events.push_back({InputEventType::PaddleDown});
+    // Check for A+B combination for debug toggle
+    bool currentABPressed = (heldButtons & WPAD_BUTTON_A) && (heldButtons & WPAD_BUTTON_B);
+    
+    if (currentABPressed) {
+        if (!wasABPressed) {
+            // Just started pressing A+B
+            debugToggleTimer = 0;
+            wasABPressed = true;
+        } else {
+            // Continue holding A+B
+            debugToggleTimer++;
+            if (debugToggleTimer >= DEBUG_TOGGLE_DURATION) {
+                // Held for 4 seconds, trigger debug toggle
+                events.push_back({InputEventType::ToggleDebug});
+                debugToggleTimer = 0; // Reset to prevent multiple triggers
+            }
+        }
+    } else {
+        // Not holding A+B anymore
+        if (wasABPressed) {
+            debugToggleTimer = 0;
+        }
+        wasABPressed = false;
+        
+        // Generate events for paddle movement (only if not holding both A+B)
+        if (heldButtons & WPAD_BUTTON_A) {
+            events.push_back({InputEventType::PaddleUp});
+        }
+        if (heldButtons & WPAD_BUTTON_B) {
+            events.push_back({InputEventType::PaddleDown});
+        }
     }
 
     // Home for exit (pressed once)
     if (pressedButtons & WPAD_BUTTON_HOME) {
         events.push_back({InputEventType::Home});
-    }
-    
-    // Toggle debug view with button 1 (pressed once)
-    if (pressedButtons & WPAD_BUTTON_1) {
-        events.push_back({InputEventType::ToggleDebug});
     }
 }
 
