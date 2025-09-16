@@ -136,7 +136,7 @@ void Renderer::renderDebugInfo(const InputManager& input) {
 }
 
 void Renderer::renderDebugToggleProgress(const InputManager& input) {
-#if WIINGPONG_DEBUG_ENABLED && WIINGPONG_DEBUG_TOGGLE_METHOD == 1
+#if WIINGPONG_DEBUG_ENABLED && (WIINGPONG_DEBUG_TOGGLE_METHOD == 1 || WIINGPONG_DEBUG_TOGGLE_METHOD == 2)
     if (!initialized) return;
 
     float progress = input.getDebugToggleProgress();
@@ -160,6 +160,7 @@ void Renderer::renderDebugToggleProgress(const InputManager& input) {
         }
         GRRLIB_Rectangle(barX + 2, barY + 2, fillWidth - 4, barHeight - 4, fillColor, true);
         
+        #if WIINGPONG_DEBUG_TOGGLE_METHOD == 1
         // A+B indicators on the sides
         u32 buttonAColor = (input.getHeldButtons() & WPAD_BUTTON_A) ? 0x00FF00FF : 0x333333FF;
         u32 buttonBColor = (input.getHeldButtons() & WPAD_BUTTON_B) ? 0x0000FFFF : 0x333333FF;
@@ -171,6 +172,25 @@ void Renderer::renderDebugToggleProgress(const InputManager& input) {
         // B button indicator (right)
         GRRLIB_Rectangle(barX + barWidth + 10, barY, 20, 20, buttonBColor, true);
         GRRLIB_Rectangle(barX + barWidth + 10, barY, 20, 20, 0xFFFFFFFF, false);
+        
+        #elif WIINGPONG_DEBUG_TOGGLE_METHOD == 2
+        // PLUS+MINUS indicators on the sides
+        u32 buttonPlusColor = (input.getHeldButtons() & WPAD_BUTTON_PLUS) ? 0xFFFF00FF : 0x333333FF;
+        u32 buttonMinusColor = (input.getHeldButtons() & WPAD_BUTTON_MINUS) ? 0xFF00FFFF : 0x333333FF;
+        
+        // PLUS button indicator (left) - draw a + symbol
+        GRRLIB_Rectangle(barX - 30, barY, 20, 20, buttonPlusColor, true);
+        GRRLIB_Rectangle(barX - 30, barY, 20, 20, 0xFFFFFFFF, false);
+        // Draw + symbol inside
+        GRRLIB_Rectangle(barX - 25, barY + 8, 10, 4, 0x000000FF, true); // Horizontal line
+        GRRLIB_Rectangle(barX - 23, barY + 6, 4, 8, 0x000000FF, true);  // Vertical line
+        
+        // MINUS button indicator (right) - draw a - symbol
+        GRRLIB_Rectangle(barX + barWidth + 10, barY, 20, 20, buttonMinusColor, true);
+        GRRLIB_Rectangle(barX + barWidth + 10, barY, 20, 20, 0xFFFFFFFF, false);
+        // Draw - symbol inside
+        GRRLIB_Rectangle(barX + barWidth + 15, barY + 8, 10, 4, 0x000000FF, true); // Horizontal line
+        #endif
     }
 #endif
 }

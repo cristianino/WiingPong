@@ -107,7 +107,7 @@ int main() {
         // Render debug info if enabled
         renderer.renderDebugInfo(input);
         
-        // Always render debug toggle progress (A+B indicator)
+        // Always render debug toggle progress (A+B or PLUS+MINUS indicator based on method)
         renderer.renderDebugToggleProgress(input);
         
         GRRLIB_Render();
