@@ -68,20 +68,42 @@ master     ←── release/* ←── develop ←── feature/*
 
 ## DevkitPro Setup
 
-The workflows automatically install and configure:
-- DevkitPro package manager via official installation script
+The workflows use a custom GitHub Action that automatically installs and configures:
+- DevkitPro package manager (with fallback methods)
 - Wii development tools (`wii-dev` package)
 - PowerPC cross-compiler
 - Required environment variables
+- Caching for faster subsequent builds
 
-### Installation Method
-Uses the official DevkitPro installation script:
-```bash
-wget https://apt.devkitpro.org/install-devkitpro-pacman
-chmod +x ./install-devkitpro-pacman
-sudo ./install-devkitpro-pacman
-sudo dkp-pacman -S wii-dev --noconfirm
+### Custom Action: `setup-devkitpro`
+Located at `.github/actions/setup-devkitpro/action.yml`
+
+**Features:**
+- **Multiple Installation Methods:** APT repository (preferred) with fallback to direct downloads
+- **Robust Error Handling:** Tries multiple sources if primary method fails
+- **Caching Support:** Caches DevkitPro installation for faster builds
+- **Automatic Verification:** Ensures tools are properly installed and accessible
+
+**Usage:**
+```yaml
+- name: Setup DevkitPro
+  uses: ./.github/actions/setup-devkitpro
+  with:
+    packages: 'wii-dev'  # Can be multiple packages: 'wii-dev 3ds-dev'
 ```
+
+### Installation Methods (in order of preference):
+1. **APT Repository** (preferred):
+   ```bash
+   # Add DevkitPro repository and GPG key
+   wget -O- https://apt.devkitpro.org/devkitpro-pub.gpg | sudo gpg --dearmor -o /usr/share/keyrings/devkitpro-pub.gpg
+   echo "deb [signed-by=/usr/share/keyrings/devkitpro-pub.gpg] https://apt.devkitpro.org stable main" | sudo tee /etc/apt/sources.list.d/devkitpro.list
+   sudo apt update && sudo apt install -y devkitpro-pacman
+   ```
+
+2. **Direct Download** (fallback):
+   - Tries multiple release versions from GitHub releases
+   - Downloads `.deb` package and installs via `dpkg`
 
 ## Build Artifacts
 
