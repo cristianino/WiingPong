@@ -73,7 +73,8 @@ Renderer.o: \
  /opt/devkitpro/libogc/include/wiiuse/wpad.h \
  /opt/devkitpro/libogc/include/wiiuse/wiiuse.h \
  /opt/devkitpro/libogc/include/bte/bte.h \
- /opt/devkitpro/libogc/include/bte/bd_addr.h
+ /opt/devkitpro/libogc/include/bte/bd_addr.h \
+ /home/cristian/Documentos/WiingPong/include/rendering/../input/../config.h
 /home/cristian/Documentos/WiingPong/include/rendering/Renderer.h:
 /opt/devkitpro/portlibs/wii/include/grrlib.h:
 /opt/devkitpro/libogc/include/gccore.h:
@@ -148,3 +149,4 @@ Renderer.o: \
 /opt/devkitpro/libogc/include/wiiuse/wiiuse.h:
 /opt/devkitpro/libogc/include/bte/bte.h:
 /opt/devkitpro/libogc/include/bte/bd_addr.h:
+/home/cristian/Documentos/WiingPong/include/rendering/../input/../config.h:

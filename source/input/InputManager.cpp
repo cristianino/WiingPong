@@ -1,5 +1,6 @@
 // source/input/InputManager.cpp
 #include "input/InputManager.h"
+#include "config.h"
 #include <ogcsys.h>
 #include <stdio.h>
 #include <unistd.h>  // For usleep
@@ -49,7 +50,10 @@ void InputManager::update() {
     // For now, assume connected if initialized (will show in debug)
     wiimoteConnected = initialized;
 
-    // Check for A+B combination for debug toggle
+#if WIINGPONG_DEBUG_ENABLED
+    
+    #if WIINGPONG_DEBUG_TOGGLE_METHOD == 1
+    // A+B hold method for debug toggle
     bool currentABPressed = (heldButtons & WPAD_BUTTON_A) && (heldButtons & WPAD_BUTTON_B);
     
     if (currentABPressed) {
@@ -61,7 +65,7 @@ void InputManager::update() {
             // Continue holding A+B
             debugToggleTimer++;
             if (debugToggleTimer >= DEBUG_TOGGLE_DURATION) {
-                // Held for 4 seconds, trigger debug toggle
+                // Held for configured duration, trigger debug toggle
                 events.push_back({InputEventType::ToggleDebug});
                 debugToggleTimer = 0; // Reset to prevent multiple triggers
             }
@@ -81,6 +85,31 @@ void InputManager::update() {
             events.push_back({InputEventType::PaddleDown});
         }
     }
+    
+    #elif WIINGPONG_DEBUG_TOGGLE_METHOD == 0
+    // Single button press method for debug toggle
+    if (pressedButtons & WIINGPONG_DEBUG_TOGGLE_BUTTON) {
+        events.push_back({InputEventType::ToggleDebug});
+    }
+    
+    // Normal paddle movement
+    if (heldButtons & WPAD_BUTTON_A) {
+        events.push_back({InputEventType::PaddleUp});
+    }
+    if (heldButtons & WPAD_BUTTON_B) {
+        events.push_back({InputEventType::PaddleDown});
+    }
+    #endif
+    
+#else
+    // Debug disabled - normal paddle movement only
+    if (heldButtons & WPAD_BUTTON_A) {
+        events.push_back({InputEventType::PaddleUp});
+    }
+    if (heldButtons & WPAD_BUTTON_B) {
+        events.push_back({InputEventType::PaddleDown});
+    }
+#endif
 
     // Home for exit (pressed once)
     if (pressedButtons & WPAD_BUTTON_HOME) {

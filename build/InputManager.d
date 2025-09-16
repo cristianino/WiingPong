@@ -59,6 +59,7 @@ InputManager.o: \
  /opt/devkitpro/libogc/include/ogc/system.h \
  /opt/devkitpro/libogc/include/ogc/wiilaunch.h \
  /opt/devkitpro/libogc/include/bte/bd_addr.h \
+ /home/cristian/Documentos/WiingPong/include/input/../config.h \
  /opt/devkitpro/libogc/include/ogcsys.h
 /home/cristian/Documentos/WiingPong/include/input/InputManager.h:
 /opt/devkitpro/libogc/include/wiiuse/wpad.h:
@@ -119,4 +120,5 @@ InputManager.o: \
 /opt/devkitpro/libogc/include/ogc/system.h:
 /opt/devkitpro/libogc/include/ogc/wiilaunch.h:
 /opt/devkitpro/libogc/include/bte/bd_addr.h:
+/home/cristian/Documentos/WiingPong/include/input/../config.h:
 /opt/devkitpro/libogc/include/ogcsys.h:

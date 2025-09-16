@@ -55,6 +55,7 @@ main.o: /home/cristian/Documentos/WiingPong/source/main.cpp \
  /opt/devkitpro/libogc/include/ogc/mutex.h \
  /opt/devkitpro/libogc/include/ogc/system.h \
  /opt/devkitpro/libogc/include/ogc/wiilaunch.h \
+ /home/cristian/Documentos/WiingPong/include/config.h \
  /home/cristian/Documentos/WiingPong/include/input/InputManager.h \
  /opt/devkitpro/libogc/include/wiiuse/wpad.h \
  /opt/devkitpro/libogc/include/wiiuse/wiiuse.h \
@@ -135,6 +136,7 @@ main.o: /home/cristian/Documentos/WiingPong/source/main.cpp \
 /opt/devkitpro/libogc/include/ogc/mutex.h:
 /opt/devkitpro/libogc/include/ogc/system.h:
 /opt/devkitpro/libogc/include/ogc/wiilaunch.h:
+/home/cristian/Documentos/WiingPong/include/config.h:
 /home/cristian/Documentos/WiingPong/include/input/InputManager.h:
 /opt/devkitpro/libogc/include/wiiuse/wpad.h:
 /opt/devkitpro/libogc/include/wiiuse/wiiuse.h:

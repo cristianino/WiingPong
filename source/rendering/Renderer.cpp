@@ -71,6 +71,7 @@ void Renderer::drawText(const char* text, int x, int y, u32 color) {
 }
 
 void Renderer::renderDebugInfo(const InputManager& input) {
+#if WIINGPONG_DEBUG_ENABLED
     if (!initialized || !debugVisible) return;
 
     // Draw debug background
@@ -131,9 +132,11 @@ void Renderer::renderDebugInfo(const InputManager& input) {
     GRRLIB_Rectangle(590, 410, 8, 8, button1Color, true);
     // Small border around the toggle indicator
     GRRLIB_Rectangle(590, 410, 8, 8, 0xFFFFFFFF, false);
+#endif
 }
 
 void Renderer::renderDebugToggleProgress(const InputManager& input) {
+#if WIINGPONG_DEBUG_ENABLED && WIINGPONG_DEBUG_TOGGLE_METHOD == 1
     if (!initialized) return;
 
     float progress = input.getDebugToggleProgress();
@@ -169,4 +172,5 @@ void Renderer::renderDebugToggleProgress(const InputManager& input) {
         GRRLIB_Rectangle(barX + barWidth + 10, barY, 20, 20, buttonBColor, true);
         GRRLIB_Rectangle(barX + barWidth + 10, barY, 20, 20, 0xFFFFFFFF, false);
     }
+#endif
 }

@@ -2,6 +2,7 @@
 
 #include <wiiuse/wpad.h>
 #include <vector>
+#include "../config.h"
 
 // Simple event system for input
 enum class InputEventType {
@@ -43,5 +44,5 @@ private:
     // Debug toggle timing
     u32 debugToggleTimer;
     bool wasABPressed;
-    static const u32 DEBUG_TOGGLE_DURATION = 240; // 4 seconds at 60fps
+    static const u32 DEBUG_TOGGLE_DURATION = WIINGPONG_DEBUG_TOGGLE_DURATION_FRAMES;
 };

@@ -9,6 +9,7 @@ extern DISC_INTERFACE __io_usbstorage;
 extern DISC_INTERFACE __io_gcsda;
 extern DISC_INTERFACE __io_gcsdb;
 
+#include "config.h"
 #include "input/InputManager.h"
 #include "physics/PhysicsEngine.h"
 #include "rendering/Renderer.h"
@@ -75,18 +76,20 @@ int main() {
             } else if (event.type == InputEventType::Home) {
                 running = false;
                 break;
+#if WIINGPONG_DEBUG_ENABLED
             } else if (event.type == InputEventType::ToggleDebug) {
                 // Toggle debug visibility
                 renderer.setDebugVisible(!renderer.isDebugVisible());
                 printf("Debug view %s\n", renderer.isDebugVisible() ? "enabled" : "disabled");
+#endif
             }
         }
 
         // Apply player movement to physics
         if (paddleUp) {
-            physics.velocities[PLAYER_PADDLE].dy = -5;  // paddleSpeed
+            physics.velocities[PLAYER_PADDLE].dy = -WIINGPONG_PADDLE_SPEED;  // Use config
         } else if (paddleDown) {
-            physics.velocities[PLAYER_PADDLE].dy = 5;
+            physics.velocities[PLAYER_PADDLE].dy = WIINGPONG_PADDLE_SPEED;
         } else {
             physics.velocities[PLAYER_PADDLE].dy = 0;
         }
