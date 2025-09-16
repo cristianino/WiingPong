@@ -5,8 +5,8 @@
 
 // Simple event system for input
 enum class InputEventType {
-    PaddleUp,      // + button held for player movement up
-    PaddleDown,    // - button held for player movement down
+    PaddleUp,      // A button held for player movement up
+    PaddleDown,    // B button held for player movement down
     Home,          // HOME button pressed to exit/pause
     None
 };

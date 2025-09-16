@@ -810,6 +810,16 @@ Discarded input sections
                 0x00000000       0x1c WiimoteManager.o
  .text._ZN14WiimoteManager22freeWiimoteAudioBufferE14WiimoteSoundID
                 0x00000000       0x68 WiimoteManager.o
+ .text          0x00000000        0x0 wpad_mock.o
+ .data          0x00000000        0x0 wpad_mock.o
+ .bss           0x00000000        0x0 wpad_mock.o
+ .debug_info    0x00000000       0x88 wpad_mock.o
+ .debug_abbrev  0x00000000       0x26 wpad_mock.o
+ .debug_aranges
+                0x00000000       0x18 wpad_mock.o
+ .debug_line    0x00000000       0x59 wpad_mock.o
+ .debug_str     0x00000000      0x176 wpad_mock.o
+ .comment       0x00000000       0x26 wpad_mock.o
  .group         0x00000000        0xc InputManager.o
  .text          0x00000000        0x0 InputManager.o
  .data          0x00000000        0x0 InputManager.o
@@ -19107,6 +19117,7 @@ LOAD /opt/devkitpro/devkitPPC/bin/../lib/gcc/powerpc-eabi/14.2.0/crtbegin.o
 LOAD /opt/devkitpro/devkitPPC/bin/../lib/gcc/powerpc-eabi/14.2.0/../../../../powerpc-eabi/lib/crtmain.o
 LOAD main.o
 LOAD WiimoteManager.o
+LOAD wpad_mock.o
 LOAD InputManager.o
 LOAD PhysicsEngine.o
 LOAD Renderer.o

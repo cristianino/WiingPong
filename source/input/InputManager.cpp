@@ -30,10 +30,10 @@ void InputManager::update() {
     pressedButtons = WPAD_ButtonsDown(0);
 
     // Generate events for paddle movement (held for continuous)
-    if (heldButtons & WPAD_BUTTON_PLUS) {
+    if (heldButtons & WPAD_BUTTON_A) {
         events.push_back({InputEventType::PaddleUp});
     }
-    if (heldButtons & WPAD_BUTTON_MINUS) {
+    if (heldButtons & WPAD_BUTTON_B) {
         events.push_back({InputEventType::PaddleDown});
     }
 
