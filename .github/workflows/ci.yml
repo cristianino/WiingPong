@@ -26,6 +26,12 @@ jobs:
       with:
         fetch-depth: 0
 
+    - name: Configure Git safe directory
+      run: |
+        git config --global --add safe.directory /__w/WiingPong/WiingPong
+        git config --global --add safe.directory /github/workspace
+        git config --global --add safe.directory .
+
     - name: Setup DevkitPro environment
       run: |
         echo "Setting up DevkitPro environment..."
@@ -143,6 +149,12 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+
+    - name: Configure Git safe directory
+      run: |
+        git config --global --add safe.directory /__w/WiingPong/WiingPong
+        git config --global --add safe.directory /github/workspace
+        git config --global --add safe.directory .
 
     - name: Setup DevkitPro environment
       run: |
