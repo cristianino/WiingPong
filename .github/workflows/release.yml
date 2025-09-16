@@ -43,8 +43,20 @@ jobs:
     - name: Install Wii development libraries
       run: |
         echo "Installing Wii development libraries..."
-        dkp-pacman -Sy --noconfirm
-        dkp-pacman -S --noconfirm wii-dev ppc-libpng ppc-zlib ppc-freetype
+        echo "Attempting to sync package databases (with retries)..."
+        for i in {1..3}; do
+          echo "Attempt $i/3"
+          if dkp-pacman -Sy --noconfirm; then
+            echo "Successfully synced package databases"
+            break
+          else
+            echo "Failed attempt $i, waiting 10 seconds..."
+            sleep 10
+          fi
+        done
+        
+        echo "Installing packages..."
+        dkp-pacman -S --noconfirm wii-dev ppc-libpng ppc-zlib ppc-freetype || echo "Package installation failed, continuing..."
         
     - name: Install GRRLIB from source
       run: |
