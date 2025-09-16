@@ -5,10 +5,13 @@
 The GitHub Actions CI workflows automatically install the following development libraries using `dkp-pacman`:
 
 ### Core Packages
-- **wii-dev**: Core development package for Nintendo Wii
-- **libogc-wii**: Official Nintendo GameCube/Wii library
+- **libogc**: Official Nintendo GameCube/Wii library
   - Provides hardware abstraction layer
   - Core system functionality
+- **libfat-ogc**: File system access library for GameCube/Wii
+  - SD card and USB storage access
+  - File I/O operations
+- **devkitppc-rules**: Build rules for PowerPC cross-compilation
 
 ### Graphics & Media
 - **ppc-grrlib**: Graphics library specifically for Wii homebrew
@@ -26,6 +29,7 @@ The GitHub Actions CI workflows automatically install the following development 
 
 ### System Libraries
 - **ppc-libfat**: File system access library
+  - Note: Use `libfat-ogc` package name
   - SD card and USB storage access
   - File I/O operations
 
@@ -34,7 +38,7 @@ The GitHub Actions CI workflows automatically install the following development 
 Core libraries are installed in the CI environment using:
 
 ```bash
-dkp-pacman -S wii-dev ppc-libpng ppc-zlib ppc-freetype --noconfirm
+dkp-pacman -S libogc libfat-ogc devkitppc-rules ppc-libpng ppc-zlib ppc-freetype --noconfirm
 ```
 
 GRRLIB is compiled from source:
@@ -55,7 +59,7 @@ For local development, install the core packages and compile GRRLIB:
 dkp-pacman -Sy
 
 # Install core packages
-dkp-pacman -S wii-dev ppc-libpng ppc-zlib ppc-freetype
+dkp-pacman -S libogc libfat-ogc devkitppc-rules ppc-libpng ppc-zlib ppc-freetype
 
 # Compile and install GRRLIB
 cd /tmp

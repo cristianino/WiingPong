@@ -56,7 +56,7 @@ jobs:
         done
         
         echo "Installing packages..."
-        dkp-pacman -S --noconfirm wii-dev ppc-libpng ppc-zlib ppc-freetype || echo "Package installation failed, continuing..."
+        dkp-pacman -S --noconfirm libogc libfat-ogc devkitppc-rules ppc-libpng ppc-zlib ppc-freetype
         
     - name: Install GRRLIB from source
       run: |
