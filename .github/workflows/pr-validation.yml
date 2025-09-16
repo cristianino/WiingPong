@@ -14,6 +14,9 @@ jobs:
     name: Validate Pull Request
     runs-on: ubuntu-latest
     container: devkitpro/devkitppc:latest
+    env:
+      DEVKITPRO: /opt/devkitpro
+      DEVKITPPC: /opt/devkitpro/devkitPPC
     if: github.event.pull_request.draft == false
     
     steps:
@@ -22,6 +25,15 @@ jobs:
       with:
         ref: ${{ github.event.pull_request.head.sha }}
         fetch-depth: 0
+
+    - name: Setup DevkitPro environment
+      run: |
+        echo "Setting up DevkitPro environment..."
+        echo "DEVKITPRO=/opt/devkitpro" >> $GITHUB_ENV
+        echo "DEVKITPPC=/opt/devkitpro/devkitPPC" >> $GITHUB_ENV
+        echo "/opt/devkitpro/devkitPPC/bin" >> $GITHUB_PATH
+        echo "/opt/devkitpro/tools/bin" >> $GITHUB_PATH
+        echo "/opt/devkitpro/pacman/bin" >> $GITHUB_PATH
 
     - name: Verify DevkitPro installation
       run: |
