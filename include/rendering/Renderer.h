@@ -16,7 +16,7 @@ public:
     void init();
     void render(const PhysicsEngine& physics);  // Draw from physics components
     void renderDebugInfo(const InputManager& input);  // Debug overlay
-    void renderDebugToggleProgress(const InputManager& input); // A+B progress indicator
+    void renderDebugToggleProgress(const InputManager& input); // Debug toggle progress indicator (A+B or PLUS+MINUS)
     void setDebugVisible(bool visible) { debugVisible = visible; }
     bool isDebugVisible() const { return debugVisible; }
 

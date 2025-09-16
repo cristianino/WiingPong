@@ -1,0 +1,67 @@
+name: Bug Report
+description: File a bug report to help us improve WiingPong
+title: "[BUG] "
+labels: ["bug", "triage"]
+assignees:
+  - cristianino
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report!
+
+  - type: input
+    id: wii-model
+    attributes:
+      label: Wii Model
+      description: What Wii model are you using?
+      placeholder: ex. Original Wii, Wii Mini, Wii Family Edition
+    validations:
+      required: true
+
+  - type: input
+    id: homebrew-version
+    attributes:
+      label: Homebrew Channel Version
+      description: What version of Homebrew Channel are you using?
+      placeholder: ex. 1.1.2
+    validations:
+      required: false
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Also tell us, what did you expect to happen?
+      placeholder: Tell us what you see!
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps-to-reproduce
+    attributes:
+      label: Steps to Reproduce
+      description: How can we reproduce this issue?
+      placeholder: |
+        1. Go to '...'
+        2. Click on '....'
+        3. Scroll down to '....'
+        4. See error
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output
+      description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
+      render: shell
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Code of Conduct
+      description: By submitting this issue, you agree to follow our [Code of Conduct](https://github.com/cristianino/WiingPong/blob/master/CODE_OF_CONDUCT.md)
+      options:
+        - label: I agree to follow this project's Code of Conduct
+          required: true

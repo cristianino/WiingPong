@@ -1,0 +1,185 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ master, develop ]
+  pull_request:
+    branches: [ master, develop ]
+  workflow_dispatch:
+
+env:
+  DEVKITPRO: /opt/devkitpro
+  DEVKITPPC: /opt/devkitpro/devkitPPC
+
+jobs:
+  build-and-test:
+    name: Build WiingPong
+    runs-on: ubuntu-latest
+    container: devkitpro/devkitppc:latest
+    env:
+      DEVKITPRO: /opt/devkitpro
+      DEVKITPPC: /opt/devkitpro/devkitPPC
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Configure Git safe directory
+      run: |
+        git config --global --add safe.directory /__w/WiingPong/WiingPong
+        git config --global --add safe.directory /github/workspace
+        git config --global --add safe.directory .
+
+    - name: Setup DevkitPro environment
+      run: |
+        echo "Setting up DevkitPro environment..."
+        echo "/opt/devkitpro/devkitPPC/bin" >> $GITHUB_PATH
+        echo "/opt/devkitpro/tools/bin" >> $GITHUB_PATH
+        echo "/opt/devkitpro/pacman/bin" >> $GITHUB_PATH
+
+    - name: Install Wii development libraries
+      run: |
+        echo "Installing Wii development libraries..."
+        echo "Checking network connectivity..."
+        ping -c 3 pkg.devkitpro.org || echo "Cannot reach pkg.devkitpro.org"
+        
+        echo "Attempting to sync package databases (with retries)..."
+        for i in {1..3}; do
+          echo "Attempt $i/3"
+          if dkp-pacman -Sy --noconfirm; then
+            echo "Successfully synced package databases"
+            break
+          else
+            echo "Failed attempt $i, waiting 10 seconds..."
+            sleep 10
+          fi
+        done
+        
+        echo "Installing packages..."
+        dkp-pacman -S --noconfirm libogc libfat-ogc devkitppc-rules ppc-libpng ppc-zlib ppc-freetype
+        
+    - name: Install GRRLIB from source
+      run: |
+        echo "Verifying basic tools..."
+        which powerpc-eabi-gcc || echo "PowerPC compiler not found"
+        which make || echo "Make not found"
+        
+        echo "Compiling GRRLIB from source..."
+        cd /tmp
+        git clone https://github.com/GRRLIB/GRRLIB.git
+        cd GRRLIB/GRRLIB
+        
+        echo "Building GRRLIB..."
+        make clean
+        make all
+        make install
+        echo "GRRLIB installation completed"
+        
+        echo "Verifying GRRLIB installation..."
+        ls -la $DEVKITPRO/libogc/include/ | grep grrlib || echo "grrlib.h not found in include directory"
+
+    - name: Verify DevkitPro installation
+      run: |
+        echo "DevkitPro environment verification:"
+        echo "DEVKITPRO: $DEVKITPRO"
+        echo "DEVKITPPC: $DEVKITPPC"
+        echo "PATH: $PATH"
+        
+        echo "Checking DevkitPro directory structure..."
+        ls -la $DEVKITPRO/ || echo "DevkitPro directory not found"
+        ls -la $DEVKITPPC/ || echo "DevkitPPC directory not found"
+        
+        echo "Checking for essential tools..."
+        which dkp-pacman && dkp-pacman --version || echo "dkp-pacman not available"
+        which powerpc-eabi-gcc && powerpc-eabi-gcc --version || echo "PowerPC compiler not available"
+        which make && make --version || echo "Make not available"
+        powerpc-eabi-gcc --version
+
+    - name: Build Debug Version
+      run: |
+        make clean
+        make CONFIG=debug
+
+    - name: Build Release Version  
+      run: |
+        make clean
+        make CONFIG=release
+
+    - name: Run Tests
+      run: |
+        # Add test execution here when available
+        echo "Tests would run here"
+
+    - name: Package Release Artifacts
+      if: github.ref == 'refs/heads/master'
+      run: |
+        mkdir -p release-artifacts
+        cp WiingPong.dol release-artifacts/
+        cp -r apps/ release-artifacts/ 2>/dev/null || true
+        tar -czf release-artifacts/WiingPong-$(date +%Y%m%d)-$(git rev-parse --short HEAD).tar.gz WiingPong.dol apps/
+        
+    - name: Upload Build Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: wiingpong-build-${{ github.sha }}
+        path: |
+          WiingPong.dol
+          WiingPong.elf
+          apps/
+        retention-days: 30
+
+    - name: Upload Release Artifacts
+      if: github.ref == 'refs/heads/master'
+      uses: actions/upload-artifact@v4
+      with:
+        name: wiingpong-release-${{ github.sha }}
+        path: release-artifacts/
+        retention-days: 90
+
+  code-quality:
+    name: Code Quality Checks
+    runs-on: ubuntu-latest
+    container: devkitpro/devkitppc:latest
+    env:
+      DEVKITPRO: /opt/devkitpro
+      DEVKITPPC: /opt/devkitpro/devkitPPC
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Configure Git safe directory
+      run: |
+        git config --global --add safe.directory /__w/WiingPong/WiingPong
+        git config --global --add safe.directory /github/workspace
+        git config --global --add safe.directory .
+
+    - name: Setup DevkitPro environment
+      run: |
+        echo "Setting up DevkitPro environment..."
+        echo "/opt/devkitpro/devkitPPC/bin" >> $GITHUB_PATH
+        echo "/opt/devkitpro/tools/bin" >> $GITHUB_PATH
+        echo "/opt/devkitpro/pacman/bin" >> $GITHUB_PATH
+
+    - name: Install Wii development libraries
+      run: |
+        echo "Installing Wii development libraries..."
+        dkp-pacman -Sy --noconfirm
+        dkp-pacman -S --noconfirm libogc libfat-ogc devkitppc-rules ppc-libpng ppc-zlib ppc-freetype
+
+    - name: Check code formatting
+      run: |
+        # Add clang-format check here if needed
+        echo "Code formatting check would go here"
+
+    - name: Static analysis
+      run: |
+        # Add static analysis tools here
+        echo "Static analysis would go here"
+
+    - name: Check for TODOs and FIXMEs
+      run: |
+        echo "Checking for TODO and FIXME comments..."
+        grep -r "TODO\|FIXME" --include="*.cpp" --include="*.h" source/ include/ || echo "No TODOs or FIXMEs found"
