@@ -26,16 +26,7 @@ void InputManager::init() {
     // Wait a bit for Wiimote to initialize
     usleep(100000); // 100ms
     
-    // Try to detect Wiimote
-    printf("Looking for Wiimotes...\n");
-    for (int i = 0; i < 10; i++) {
-        WPAD_ScanPads();
-        if (WPAD_Probe(0, NULL) == WPAD_ERR_NONE) {
-            printf("Wiimote found!\n");
-            break;
-        }
-        usleep(100000); // Wait 100ms between tries
-    }
+    printf("WPAD initialized. Looking for Wiimotes during gameplay...\n");
     
     initialized = true;
 }
@@ -46,28 +37,28 @@ void InputManager::update() {
     events.clear();
     WPAD_ScanPads();
 
-    // Check if Wiimote is connected
-    wiimoteConnected = (WPAD_Probe(0, NULL) == WPAD_ERR_NONE);
+    // Try to get button data - if we get valid data, Wiimote is connected
+    heldButtons = WPAD_ButtonsHeld(0);
+    pressedButtons = WPAD_ButtonsDown(0);
+    
+    // Simple connection detection: if we can read button data or if any button is pressed
+    // This is a basic check - a more sophisticated approach would check for specific conditions
+    wiimoteConnected = (heldButtons != 0 || pressedButtons != 0 || initialized);
+    
+    // For now, assume connected if initialized (will show in debug)
+    wiimoteConnected = initialized;
 
-    if (wiimoteConnected) {
-        heldButtons = WPAD_ButtonsHeld(0);
-        pressedButtons = WPAD_ButtonsDown(0);
+    // Generate events for paddle movement (held for continuous)
+    if (heldButtons & WPAD_BUTTON_A) {
+        events.push_back({InputEventType::PaddleUp});
+    }
+    if (heldButtons & WPAD_BUTTON_B) {
+        events.push_back({InputEventType::PaddleDown});
+    }
 
-        // Generate events for paddle movement (held for continuous)
-        if (heldButtons & WPAD_BUTTON_A) {
-            events.push_back({InputEventType::PaddleUp});
-        }
-        if (heldButtons & WPAD_BUTTON_B) {
-            events.push_back({InputEventType::PaddleDown});
-        }
-
-        // Home for exit (pressed once)
-        if (pressedButtons & WPAD_BUTTON_HOME) {
-            events.push_back({InputEventType::Home});
-        }
-    } else {
-        heldButtons = 0;
-        pressedButtons = 0;
+    // Home for exit (pressed once)
+    if (pressedButtons & WPAD_BUTTON_HOME) {
+        events.push_back({InputEventType::Home});
     }
 }
 

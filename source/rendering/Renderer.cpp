@@ -74,36 +74,33 @@ void Renderer::renderDebugInfo(const InputManager& input) {
     if (!initialized) return;
 
     // Draw debug background
-    GRRLIB_Rectangle(10, 400, 300, 70, 0x000000CC, true);
-    GRRLIB_Rectangle(10, 400, 300, 70, 0xFFFFFFFF, false);
+    GRRLIB_Rectangle(10, 400, 620, 70, 0x000000CC, true);
+    GRRLIB_Rectangle(10, 400, 620, 70, 0xFFFFFFFF, false);
 
     // Debug text color
     u32 textColor = 0xFFFFFFFF;
     
-    // Show connection status
-    if (input.isWiimoteConnected()) {
-        GRRLIB_Printf(15, 405, font, 0x00FF00FF, 1, "Wiimote: CONNECTED");
+    // Show connection status (simplified - just show if initialized)
+    if (input.isInitialized()) {
+        GRRLIB_Printf(15, 405, font, 0x00FF00FF, 1, "WPAD: INITIALIZED");
     } else {
-        GRRLIB_Printf(15, 405, font, 0xFF0000FF, 1, "Wiimote: DISCONNECTED");
+        GRRLIB_Printf(15, 405, font, 0xFF0000FF, 1, "WPAD: NOT INIT");
     }
-    
-    // Show initialization status
-    GRRLIB_Printf(15, 420, font, textColor, 1, "Init: %s", input.isInitialized() ? "YES" : "NO");
     
     // Show button states
     u32 held = input.getHeldButtons();
     u32 pressed = input.getPressedButtons();
     
-    GRRLIB_Printf(15, 435, font, textColor, 1, "Held: 0x%08X", held);
-    GRRLIB_Printf(15, 450, font, textColor, 1, "Pressed: 0x%08X", pressed);
+    GRRLIB_Printf(15, 420, font, textColor, 1, "Held: 0x%08X", held);
+    GRRLIB_Printf(15, 435, font, textColor, 1, "Pressed: 0x%08X", pressed);
     
-    // Show specific button states
-    char buttonStatus[64];
-    snprintf(buttonStatus, sizeof(buttonStatus), "A:%d B:%d HOME:%d +:%d -:%d", 
+    // Show specific button states with expected values
+    char buttonStatus[128];
+    snprintf(buttonStatus, sizeof(buttonStatus), "A:%d(0x0008) B:%d(0x0004) HOME:%d(0x0080) +:%d(0x0010) -:%d(0x1000)", 
              (held & WPAD_BUTTON_A) ? 1 : 0,
              (held & WPAD_BUTTON_B) ? 1 : 0, 
              (held & WPAD_BUTTON_HOME) ? 1 : 0,
              (held & WPAD_BUTTON_PLUS) ? 1 : 0,
              (held & WPAD_BUTTON_MINUS) ? 1 : 0);
-    GRRLIB_Printf(320, 405, font, textColor, 1, buttonStatus);
+    GRRLIB_Printf(15, 450, font, textColor, 1, buttonStatus);
 }

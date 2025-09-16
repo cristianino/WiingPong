@@ -6,24 +6,20 @@ Se añadió una ventana de debug superpuesta en la pantalla que muestra informac
 
 ## Información Mostrada
 
-### 1. Estado de Conexión
-- **"Wiimote: CONNECTED"** (Verde) - El Wiimote está detectado y funcionando
-- **"Wiimote: DISCONNECTED"** (Rojo) - No se detecta el Wiimote
+### 1. Estado de Inicialización WPAD
+- **"WPAD: INITIALIZED"** (Verde) - El sistema WPAD está funcionando
+- **"WPAD: NOT INIT"** (Rojo) - Problema con la inicialización del sistema
 
-### 2. Estado de Inicialización
-- **"Init: YES"** - El sistema WPAD está inicializado correctamente
-- **"Init: NO"** - Problema con la inicialización
-
-### 3. Valores Hexadecimales de Botones
+### 2. Valores Hexadecimales de Botones
 - **"Held: 0x########"** - Valor hexadecimal de botones mantenidos presionados
 - **"Pressed: 0x########"** - Valor hexadecimal de botones recién presionados
 
-### 4. Estado Individual de Botones
-- **A:0/1** - Botón A (0=no presionado, 1=presionado)
-- **B:0/1** - Botón B (0=no presionado, 1=presionado)  
-- **HOME:0/1** - Botón HOME
-- **+:0/1** - Botón PLUS
-- **-:0/1** - Botón MINUS
+### 3. Estado Individual de Botones con Valores Esperados
+- **A:0/1(0x0008)** - Botón A con valor hex esperado
+- **B:0/1(0x0004)** - Botón B con valor hex esperado  
+- **HOME:0/1(0x0080)** - Botón HOME con valor hex esperado
+- **+:0/1(0x0010)** - Botón PLUS con valor hex esperado
+- **-:0/1(0x1000)** - Botón MINUS con valor hex esperado
 
 ## Ubicación en Pantalla
 
