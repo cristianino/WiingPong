@@ -69,10 +69,19 @@ master     ←── release/* ←── develop ←── feature/*
 ## DevkitPro Setup
 
 The workflows automatically install and configure:
-- DevkitPro package manager
-- Wii development tools (`wii-dev`)
+- DevkitPro package manager via official installation script
+- Wii development tools (`wii-dev` package)
 - PowerPC cross-compiler
 - Required environment variables
+
+### Installation Method
+Uses the official DevkitPro installation script:
+```bash
+wget https://apt.devkitpro.org/install-devkitpro-pacman
+chmod +x ./install-devkitpro-pacman
+sudo ./install-devkitpro-pacman
+sudo dkp-pacman -S wii-dev --noconfirm
+```
 
 ## Build Artifacts
 

@@ -29,8 +29,9 @@ jobs:
 
     - name: Setup DevkitPro
       run: |
-        wget https://github.com/devkitPro/pacman/releases/latest/download/devkitpro-pacman.amd64.deb
-        sudo dpkg -i devkitpro-pacman.amd64.deb
+        wget https://apt.devkitpro.org/install-devkitpro-pacman
+        chmod +x ./install-devkitpro-pacman
+        sudo ./install-devkitpro-pacman
         sudo dkp-pacman -S wii-dev --noconfirm
         
     - name: Setup environment
@@ -38,6 +39,7 @@ jobs:
         echo "DEVKITPRO=/opt/devkitpro" >> $GITHUB_ENV
         echo "DEVKITPPC=/opt/devkitpro/devkitPPC" >> $GITHUB_ENV
         echo "/opt/devkitpro/tools/bin" >> $GITHUB_PATH
+        echo "/opt/devkitpro/pacman/bin" >> $GITHUB_PATH
 
     - name: Build Release Version
       run: |
