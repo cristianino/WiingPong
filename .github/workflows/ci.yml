@@ -37,7 +37,10 @@ jobs:
       run: |
         echo "Installing Wii development libraries..."
         dkp-pacman -Sy --noconfirm
-        dkp-pacman -S --noconfirm wii-dev libogc-wii ppc-grrlib ppc-libpng ppc-zlib ppc-freetype ppc-libfat
+        dkp-pacman -S --noconfirm wii-dev ppc-libpng ppc-zlib ppc-freetype
+        echo "Listing all available packages..."
+        dkp-pacman -Sl | grep -i grrlib || echo "GRRLIB not found"
+        dkp-pacman -Sl | grep -i ppc- | head -20
 
     - name: Verify DevkitPro installation
       run: |
