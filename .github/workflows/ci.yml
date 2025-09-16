@@ -155,7 +155,7 @@ jobs:
       run: |
         echo "Installing Wii development libraries..."
         dkp-pacman -Sy --noconfirm
-        dkp-pacman -S --noconfirm wii-dev libogc-wii ppc-grrlib ppc-libpng ppc-zlib ppc-freetype ppc-libfat
+        dkp-pacman -S --noconfirm libogc libfat-ogc devkitppc-rules ppc-libpng ppc-zlib ppc-freetype
 
     - name: Check code formatting
       run: |
