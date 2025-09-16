@@ -1,6 +1,7 @@
 // include/WiimoteManager.h
 #pragma once
 #include <wiiuse/wpad.h>
+#include <gctypes.h>  // For s16, s32, etc.
 #include <cstddef>
 
 // Sound effects for Wiimote speaker
@@ -11,9 +12,9 @@ enum class WiimoteSoundID {
 };
 
 struct WiimoteAudioBuffer {
-    s16* pcmData;       // PCM data as 16-bit signed integers
-    size_t sampleCount; // Number of samples
-    size_t fileSize;    // Original file size in bytes
+    signed short* pcmData;  // PCM data as 16-bit signed integers (more compatible than s16*)
+    size_t sampleCount;     // Number of samples
+    size_t fileSize;        // Original file size in bytes
 };
 
 class WiimoteManager {

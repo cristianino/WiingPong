@@ -5,6 +5,36 @@
 #include <cstring>
 #include <unistd.h>  // for usleep
 
+// Compatibility definitions for CI builds
+#ifndef s16
+typedef signed short s16;
+#endif
+#ifndef s32
+typedef signed int s32;
+#endif
+#ifndef u8
+typedef unsigned char u8;
+#endif
+#ifndef u32
+typedef unsigned int u32;
+#endif
+
+// Mock definitions for CI builds if WPAD functions are not available
+#ifdef CI_BUILD
+// Mock structure for CI
+typedef struct {
+    u8 data[32];
+} WPADEncStatus;
+
+// Mock functions for CI
+static s32 WPAD_ControlSpeaker(s32 chan, s32 enable) { (void)chan; (void)enable; return 0; }
+static s32 WPAD_IsSpeakerEnabled(s32 chan) { (void)chan; return 1; }
+static s32 WPAD_SendStreamData(s32 chan, void* buf, u32 len) { (void)chan; (void)buf; (void)len; return 0; }
+static void WPAD_EncodeData(WPADEncStatus* info, u32 flag, const s16* pcmSamples, s32 numSamples, u8* encData) {
+    (void)info; (void)flag; (void)pcmSamples; (void)numSamples; (void)encData;
+}
+#endif
+
 WiimoteManager::WiimoteManager() : speakerInitialized(false) {
     // Initialize audio buffers
     for (int i = 0; i < 3; i++) {
@@ -71,7 +101,7 @@ bool WiimoteManager::loadWiimoteSound(WiimoteSoundID id, const char* filename) {
         free(buffer->pcmData);  // Free existing data
     }
     
-    buffer->pcmData = (s16*)malloc(fileSize);
+    buffer->pcmData = (signed short*)malloc(fileSize);
     if (!buffer->pcmData) {
         printf("Error: Could not allocate memory for Wiimote audio file\n");
         fclose(file);
@@ -114,7 +144,7 @@ void WiimoteManager::playWiimoteSound(WiimoteSoundID id, int channel) {
     // The Wiimote speaker has limited buffer, so we need to be careful
     const size_t CHUNK_SIZE = 20;  // Small chunks for Wiimote speaker
     size_t samplesRemaining = buffer->sampleCount;
-    s16* currentData = buffer->pcmData;
+    signed short* currentData = buffer->pcmData;
     
     while (samplesRemaining > 0) {
         size_t chunkSamples = (samplesRemaining > CHUNK_SIZE) ? CHUNK_SIZE : samplesRemaining;
@@ -123,7 +153,7 @@ void WiimoteManager::playWiimoteSound(WiimoteSoundID id, int channel) {
         WPADEncStatus encStatus;
         u8 encodedData[40];  // Buffer for encoded data
         
-        WPAD_EncodeData(&encStatus, 0, currentData, chunkSamples, encodedData);
+        WPAD_EncodeData(&encStatus, 0, (const s16*)currentData, chunkSamples, encodedData);
         
         // Send encoded data to Wiimote speaker
         WPAD_SendStreamData(channel, encodedData, sizeof(encodedData));
