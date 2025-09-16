@@ -66,8 +66,8 @@ void Renderer::drawScores(const PhysicsEngine& physics) {
 }
 
 void Renderer::drawText(const char* text, int x, int y, u32 color) {
-    // Simple text rendering using GRRLIB_Printf
-    GRRLIB_Printf(x, y, font, color, 1, text);
+    // Text function not available - using visual indicators instead
+    // This function is kept for interface compatibility but does nothing
 }
 
 void Renderer::renderDebugInfo(const InputManager& input) {
@@ -77,30 +77,52 @@ void Renderer::renderDebugInfo(const InputManager& input) {
     GRRLIB_Rectangle(10, 400, 620, 70, 0x000000CC, true);
     GRRLIB_Rectangle(10, 400, 620, 70, 0xFFFFFFFF, false);
 
-    // Debug text color
-    u32 textColor = 0xFFFFFFFF;
-    
-    // Show connection status (simplified - just show if initialized)
+    // Show initialization status with colored indicator
     if (input.isInitialized()) {
-        GRRLIB_Printf(15, 405, font, 0x00FF00FF, 1, "WPAD: INITIALIZED");
+        GRRLIB_Rectangle(20, 410, 20, 20, 0x00FF00FF, true); // Green square = INITIALIZED
     } else {
-        GRRLIB_Printf(15, 405, font, 0xFF0000FF, 1, "WPAD: NOT INIT");
+        GRRLIB_Rectangle(20, 410, 20, 20, 0xFF0000FF, true); // Red square = NOT INIT
     }
     
-    // Show button states
+    // Get button states
     u32 held = input.getHeldButtons();
     u32 pressed = input.getPressedButtons();
     
-    GRRLIB_Printf(15, 420, font, textColor, 1, "Held: 0x%08X", held);
-    GRRLIB_Printf(15, 435, font, textColor, 1, "Pressed: 0x%08X", pressed);
+    // Visual representation of button states using colored rectangles
+    int buttonY = 435;
+    int buttonSize = 15;
+    int spacing = 25;
     
-    // Show specific button states with expected values
-    char buttonStatus[128];
-    snprintf(buttonStatus, sizeof(buttonStatus), "A:%d(0x0008) B:%d(0x0004) HOME:%d(0x0080) +:%d(0x0010) -:%d(0x1000)", 
-             (held & WPAD_BUTTON_A) ? 1 : 0,
-             (held & WPAD_BUTTON_B) ? 1 : 0, 
-             (held & WPAD_BUTTON_HOME) ? 1 : 0,
-             (held & WPAD_BUTTON_PLUS) ? 1 : 0,
-             (held & WPAD_BUTTON_MINUS) ? 1 : 0);
-    GRRLIB_Printf(15, 450, font, textColor, 1, buttonStatus);
+    // A Button indicator
+    u32 colorA = (held & WPAD_BUTTON_A) ? 0x00FF00FF : 0x333333FF;
+    GRRLIB_Rectangle(20, buttonY, buttonSize, buttonSize, colorA, true);
+    
+    // B Button indicator  
+    u32 colorB = (held & WPAD_BUTTON_B) ? 0x0000FFFF : 0x333333FF;
+    GRRLIB_Rectangle(20 + spacing, buttonY, buttonSize, buttonSize, colorB, true);
+    
+    // HOME Button indicator
+    u32 colorHome = (held & WPAD_BUTTON_HOME) ? 0xFF0000FF : 0x333333FF;
+    GRRLIB_Rectangle(20 + spacing * 2, buttonY, buttonSize, buttonSize, colorHome, true);
+    
+    // PLUS Button indicator
+    u32 colorPlus = (held & WPAD_BUTTON_PLUS) ? 0xFFFF00FF : 0x333333FF;
+    GRRLIB_Rectangle(20 + spacing * 3, buttonY, buttonSize, buttonSize, colorPlus, true);
+    
+    // MINUS Button indicator
+    u32 colorMinus = (held & WPAD_BUTTON_MINUS) ? 0xFF00FFFF : 0x333333FF;
+    GRRLIB_Rectangle(20 + spacing * 4, buttonY, buttonSize, buttonSize, colorMinus, true);
+    
+    // Hex value representation using bars (each bit as a small rectangle)
+    // Show held buttons as a series of small indicators
+    for (int i = 0; i < 16; i++) {
+        u32 bitColor = (held & (1 << i)) ? 0xFFFFFFFF : 0x111111FF;
+        GRRLIB_Rectangle(200 + i * 8, 410, 6, 10, bitColor, true);
+    }
+    
+    // Show pressed buttons as a series of small indicators (second row)
+    for (int i = 0; i < 16; i++) {
+        u32 bitColor = (pressed & (1 << i)) ? 0xFFFFFFFF : 0x111111FF;
+        GRRLIB_Rectangle(200 + i * 8, 425, 6, 10, bitColor, true);
+    }
 }
