@@ -40,6 +40,12 @@ jobs:
         echo "/opt/devkitpro/tools/bin" >> $GITHUB_PATH
         echo "/opt/devkitpro/pacman/bin" >> $GITHUB_PATH
 
+    - name: Install Wii development libraries
+      run: |
+        echo "Installing Wii development libraries..."
+        dkp-pacman -Sy --noconfirm
+        dkp-pacman -S --noconfirm wii-dev libogc-wii ppc-grrlib ppc-libpng ppc-zlib ppc-freetype ppc-libfat
+
     - name: Verify DevkitPro installation
       run: |
         echo "DevkitPro environment verification:"
