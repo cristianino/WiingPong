@@ -19,21 +19,61 @@ typedef unsigned char u8;
 typedef unsigned int u32;
 #endif
 
-// Mock definitions for CI builds if WPAD functions are not available
-#ifdef CI_BUILD
-// Mock structure for CI
+// Only provide mock implementations if we're in a CI environment that doesn't have WPAD
+// This is detected by checking if certain defines are missing
+#if defined(__SYNTAX_CHECK__) || defined(MOCK_WPAD_FUNCTIONS)
+
+// Mock constants
+#define WPAD_BUTTON_HOME 0x0080
+
+extern "C" {
+    // Mock implementations for syntax checking
+    void WPAD_Init() {
+        printf("Mock WPAD_Init\n");
+    }
+    
+    void WPAD_ScanPads() {
+        // Mock implementation
+    }
+    
+    u32 WPAD_ButtonsDown(int chan) {
+        printf("Mock WPAD_ButtonsDown (chan=%d)\n", chan);
+        return 0;
+    }
+    
+    s32 WPAD_ControlSpeaker(s32 chan, s32 enable) {
+        printf("Mock WPAD_ControlSpeaker (chan=%d, enable=%d)\n", chan, enable);
+        return 0;
+    }
+    
+    s32 WPAD_IsSpeakerEnabled(s32 chan) {
+        printf("Mock WPAD_IsSpeakerEnabled (chan=%d)\n", chan);
+        return 1;
+    }
+    
+    s32 WPAD_SendStreamData(s32 chan, void* buf, u32 len) {
+        printf("Mock WPAD_SendStreamData (chan=%d, len=%u)\n", chan, len);
+        (void)buf;
+        return 0;
+    }
+    
+    void WPAD_EncodeData(void* info, u32 flag, const s16* pcmSamples, s32 numSamples, u8* encData) {
+        printf("Mock WPAD_EncodeData (numSamples=%d)\n", numSamples);
+        (void)info; (void)flag; (void)pcmSamples; (void)encData;
+        if (encData) {
+            for (int i = 0; i < 40; i++) {
+                encData[i] = 0;
+            }
+        }
+    }
+}
+
+// Mock structure definition
 typedef struct {
     u8 data[32];
 } WPADEncStatus;
 
-// Mock functions for CI
-static s32 WPAD_ControlSpeaker(s32 chan, s32 enable) { (void)chan; (void)enable; return 0; }
-static s32 WPAD_IsSpeakerEnabled(s32 chan) { (void)chan; return 1; }
-static s32 WPAD_SendStreamData(s32 chan, void* buf, u32 len) { (void)chan; (void)buf; (void)len; return 0; }
-static void WPAD_EncodeData(WPADEncStatus* info, u32 flag, const s16* pcmSamples, s32 numSamples, u8* encData) {
-    (void)info; (void)flag; (void)pcmSamples; (void)numSamples; (void)encData;
-}
-#endif
+#endif // MOCK_WPAD_FUNCTIONS
 
 WiimoteManager::WiimoteManager() : speakerInitialized(false) {
     // Initialize audio buffers
@@ -153,7 +193,7 @@ void WiimoteManager::playWiimoteSound(WiimoteSoundID id, int channel) {
         WPADEncStatus encStatus;
         u8 encodedData[40];  // Buffer for encoded data
         
-        WPAD_EncodeData(&encStatus, 0, (const s16*)currentData, chunkSamples, encodedData);
+        WPAD_EncodeData(&encStatus, 0, (const s16*)currentData, (s32)chunkSamples, encodedData);
         
         // Send encoded data to Wiimote speaker
         WPAD_SendStreamData(channel, encodedData, sizeof(encodedData));

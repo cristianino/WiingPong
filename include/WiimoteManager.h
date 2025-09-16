@@ -1,8 +1,28 @@
 // include/WiimoteManager.h
 #pragma once
+
+// Conditional includes based on build environment
+#ifdef MOCK_WPAD_FUNCTIONS
+// For CI/mock builds, define types locally
+#include <cstddef>
+#ifndef s16
+typedef signed short s16;
+#endif
+#ifndef s32
+typedef signed int s32;
+#endif
+#ifndef u8
+typedef unsigned char u8;
+#endif
+#ifndef u32
+typedef unsigned int u32;
+#endif
+#else
+// For real hardware builds, include WPAD headers
 #include <wiiuse/wpad.h>
 #include <gctypes.h>  // For s16, s32, etc.
 #include <cstddef>
+#endif
 
 // Sound effects for Wiimote speaker
 enum class WiimoteSoundID {

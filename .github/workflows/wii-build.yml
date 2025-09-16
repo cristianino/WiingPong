@@ -184,7 +184,7 @@ jobs:
         for cpp_file in $(find source -name "*.cpp"); do
           echo "Checking $cpp_file..."
           g++ -std=c++11 -Wall -Wextra -Wno-unused-parameter -I./include -I./mock_includes \
-              -DGEKKO -c "$cpp_file" -o "/tmp/$(basename $cpp_file .cpp).o" || exit 1
+              -DGEKKO -DMOCK_WPAD_FUNCTIONS -c "$cpp_file" -o "/tmp/$(basename $cpp_file .cpp).o" || exit 1
         done
         
         echo "✓ All source files compiled successfully"
