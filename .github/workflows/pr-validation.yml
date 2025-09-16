@@ -40,8 +40,15 @@ jobs:
         echo "Installing Wii development libraries..."
         dkp-pacman -Sy --noconfirm
         dkp-pacman -S --noconfirm wii-dev ppc-libpng ppc-zlib ppc-freetype
-        echo "Searching for additional libraries..."
-        dkp-pacman -Ss grrlib || echo "GRRLIB not found in repositories"
+        
+    - name: Install GRRLIB from source
+      run: |
+        echo "Compiling GRRLIB from source..."
+        cd /tmp
+        git clone https://github.com/GRRLIB/GRRLIB.git
+        cd GRRLIB/GRRLIB
+        make clean all install
+        echo "GRRLIB installation completed"
 
     - name: Verify DevkitPro installation
       run: |

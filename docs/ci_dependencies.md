@@ -12,6 +12,8 @@ The GitHub Actions CI workflows automatically install the following development 
 
 ### Graphics & Media
 - **ppc-grrlib**: Graphics library specifically for Wii homebrew
+  - **Note**: Compiled from source (https://github.com/GRRLIB/GRRLIB)
+  - Not available in official DevkitPro repositories
   - 2D/3D graphics rendering
   - Sprite and texture support
   - Color manipulation functions
@@ -29,22 +31,37 @@ The GitHub Actions CI workflows automatically install the following development 
 
 ## Installation Command
 
-All libraries are installed in the CI environment using:
+Core libraries are installed in the CI environment using:
 
 ```bash
-dkp-pacman -S wii-dev libogc-wii ppc-grrlib ppc-libpng ppc-zlib ppc-freetype ppc-libfat --noconfirm
+dkp-pacman -S wii-dev ppc-libpng ppc-zlib ppc-freetype --noconfirm
+```
+
+GRRLIB is compiled from source:
+
+```bash
+cd /tmp
+git clone https://github.com/GRRLIB/GRRLIB.git
+cd GRRLIB/GRRLIB
+make clean all install
 ```
 
 ## Local Development
 
-For local development, ensure these same packages are installed in your DevkitPro environment:
+For local development, install the core packages and compile GRRLIB:
 
 ```bash
 # Update package database
 dkp-pacman -Sy
 
-# Install all required packages
-dkp-pacman -S wii-dev libogc-wii ppc-grrlib ppc-libpng ppc-zlib ppc-freetype ppc-libfat
+# Install core packages
+dkp-pacman -S wii-dev ppc-libpng ppc-zlib ppc-freetype
+
+# Compile and install GRRLIB
+cd /tmp
+git clone https://github.com/GRRLIB/GRRLIB.git
+cd GRRLIB/GRRLIB
+make clean all install
 ```
 
 ## Troubleshooting
