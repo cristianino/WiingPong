@@ -15,6 +15,7 @@ jobs:
   build-and-test:
     name: Build WiingPong
     runs-on: ubuntu-latest
+    container: devkitpro/devkitppc:latest
     
     steps:
     - name: Checkout code
@@ -22,10 +23,14 @@ jobs:
       with:
         fetch-depth: 0
 
-    - name: Setup DevkitPro
-      uses: ./.github/actions/setup-devkitpro
-      with:
-        packages: 'wii-dev'
+    - name: Verify DevkitPro installation
+      run: |
+        echo "DevkitPro environment verification:"
+        echo "DEVKITPRO: $DEVKITPRO"
+        echo "DEVKITPPC: $DEVKITPPC"
+        ls -la $DEVKITPRO/
+        dkp-pacman --version
+        powerpc-eabi-gcc --version
 
     - name: Build Debug Version
       run: |
@@ -71,15 +76,11 @@ jobs:
   code-quality:
     name: Code Quality Checks
     runs-on: ubuntu-latest
+    container: devkitpro/devkitppc:latest
     
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-
-    - name: Setup DevkitPro (minimal for analysis)
-      uses: ./.github/actions/setup-devkitpro
-      with:
-        packages: 'wii-dev'
 
     - name: Check code formatting
       run: |

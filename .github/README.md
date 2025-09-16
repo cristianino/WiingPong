@@ -68,42 +68,41 @@ master     ←── release/* ←── develop ←── feature/*
 
 ## DevkitPro Setup
 
-The workflows use a custom GitHub Action that automatically installs and configures:
-- DevkitPro package manager (with fallback methods)
-- Wii development tools (`wii-dev` package)
-- PowerPC cross-compiler
-- Required environment variables
-- Caching for faster subsequent builds
+The workflows use **official DevkitPro Docker images** as recommended by DevkitPro for CI/CD workflows.
 
-### Custom Action: `setup-devkitpro`
-Located at `.github/actions/setup-devkitpro/action.yml`
+### Docker Container: `devkitpro/devkitppc:latest`
+- **Pre-configured environment** with all Wii development tools
+- **No installation required** - tools are ready to use
+- **Official support** from DevkitPro team
+- **Consistent environment** across all builds
 
-**Features:**
-- **Multiple Installation Methods:** APT repository (preferred) with fallback to direct downloads
-- **Robust Error Handling:** Tries multiple sources if primary method fails
-- **Caching Support:** Caches DevkitPro installation for faster builds
-- **Automatic Verification:** Ensures tools are properly installed and accessible
-
-**Usage:**
+**Usage in workflows:**
 ```yaml
-- name: Setup DevkitPro
-  uses: ./.github/actions/setup-devkitpro
-  with:
-    packages: 'wii-dev'  # Can be multiple packages: 'wii-dev 3ds-dev'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: devkitpro/devkitppc:latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build
+        run: make
 ```
 
-### Installation Methods (in order of preference):
-1. **APT Repository** (preferred):
-   ```bash
-   # Add DevkitPro repository and GPG key
-   wget -O- https://apt.devkitpro.org/devkitpro-pub.gpg | sudo gpg --dearmor -o /usr/share/keyrings/devkitpro-pub.gpg
-   echo "deb [signed-by=/usr/share/keyrings/devkitpro-pub.gpg] https://apt.devkitpro.org stable main" | sudo tee /etc/apt/sources.list.d/devkitpro.list
-   sudo apt update && sudo apt install -y devkitpro-pacman
-   ```
+### Why Docker?
+According to [DevkitPro's official guidance](https://github.com/devkitPro/pacman/releases):
+> "Please do not use pacman on your CI workflows. We provide docker images for this purpose at https://hub.docker.com/u/devkitpro"
 
-2. **Direct Download** (fallback):
-   - Tries multiple release versions from GitHub releases
-   - Downloads `.deb` package and installs via `dpkg`
+### Environment Variables (Pre-configured)
+The Docker container automatically provides:
+- `DEVKITPRO=/opt/devkitpro`
+- `DEVKITPPC=/opt/devkitpro/devkitPPC`
+- `PATH` includes all required tool directories
+
+### Available Tools
+- `dkp-pacman` - Package manager
+- `powerpc-eabi-gcc` - PowerPC cross-compiler
+- `make` - Build system
+- All Wii development libraries
 
 ## Build Artifacts
 
