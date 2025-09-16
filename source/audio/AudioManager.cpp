@@ -13,7 +13,7 @@
 #define VOICE_STEREO16 1
 #endif
 
-AudioManager::AudioManager() : initialized(false) {
+AudioManager::AudioManager() : initialized(false), nextVoice(1) {
     // Initialize audio buffers
     for (int i = 0; i < 5; i++) {
         audioBuffers[i].data = nullptr;
@@ -88,9 +88,8 @@ void AudioManager::playSound(SoundID id) {
     AudioBuffer* buffer = getAudioBuffer(id);
     if (!buffer->data) return;
     
-    // Play sound using ASND
-    // Use voice 1-3 for sound effects (voice 0 reserved for music)
-    int voice = 1;  // Simple voice allocation, could be improved
+    // Use round-robin voice allocation for sound effects (voices 1-3)
+    int voice = getNextVoice();
     ASND_SetVoice(voice, 
                   buffer->format, 
                   buffer->frequency, 
@@ -155,4 +154,12 @@ void AudioManager::freeAudioBuffer(SoundID id) {
         buffer->data = nullptr;
         buffer->size = 0;
     }
+}
+
+int AudioManager::getNextVoice() {
+    // Round-robin allocation for voices 1-3 (voice 0 reserved for music)
+    int voice = nextVoice;
+    nextVoice++;
+    if (nextVoice > 3) nextVoice = 1;
+    return voice;
 }

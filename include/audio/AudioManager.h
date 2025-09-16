@@ -6,11 +6,11 @@
 // Play SFX and BGM; supports PCM audio files
 
 enum class SoundID {
-    Hit,
-    Score,
-    MenuClick,
-    BackgroundMusic,
-    Intro
+    Intro = 0,
+    PaddleHit = 1,
+    WallHit = 2,
+    Score = 3,
+    MenuClick = 4
 };
 
 struct AudioBuffer {
@@ -35,7 +35,9 @@ public:
 private:
     bool initialized;
     AudioBuffer audioBuffers[5];  // Storage for audio data
+    int nextVoice;               // For round-robin voice allocation
     
     AudioBuffer* getAudioBuffer(SoundID id);
     void freeAudioBuffer(SoundID id);
+    int getNextVoice();          // Get next available voice for sound effects
 };

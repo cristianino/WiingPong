@@ -35,6 +35,9 @@ int main() {
     renderer.init();
     audio.init();
 
+    // Connect audio to physics engine for sound effects
+    physics.setAudioManager(&audio);
+
     // Load audio assets
     printf("Loading audio...\n");
     assets.loadAudio(audio);

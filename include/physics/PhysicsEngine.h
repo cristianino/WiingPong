@@ -4,6 +4,9 @@
 #include "Components.h"
 #include <vector>
 
+// Forward declaration
+class AudioManager;
+
 // Lite ECS Entity ID (fixed for simplicity: 0=player paddle, 1=CPU paddle, 2=ball)
 typedef unsigned int EntityID;
 const EntityID PLAYER_PADDLE = 0;
@@ -18,6 +21,7 @@ public:
     ~PhysicsEngine();
 
     void init();
+    void setAudioManager(AudioManager* audioManager);  // Set audio manager reference
     void update();  // Updates positions, velocities, collisions, AI
 
     // Accessors for components (public for simplicity; later encapsulate)
@@ -32,6 +36,8 @@ public:
     int cpuScore;
 
 private:
+    AudioManager* audioManager;  // Reference to audio manager for sound effects
+    
     void updateAI();
     void updateBall();
     void checkCollisions();

@@ -41,9 +41,24 @@ void AssetManager::loadAudio(AudioManager& audioManager) {
         printf("Failed to load intro.pcm\n");
     }
     
-    // Add more audio files here as needed
-    // audioManager.loadPCM(SoundID::Hit, "data/sounds/hit.pcm");
-    // audioManager.loadPCM(SoundID::Score, "data/sounds/score.pcm");
+    // Load sound effects
+    if (audioManager.loadPCM(SoundID::PaddleHit, "data/sounds/paddle_hit.pcm")) {
+        printf("Successfully loaded paddle_hit.pcm\n");
+    } else {
+        printf("Failed to load paddle_hit.pcm\n");
+    }
+    
+    if (audioManager.loadPCM(SoundID::WallHit, "data/sounds/wall_hit.pcm")) {
+        printf("Successfully loaded wall_hit.pcm\n");
+    } else {
+        printf("Failed to load wall_hit.pcm\n");
+    }
+    
+    if (audioManager.loadPCM(SoundID::Score, "data/sounds/score.pcm")) {
+        printf("Successfully loaded score.pcm\n");
+    } else {
+        printf("Failed to load score.pcm\n");
+    }
 }
 
 GRRLIB_texImg* AssetManager::getTexture(const char* name) const {

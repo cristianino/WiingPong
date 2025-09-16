@@ -1,9 +1,10 @@
 // source/physics/PhysicsEngine.cpp
 #include "physics/PhysicsEngine.h"
+#include "audio/AudioManager.h"
 #include <cstdlib>  // for rand
 #include <time.h>
 
-PhysicsEngine::PhysicsEngine() : playerScore(0), cpuScore(0) {
+PhysicsEngine::PhysicsEngine() : playerScore(0), cpuScore(0), audioManager(nullptr) {
     // Initialize components
     // Player paddle
     positions[PLAYER_PADDLE] = {20, 200};
@@ -33,6 +34,10 @@ PhysicsEngine::~PhysicsEngine() {
 
 void PhysicsEngine::init() {
     srand((unsigned)time(NULL));
+}
+
+void PhysicsEngine::setAudioManager(AudioManager* audioManager) {
+    this->audioManager = audioManager;
 }
 
 void PhysicsEngine::update() {
@@ -80,6 +85,10 @@ void PhysicsEngine::checkCollisions() {
     // Wall collisions (top/bottom)
     if (positions[BALL].y <= 0 || positions[BALL].y >= 470) {
         velocities[BALL].dy = -velocities[BALL].dy;
+        // Play wall hit sound effect
+        if (audioManager) {
+            audioManager->playSound(SoundID::WallHit);
+        }
     }
 
     // Paddle collisions
@@ -92,6 +101,11 @@ void PhysicsEngine::checkCollisions() {
         velocities[BALL].dy = (positions[BALL].y + sizes[BALL].width / 2 - hitY - sizes[PLAYER_PADDLE].height / 2) / 10;
         if (velocities[BALL].dy > 5) velocities[BALL].dy = 5;
         if (velocities[BALL].dy < -5) velocities[BALL].dy = -5;
+        
+        // Play paddle hit sound effect
+        if (audioManager) {
+            audioManager->playSound(SoundID::PaddleHit);
+        }
     }
 }
 
@@ -116,11 +130,21 @@ void PhysicsEngine::checkScoring() {
         positions[BALL].y = 240;
         velocities[BALL].dx = 3;
         velocities[BALL].dy = (rand() % 5) - 2;
+        
+        // Play score sound effect
+        if (audioManager) {
+            audioManager->playSound(SoundID::Score);
+        }
     } else if (positions[BALL].x > 640) {  // Player scores
         ++playerScore;
         positions[BALL].x = 320;
         positions[BALL].y = 240;
         velocities[BALL].dx = -3;
         velocities[BALL].dy = (rand() % 5) - 2;
+        
+        // Play score sound effect
+        if (audioManager) {
+            audioManager->playSound(SoundID::Score);
+        }
     }
 }
