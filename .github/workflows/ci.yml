@@ -1,0 +1,116 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ master, develop ]
+  pull_request:
+    branches: [ master, develop ]
+  workflow_dispatch:
+
+env:
+  DEVKITPRO: /opt/devkitpro
+  DEVKITPPC: /opt/devkitpro/devkitPPC
+
+jobs:
+  build-and-test:
+    name: Build WiingPong
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Setup DevkitPro
+      run: |
+        wget https://github.com/devkitPro/pacman/releases/latest/download/devkitpro-pacman.amd64.deb
+        sudo dpkg -i devkitpro-pacman.amd64.deb
+        sudo dkp-pacman -S wii-dev --noconfirm
+        
+    - name: Setup environment
+      run: |
+        echo "DEVKITPRO=/opt/devkitpro" >> $GITHUB_ENV
+        echo "DEVKITPPC=/opt/devkitpro/devkitPPC" >> $GITHUB_ENV
+        echo "/opt/devkitpro/tools/bin" >> $GITHUB_PATH
+
+    - name: Verify DevkitPro installation
+      run: |
+        ls -la /opt/devkitpro/
+        powerpc-eabi-gcc --version
+
+    - name: Build Debug Version
+      run: |
+        make clean
+        make CONFIG=debug
+
+    - name: Build Release Version  
+      run: |
+        make clean
+        make CONFIG=release
+
+    - name: Run Tests
+      run: |
+        # Add test execution here when available
+        echo "Tests would run here"
+
+    - name: Package Release Artifacts
+      if: github.ref == 'refs/heads/master'
+      run: |
+        mkdir -p release-artifacts
+        cp WiingPong.dol release-artifacts/
+        cp -r apps/ release-artifacts/ 2>/dev/null || true
+        tar -czf release-artifacts/WiingPong-$(date +%Y%m%d)-$(git rev-parse --short HEAD).tar.gz WiingPong.dol apps/
+        
+    - name: Upload Build Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: wiingpong-build-${{ github.sha }}
+        path: |
+          WiingPong.dol
+          WiingPong.elf
+          apps/
+        retention-days: 30
+
+    - name: Upload Release Artifacts
+      if: github.ref == 'refs/heads/master'
+      uses: actions/upload-artifact@v4
+      with:
+        name: wiingpong-release-${{ github.sha }}
+        path: release-artifacts/
+        retention-days: 90
+
+  code-quality:
+    name: Code Quality Checks
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup DevkitPro (minimal for analysis)
+      run: |
+        wget https://github.com/devkitPro/pacman/releases/latest/download/devkitpro-pacman.amd64.deb
+        sudo dpkg -i devkitpro-pacman.amd64.deb
+        sudo dkp-pacman -S wii-dev --noconfirm
+
+    - name: Setup environment
+      run: |
+        echo "DEVKITPRO=/opt/devkitpro" >> $GITHUB_ENV
+        echo "DEVKITPPC=/opt/devkitpro/devkitPPC" >> $GITHUB_ENV
+        echo "/opt/devkitpro/tools/bin" >> $GITHUB_PATH
+
+    - name: Check code formatting
+      run: |
+        # Add clang-format check here if needed
+        echo "Code formatting check would go here"
+
+    - name: Static analysis
+      run: |
+        # Add static analysis tools here
+        echo "Static analysis would go here"
+
+    - name: Check for TODOs and FIXMEs
+      run: |
+        echo "Checking for TODO and FIXME comments..."
+        grep -r "TODO\|FIXME" --include="*.cpp" --include="*.h" source/ include/ || echo "No TODOs or FIXMEs found"

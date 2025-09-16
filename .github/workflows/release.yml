@@ -1,0 +1,119 @@
+name: Release
+
+on:
+  push:
+    branches: [ master ]
+    tags: [ 'v*' ]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version (e.g., v1.0.0)'
+        required: true
+        type: string
+
+env:
+  DEVKITPRO: /opt/devkitpro
+  DEVKITPPC: /opt/devkitpro/devkitPPC
+
+jobs:
+  create-release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/')
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Setup DevkitPro
+      run: |
+        wget https://github.com/devkitPro/pacman/releases/latest/download/devkitpro-pacman.amd64.deb
+        sudo dpkg -i devkitpro-pacman.amd64.deb
+        sudo dkp-pacman -S wii-dev --noconfirm
+        
+    - name: Setup environment
+      run: |
+        echo "DEVKITPRO=/opt/devkitpro" >> $GITHUB_ENV
+        echo "DEVKITPPC=/opt/devkitpro/devkitPPC" >> $GITHUB_ENV
+        echo "/opt/devkitpro/tools/bin" >> $GITHUB_PATH
+
+    - name: Build Release Version
+      run: |
+        make clean
+        make CONFIG=release
+
+    - name: Create release package
+      run: |
+        # Create release directory
+        mkdir -p WiingPong-release
+        
+        # Copy main files
+        cp WiingPong.dol WiingPong-release/
+        
+        # Copy apps directory if it exists
+        if [ -d "apps" ]; then
+          cp -r apps WiingPong-release/
+        fi
+        
+        # Copy documentation
+        cp README.md WiingPong-release/ 2>/dev/null || true
+        cp LICENSE WiingPong-release/ 2>/dev/null || true
+        cp CONTRIBUTING.md WiingPong-release/ 2>/dev/null || true
+        
+        # Copy data directory if it exists
+        if [ -d "data" ]; then
+          cp -r data WiingPong-release/
+        fi
+        
+        # Create archives
+        tar -czf WiingPong-$(date +%Y%m%d)-$(git rev-parse --short HEAD).tar.gz WiingPong-release/
+        zip -r WiingPong-$(date +%Y%m%d)-$(git rev-parse --short HEAD).zip WiingPong-release/
+
+    - name: Generate release notes
+      run: |
+        echo "# WiingPong Release $(date +%Y-%m-%d)" > release-notes.md
+        echo "" >> release-notes.md
+        echo "## Changes in this release:" >> release-notes.md
+        echo "" >> release-notes.md
+        
+        # Get commits since last tag
+        LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+        if [ -n "$LAST_TAG" ]; then
+          git log $LAST_TAG..HEAD --oneline --format="- %s" >> release-notes.md
+        else
+          echo "- Initial release" >> release-notes.md
+        fi
+        
+        echo "" >> release-notes.md
+        echo "## Installation:" >> release-notes.md
+        echo "1. Extract the archive to your SD card" >> release-notes.md
+        echo "2. Copy the WiingPong folder to the apps directory on your SD card" >> release-notes.md
+        echo "3. Launch from the Homebrew Channel" >> release-notes.md
+
+    - name: Create Release
+      if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch'
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: ${{ github.event.inputs.version || github.ref_name }}
+        name: WiingPong ${{ github.event.inputs.version || github.ref_name }}
+        body_path: release-notes.md
+        files: |
+          WiingPong-*.tar.gz
+          WiingPong-*.zip
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Upload artifacts for manual release
+      if: github.ref == 'refs/heads/master' && github.event_name != 'workflow_dispatch'
+      uses: actions/upload-artifact@v4
+      with:
+        name: wiingpong-release-candidate-${{ github.sha }}
+        path: |
+          WiingPong-*.tar.gz
+          WiingPong-*.zip
+          release-notes.md
+        retention-days: 30
