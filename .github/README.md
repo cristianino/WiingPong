@@ -112,7 +112,15 @@ The Docker container provides DevkitPro tools but requires PATH configuration:
 - `dkp-pacman` - Package manager
 - `powerpc-eabi-gcc` - PowerPC cross-compiler
 - `make` - Build system
-- All Wii development libraries
+
+### Required Libraries (Auto-installed)
+- `wii-dev` - Core Wii development package
+- `libogc-wii` - Official Nintendo GameCube/Wii library
+- `ppc-grrlib` - Graphics library for Wii homebrew
+- `ppc-libpng` - PNG image support
+- `ppc-zlib` - Compression library
+- `ppc-freetype` - Font rendering
+- `ppc-libfat` - File system access
 
 ## Build Artifacts
 
