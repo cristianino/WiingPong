@@ -92,6 +92,10 @@ int main() {
 
         // Render
         renderer.render(physics);
+        
+        // Render debug info
+        renderer.renderDebugInfo(input);
+        
         GRRLIB_Render();
     }
 

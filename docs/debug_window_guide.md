@@ -1,0 +1,68 @@
+# Ventana de Debug para Wiimote - WiingPong
+
+## ¿Qué se Implementó?
+
+Se añadió una ventana de debug superpuesta en la pantalla que muestra información en tiempo real sobre el estado del Wiimote y los botones presionados.
+
+## Información Mostrada
+
+### 1. Estado de Conexión
+- **"Wiimote: CONNECTED"** (Verde) - El Wiimote está detectado y funcionando
+- **"Wiimote: DISCONNECTED"** (Rojo) - No se detecta el Wiimote
+
+### 2. Estado de Inicialización
+- **"Init: YES"** - El sistema WPAD está inicializado correctamente
+- **"Init: NO"** - Problema con la inicialización
+
+### 3. Valores Hexadecimales de Botones
+- **"Held: 0x########"** - Valor hexadecimal de botones mantenidos presionados
+- **"Pressed: 0x########"** - Valor hexadecimal de botones recién presionados
+
+### 4. Estado Individual de Botones
+- **A:0/1** - Botón A (0=no presionado, 1=presionado)
+- **B:0/1** - Botón B (0=no presionado, 1=presionado)  
+- **HOME:0/1** - Botón HOME
+- **+:0/1** - Botón PLUS
+- **-:0/1** - Botón MINUS
+
+## Ubicación en Pantalla
+
+La ventana de debug aparece en la parte inferior izquierda de la pantalla con:
+- Fondo semi-transparente negro
+- Borde blanco
+- Texto blanco para la mayoría de información
+- Texto verde para "CONNECTED"
+- Texto rojo para "DISCONNECTED"
+
+## Mejoras en la Inicialización
+
+Se mejoró la función de inicialización del InputManager para:
+- Esperar un tiempo después de inicializar WPAD
+- Buscar activamente el Wiimote durante 1 segundo
+- Mostrar mensajes de debug en la consola
+
+## Diagnóstico de Problemas
+
+Con esta ventana podrás determinar:
+
+1. **Si el Wiimote se conecta**: Mira el estado de conexión
+2. **Si los botones funcionan**: Observa los valores hex y estados individuales
+3. **Qué botones están siendo detectados**: Compara los valores esperados
+4. **Si hay problemas de inicialización**: Revisa el estado "Init"
+
+## Valores Hexadecimales de Referencia
+
+Cuando presiones botones, deberías ver estos valores aproximados:
+- **WPAD_BUTTON_A**: 0x0008
+- **WPAD_BUTTON_B**: 0x0004  
+- **WPAD_BUTTON_HOME**: 0x0080
+- **WPAD_BUTTON_PLUS**: 0x0010
+- **WPAD_BUTTON_MINUS**: 0x1000
+
+## Uso
+
+1. Ejecuta el juego en el Wii/Dolphin
+2. Observa la ventana de debug en la esquina inferior izquierda
+3. Presiona botones en el Wiimote
+4. Verifica que los valores cambien en la pantalla
+5. Si no cambian, el problema está en la detección del Wiimote

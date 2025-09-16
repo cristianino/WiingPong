@@ -68,7 +68,12 @@ Renderer.o: \
  /opt/devkitpro/portlibs/wii/include/grrlib/GRRLIB_settings.h \
  /opt/devkitpro/portlibs/wii/include/grrlib/GRRLIB_texSetup.h \
  /home/cristian/Documentos/WiingPong/include/rendering/../physics/PhysicsEngine.h \
- /home/cristian/Documentos/WiingPong/include/rendering/../physics/Components.h
+ /home/cristian/Documentos/WiingPong/include/rendering/../physics/Components.h \
+ /home/cristian/Documentos/WiingPong/include/rendering/../input/InputManager.h \
+ /opt/devkitpro/libogc/include/wiiuse/wpad.h \
+ /opt/devkitpro/libogc/include/wiiuse/wiiuse.h \
+ /opt/devkitpro/libogc/include/bte/bte.h \
+ /opt/devkitpro/libogc/include/bte/bd_addr.h
 /home/cristian/Documentos/WiingPong/include/rendering/Renderer.h:
 /opt/devkitpro/portlibs/wii/include/grrlib.h:
 /opt/devkitpro/libogc/include/gccore.h:
@@ -138,3 +143,8 @@ Renderer.o: \
 /opt/devkitpro/portlibs/wii/include/grrlib/GRRLIB_texSetup.h:
 /home/cristian/Documentos/WiingPong/include/rendering/../physics/PhysicsEngine.h:
 /home/cristian/Documentos/WiingPong/include/rendering/../physics/Components.h:
+/home/cristian/Documentos/WiingPong/include/rendering/../input/InputManager.h:
+/opt/devkitpro/libogc/include/wiiuse/wpad.h:
+/opt/devkitpro/libogc/include/wiiuse/wiiuse.h:
+/opt/devkitpro/libogc/include/bte/bte.h:
+/opt/devkitpro/libogc/include/bte/bd_addr.h:

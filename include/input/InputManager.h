@@ -24,10 +24,17 @@ public:
     void init();
     void update();
     std::vector<InputEvent> getEvents() const;
+    
+    // Debug functions
+    bool isInitialized() const { return initialized; }
+    u32 getHeldButtons() const { return heldButtons; }
+    u32 getPressedButtons() const { return pressedButtons; }
+    bool isWiimoteConnected() const { return wiimoteConnected; }
 
 private:
     bool initialized;
     std::vector<InputEvent> events;
     u32 heldButtons;
     u32 pressedButtons;
+    bool wiimoteConnected;
 };

@@ -1,6 +1,8 @@
 // source/rendering/Renderer.cpp
 #include "rendering/Renderer.h"
 #include <gccore.h>  // For VIDEO_Init if needed
+#include <stdio.h>   // For snprintf
+#include <wiiuse/wpad.h>  // For WPAD button constants
 
 Renderer::Renderer() : initialized(false), font(nullptr) {
 }
@@ -61,4 +63,47 @@ void Renderer::drawScores(const PhysicsEngine& physics) {
     for (int i = 0; i < physics.cpuScore; ++i) {
         GRRLIB_Rectangle(400 + i * 15, 40, 10, 20, 0xFF0000FF, true);
     }
+}
+
+void Renderer::drawText(const char* text, int x, int y, u32 color) {
+    // Simple text rendering using GRRLIB_Printf
+    GRRLIB_Printf(x, y, font, color, 1, text);
+}
+
+void Renderer::renderDebugInfo(const InputManager& input) {
+    if (!initialized) return;
+
+    // Draw debug background
+    GRRLIB_Rectangle(10, 400, 300, 70, 0x000000CC, true);
+    GRRLIB_Rectangle(10, 400, 300, 70, 0xFFFFFFFF, false);
+
+    // Debug text color
+    u32 textColor = 0xFFFFFFFF;
+    
+    // Show connection status
+    if (input.isWiimoteConnected()) {
+        GRRLIB_Printf(15, 405, font, 0x00FF00FF, 1, "Wiimote: CONNECTED");
+    } else {
+        GRRLIB_Printf(15, 405, font, 0xFF0000FF, 1, "Wiimote: DISCONNECTED");
+    }
+    
+    // Show initialization status
+    GRRLIB_Printf(15, 420, font, textColor, 1, "Init: %s", input.isInitialized() ? "YES" : "NO");
+    
+    // Show button states
+    u32 held = input.getHeldButtons();
+    u32 pressed = input.getPressedButtons();
+    
+    GRRLIB_Printf(15, 435, font, textColor, 1, "Held: 0x%08X", held);
+    GRRLIB_Printf(15, 450, font, textColor, 1, "Pressed: 0x%08X", pressed);
+    
+    // Show specific button states
+    char buttonStatus[64];
+    snprintf(buttonStatus, sizeof(buttonStatus), "A:%d B:%d HOME:%d +:%d -:%d", 
+             (held & WPAD_BUTTON_A) ? 1 : 0,
+             (held & WPAD_BUTTON_B) ? 1 : 0, 
+             (held & WPAD_BUTTON_HOME) ? 1 : 0,
+             (held & WPAD_BUTTON_PLUS) ? 1 : 0,
+             (held & WPAD_BUTTON_MINUS) ? 1 : 0);
+    GRRLIB_Printf(320, 405, font, textColor, 1, buttonStatus);
 }
