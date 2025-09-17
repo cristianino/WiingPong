@@ -74,64 +74,145 @@ void Renderer::renderDebugInfo(const InputManager& input) {
 #if WIINGPONG_DEBUG_ENABLED
     if (!initialized || !debugVisible) return;
 
-    // Draw debug background
-    GRRLIB_Rectangle(10, 400, 620, 70, 0x000000CC, true);
-    GRRLIB_Rectangle(10, 400, 620, 70, 0xFFFFFFFF, false);
+    // Draw debug background with enhanced styling
+    GRRLIB_Rectangle(10, 400, 620, 70, 0x000000DD, true);  // Slightly more opaque
+    GRRLIB_Rectangle(10, 400, 620, 70, 0xFFFFFFFF, false); // White border
+    
+    // Add inner shadow effect
+    GRRLIB_Rectangle(11, 401, 618, 1, 0x00000066, true);   // Top inner shadow
+    GRRLIB_Rectangle(11, 401, 1, 68, 0x00000066, true);    // Left inner shadow
 
-    // Show initialization status with colored indicator
+    // Show initialization status with enhanced Wii-style indicator
+    int statusSize = 24; // Larger status indicator
     if (input.isInitialized()) {
-        GRRLIB_Rectangle(20, 410, 20, 20, 0x00FF00FF, true); // Green square = INITIALIZED
+        // Green Wii-style "connected" indicator
+        drawWiiButton(20, 408, statusSize, 0xE0FFE0FF, 0x40FF40FF, true, false);
+        // Add a small "connected" symbol (circle with checkmark approximation)
+        GRRLIB_Rectangle(28, 416, 8, 8, 0x006600FF, true); // Small circle
+        GRRLIB_Rectangle(30, 418, 4, 2, 0xFFFFFFFF, true); // Checkmark horizontal
+        GRRLIB_Rectangle(32, 420, 2, 2, 0xFFFFFFFF, true); // Checkmark vertical
     } else {
-        GRRLIB_Rectangle(20, 410, 20, 20, 0xFF0000FF, true); // Red square = NOT INIT
+        // Red Wii-style "disconnected" indicator
+        drawWiiButton(20, 408, statusSize, 0xFFE0E0FF, 0xFF4040FF, true, false);
+        // Add a small "X" symbol
+        GRRLIB_Rectangle(26, 414, 2, 12, 0xFFFFFFFF, true); // Diagonal 1
+        GRRLIB_Rectangle(28, 416, 2, 8, 0xFFFFFFFF, true);  // Diagonal 1
+        GRRLIB_Rectangle(30, 418, 2, 4, 0xFFFFFFFF, true);  // Diagonal 1
+        GRRLIB_Rectangle(32, 414, 2, 12, 0xFFFFFFFF, true); // Diagonal 2
+        GRRLIB_Rectangle(30, 416, 2, 8, 0xFFFFFFFF, true);  // Diagonal 2
+        GRRLIB_Rectangle(28, 418, 2, 4, 0xFFFFFFFF, true);  // Diagonal 2
     }
     
     // Get button states
     u32 held = input.getHeldButtons();
     u32 pressed = input.getPressedButtons();
     
-    // Visual representation of button states using colored rectangles
+    // Visual representation of button states using Wii-style buttons
     int buttonY = 435;
-    int buttonSize = 15;
-    int spacing = 25;
+    int buttonSize = 18; // Slightly larger for better visibility
+    int spacing = 28;    // More spacing for better layout
     
-    // A Button indicator
-    u32 colorA = (held & WPAD_BUTTON_A) ? 0x00FF00FF : 0x333333FF;
-    GRRLIB_Rectangle(20, buttonY, buttonSize, buttonSize, colorA, true);
+    // Define Wii-style colors
+    u32 wiiButtonBase = 0xF0F0F0FF;     // Light gray base (Wii remote style)
     
-    // B Button indicator  
-    u32 colorB = (held & WPAD_BUTTON_B) ? 0x0000FFFF : 0x333333FF;
-    GRRLIB_Rectangle(20 + spacing, buttonY, buttonSize, buttonSize, colorB, true);
+    // A Button indicator (Blue when pressed, like Wii remote)
+    u32 colorA_base = wiiButtonBase;
+    u32 colorA_active = 0x4080FFFF;  // Blue like Wii A button
+    bool isAPressed = (held & WPAD_BUTTON_A) != 0;
+    drawWiiButton(20, buttonY, buttonSize, colorA_base, colorA_active, isAPressed, true);
+    u32 textColorA = isAPressed ? 0xFFFFFFFF : 0x000000FF;
+    drawButtonSymbolA(20, buttonY, buttonSize, textColorA);
     
-    // HOME Button indicator
-    u32 colorHome = (held & WPAD_BUTTON_HOME) ? 0xFF0000FF : 0x333333FF;
-    GRRLIB_Rectangle(20 + spacing * 2, buttonY, buttonSize, buttonSize, colorHome, true);
+    // B Button indicator (Red when pressed, like Wii remote)
+    u32 colorB_base = wiiButtonBase;
+    u32 colorB_active = 0xFF4040FF;  // Red like Wii B button
+    bool isBPressed = (held & WPAD_BUTTON_B) != 0;
+    drawWiiButton(20 + spacing, buttonY, buttonSize, colorB_base, colorB_active, isBPressed, true);
+    u32 textColorB = isBPressed ? 0xFFFFFFFF : 0x000000FF;
+    drawButtonSymbolB(20 + spacing, buttonY, buttonSize, textColorB);
     
-    // PLUS Button indicator
-    u32 colorPlus = (held & WPAD_BUTTON_PLUS) ? 0xFFFF00FF : 0x333333FF;
-    GRRLIB_Rectangle(20 + spacing * 3, buttonY, buttonSize, buttonSize, colorPlus, true);
+    // HOME Button indicator (Silver/gray when pressed)
+    u32 colorHome_base = wiiButtonBase;
+    u32 colorHome_active = 0x808080FF;  // Gray like Wii HOME button
+    bool isHomePressed = (held & WPAD_BUTTON_HOME) != 0;
+    drawWiiButton(20 + spacing * 2, buttonY, buttonSize, colorHome_base, colorHome_active, isHomePressed, true);
+    u32 textColorHome = isHomePressed ? 0xFFFFFFFF : 0x000000FF;
+    drawButtonSymbolHome(20 + spacing * 2, buttonY, buttonSize, textColorHome);
     
-    // MINUS Button indicator
-    u32 colorMinus = (held & WPAD_BUTTON_MINUS) ? 0xFF00FFFF : 0x333333FF;
-    GRRLIB_Rectangle(20 + spacing * 4, buttonY, buttonSize, buttonSize, colorMinus, true);
+    // PLUS Button indicator (White/light when pressed)
+    u32 colorPlus_base = wiiButtonBase;
+    u32 colorPlus_active = 0xFFFFFFFF;  // White when active
+    bool isPlusPressed = (held & WPAD_BUTTON_PLUS) != 0;
+    drawWiiButton(20 + spacing * 3, buttonY, buttonSize, colorPlus_base, colorPlus_active, isPlusPressed, true);
+    u32 textColorPlus = isPlusPressed ? 0x000000FF : 0x666666FF;
+    drawButtonSymbolPlus(20 + spacing * 3, buttonY, buttonSize, textColorPlus);
     
-    // Hex value representation using bars (each bit as a small rectangle)
-    // Show held buttons as a series of small indicators
+    // MINUS Button indicator (White/light when pressed)
+    u32 colorMinus_base = wiiButtonBase;
+    u32 colorMinus_active = 0xFFFFFFFF;  // White when active
+    bool isMinusPressed = (held & WPAD_BUTTON_MINUS) != 0;
+    drawWiiButton(20 + spacing * 4, buttonY, buttonSize, colorMinus_base, colorMinus_active, isMinusPressed, true);
+    u32 textColorMinus = isMinusPressed ? 0x000000FF : 0x666666FF;
+    drawButtonSymbolMinus(20 + spacing * 4, buttonY, buttonSize, textColorMinus);
+    
+    // Enhanced hex value representation using bars with better styling
+    int bitStartX = 200;
+    int bitY1 = 410; // First row (held buttons)
+    int bitY2 = 425; // Second row (pressed buttons)
+    int bitWidth = 6;
+    int bitHeight = 10;
+    int bitSpacing = 8;
+    
+    // Add label background for bit display
+    GRRLIB_Rectangle(bitStartX - 10, bitY1 - 5, 140, 25, 0x222222AA, true);
+    GRRLIB_Rectangle(bitStartX - 10, bitY1 - 5, 140, 25, 0x666666FF, false);
+    
+    // Show held buttons as enhanced bit indicators (first row)
     for (int i = 0; i < 16; i++) {
-        u32 bitColor = (held & (1 << i)) ? 0xFFFFFFFF : 0x111111FF;
-        GRRLIB_Rectangle(200 + i * 8, 410, 6, 10, bitColor, true);
+        bool bitSet = (held & (1 << i)) != 0;
+        u32 bitColor = bitSet ? 0xFFFFFFFF : 0x444444FF;
+        u32 borderColor = bitSet ? 0xCCCCCCFF : 0x666666FF;
+        
+        // Draw bit indicator with border
+        GRRLIB_Rectangle(bitStartX + i * bitSpacing, bitY1, bitWidth, bitHeight, bitColor, true);
+        GRRLIB_Rectangle(bitStartX + i * bitSpacing, bitY1, bitWidth, bitHeight, borderColor, false);
+        
+        // Add small highlight for active bits
+        if (bitSet) {
+            GRRLIB_Rectangle(bitStartX + i * bitSpacing + 1, bitY1 + 1, bitWidth - 2, 2, 0xFFFFFF88, true);
+        }
     }
     
-    // Show pressed buttons as a series of small indicators (second row)
+    // Show pressed buttons as enhanced bit indicators (second row)
     for (int i = 0; i < 16; i++) {
-        u32 bitColor = (pressed & (1 << i)) ? 0xFFFFFFFF : 0x111111FF;
-        GRRLIB_Rectangle(200 + i * 8, 425, 6, 10, bitColor, true);
+        bool bitSet = (pressed & (1 << i)) != 0;
+        u32 bitColor = bitSet ? 0xFFFF00FF : 0x333333FF; // Yellow for pressed, darker for inactive
+        u32 borderColor = bitSet ? 0xCCCC00FF : 0x555555FF;
+        
+        // Draw bit indicator with border
+        GRRLIB_Rectangle(bitStartX + i * bitSpacing, bitY2, bitWidth, bitHeight, bitColor, true);
+        GRRLIB_Rectangle(bitStartX + i * bitSpacing, bitY2, bitWidth, bitHeight, borderColor, false);
+        
+        // Add small highlight for active bits
+        if (bitSet) {
+            GRRLIB_Rectangle(bitStartX + i * bitSpacing + 1, bitY2 + 1, bitWidth - 2, 2, 0xFFFF8888, true);
+        }
     }
     
-    // Add a small indicator for button 1 (toggle debug) - small white dot in corner
-    u32 button1Color = (held & WPAD_BUTTON_1) ? 0xFFFFFFFF : 0x666666FF;
-    GRRLIB_Rectangle(590, 410, 8, 8, button1Color, true);
-    // Small border around the toggle indicator
-    GRRLIB_Rectangle(590, 410, 8, 8, 0xFFFFFFFF, false);
+    // Enhanced button 1 indicator (toggle debug) - Wii-style
+    bool isButton1Pressed = (held & WPAD_BUTTON_1) != 0;
+    u32 button1_base = 0xF0F0F0FF;
+    u32 button1_active = 0x80FF80FF; // Green when pressed
+    drawWiiButton(590, 410, 12, button1_base, button1_active, isButton1Pressed, false);
+    
+    // Add small "1" indicator inside
+    if (isButton1Pressed) {
+        GRRLIB_Rectangle(593, 413, 2, 6, 0x000000FF, true); // Vertical line for "1"
+        GRRLIB_Rectangle(592, 413, 2, 2, 0x000000FF, true); // Top angled part
+    } else {
+        GRRLIB_Rectangle(593, 413, 2, 6, 0x666666FF, true); // Vertical line for "1"
+        GRRLIB_Rectangle(592, 413, 2, 2, 0x666666FF, true); // Top angled part
+    }
 #endif
 }
 
@@ -161,36 +242,182 @@ void Renderer::renderDebugToggleProgress(const InputManager& input) {
         GRRLIB_Rectangle(barX + 2, barY + 2, fillWidth - 4, barHeight - 4, fillColor, true);
         
         #if WIINGPONG_DEBUG_TOGGLE_METHOD == 1
-        // A+B indicators on the sides
-        u32 buttonAColor = (input.getHeldButtons() & WPAD_BUTTON_A) ? 0x00FF00FF : 0x333333FF;
-        u32 buttonBColor = (input.getHeldButtons() & WPAD_BUTTON_B) ? 0x0000FFFF : 0x333333FF;
+        // A+B indicators on the sides with Wii-style buttons
+        bool isAHeld = (input.getHeldButtons() & WPAD_BUTTON_A) != 0;
+        bool isBHeld = (input.getHeldButtons() & WPAD_BUTTON_B) != 0;
         
-        // A button indicator (left)
-        GRRLIB_Rectangle(barX - 30, barY, 20, 20, buttonAColor, true);
-        GRRLIB_Rectangle(barX - 30, barY, 20, 20, 0xFFFFFFFF, false);
+        // A button indicator (left) - Blue Wii-style
+        u32 colorA_base = 0xF0F0F0FF;
+        u32 colorA_active = 0x4080FFFF;
+        drawWiiButton(barX - 30, barY, 20, colorA_base, colorA_active, isAHeld, true);
+        u32 textColorA = isAHeld ? 0xFFFFFFFF : 0x000000FF;
+        drawButtonSymbolA(barX - 30, barY, 20, textColorA);
         
-        // B button indicator (right)
-        GRRLIB_Rectangle(barX + barWidth + 10, barY, 20, 20, buttonBColor, true);
-        GRRLIB_Rectangle(barX + barWidth + 10, barY, 20, 20, 0xFFFFFFFF, false);
+        // B button indicator (right) - Red Wii-style
+        u32 colorB_base = 0xF0F0F0FF;
+        u32 colorB_active = 0xFF4040FF;
+        drawWiiButton(barX + barWidth + 10, barY, 20, colorB_base, colorB_active, isBHeld, true);
+        u32 textColorB = isBHeld ? 0xFFFFFFFF : 0x000000FF;
+        drawButtonSymbolB(barX + barWidth + 10, barY, 20, textColorB);
         
         #elif WIINGPONG_DEBUG_TOGGLE_METHOD == 2
-        // PLUS+MINUS indicators on the sides
-        u32 buttonPlusColor = (input.getHeldButtons() & WPAD_BUTTON_PLUS) ? 0xFFFF00FF : 0x333333FF;
-        u32 buttonMinusColor = (input.getHeldButtons() & WPAD_BUTTON_MINUS) ? 0xFF00FFFF : 0x333333FF;
+        // PLUS+MINUS indicators on the sides with Wii-style buttons
+        bool isPlusHeld = (input.getHeldButtons() & WPAD_BUTTON_PLUS) != 0;
+        bool isMinusHeld = (input.getHeldButtons() & WPAD_BUTTON_MINUS) != 0;
         
-        // PLUS button indicator (left) - draw a + symbol
-        GRRLIB_Rectangle(barX - 30, barY, 20, 20, buttonPlusColor, true);
-        GRRLIB_Rectangle(barX - 30, barY, 20, 20, 0xFFFFFFFF, false);
-        // Draw + symbol inside
-        GRRLIB_Rectangle(barX - 25, barY + 8, 10, 4, 0x000000FF, true); // Horizontal line
-        GRRLIB_Rectangle(barX - 23, barY + 6, 4, 8, 0x000000FF, true);  // Vertical line
+        // PLUS button indicator (left) - White Wii-style
+        u32 colorPlus_base = 0xF0F0F0FF;
+        u32 colorPlus_active = 0xFFFFFFFF;
+        drawWiiButton(barX - 30, barY, 20, colorPlus_base, colorPlus_active, isPlusHeld, true);
+        u32 textColorPlus = isPlusHeld ? 0x000000FF : 0x666666FF;
+        drawButtonSymbolPlus(barX - 30, barY, 20, textColorPlus);
         
-        // MINUS button indicator (right) - draw a - symbol
-        GRRLIB_Rectangle(barX + barWidth + 10, barY, 20, 20, buttonMinusColor, true);
-        GRRLIB_Rectangle(barX + barWidth + 10, barY, 20, 20, 0xFFFFFFFF, false);
-        // Draw - symbol inside
-        GRRLIB_Rectangle(barX + barWidth + 15, barY + 8, 10, 4, 0x000000FF, true); // Horizontal line
+        // MINUS button indicator (right) - White Wii-style
+        u32 colorMinus_base = 0xF0F0F0FF;
+        u32 colorMinus_active = 0xFFFFFFFF;
+        drawWiiButton(barX + barWidth + 10, barY, 20, colorMinus_base, colorMinus_active, isMinusHeld, true);
+        u32 textColorMinus = isMinusHeld ? 0x000000FF : 0x666666FF;
+        drawButtonSymbolMinus(barX + barWidth + 10, barY, 20, textColorMinus);
         #endif
     }
 #endif
+}
+
+// =============================================================================
+// WII-STYLE BUTTON RENDERING FUNCTIONS
+// =============================================================================
+
+void Renderer::drawWiiButton(int x, int y, int size, u32 baseColor, u32 activeColor, bool isPressed, bool hasSymbol) {
+    if (!initialized) return;
+    
+    // Calculate colors for 3D effect
+    u32 buttonColor = isPressed ? activeColor : baseColor;
+    u32 shadowColor = 0x000000AA;  // Semi-transparent black shadow
+    u32 highlightColor = 0xFFFFFF88; // Semi-transparent white highlight
+    u32 borderColor = 0x999999FF;   // Gray border
+    
+    // Draw shadow (offset down and right)
+    GRRLIB_Rectangle(x + 2, y + 2, size, size, shadowColor, true);
+    
+    // Draw main button body with gradient effect
+    if (isPressed) {
+        // Pressed state: darker colors, inverted gradient
+        GRRLIB_Rectangle(x, y, size, size, buttonColor, true);
+        // Dark top edge for pressed effect
+        GRRLIB_Rectangle(x, y, size, 2, 0x000000AA, true);
+        GRRLIB_Rectangle(x, y, 2, size, 0x000000AA, true);
+    } else {
+        // Normal state: lighter colors with highlight
+        GRRLIB_Rectangle(x, y, size, size, buttonColor, true);
+        // Light highlight on top and left
+        GRRLIB_Rectangle(x, y, size, 2, highlightColor, true);
+        GRRLIB_Rectangle(x, y, 2, size, highlightColor, true);
+        // Subtle shadow on bottom and right
+        GRRLIB_Rectangle(x, y + size - 2, size, 2, 0x00000044, true);
+        GRRLIB_Rectangle(x + size - 2, y, 2, size, 0x00000044, true);
+    }
+    
+    // Draw border
+    GRRLIB_Rectangle(x, y, size, size, borderColor, false);
+    
+    // Add inner border for more definition
+    if (!isPressed) {
+        GRRLIB_Rectangle(x + 1, y + 1, size - 2, size - 2, 0xFFFFFF66, false);
+    }
+}
+
+void Renderer::drawButtonSymbolA(int x, int y, int size, u32 textColor) {
+    if (!initialized) return;
+    
+    // Draw letter "A" using rectangles
+    int centerX = x + size / 2;
+    int centerY = y + size / 2;
+    int letterSize = size / 3;
+    
+    // Vertical lines
+    GRRLIB_Rectangle(centerX - letterSize/2, centerY - letterSize/2, 2, letterSize, textColor, true);
+    GRRLIB_Rectangle(centerX + letterSize/2 - 2, centerY - letterSize/2, 2, letterSize, textColor, true);
+    
+    // Top horizontal line
+    GRRLIB_Rectangle(centerX - letterSize/2, centerY - letterSize/2, letterSize, 2, textColor, true);
+    
+    // Middle horizontal line
+    GRRLIB_Rectangle(centerX - letterSize/2 + 2, centerY - 2, letterSize - 4, 2, textColor, true);
+}
+
+void Renderer::drawButtonSymbolB(int x, int y, int size, u32 textColor) {
+    if (!initialized) return;
+    
+    // Draw letter "B" using rectangles
+    int centerX = x + size / 2;
+    int centerY = y + size / 2;
+    int letterSize = size / 3;
+    
+    // Vertical line
+    GRRLIB_Rectangle(centerX - letterSize/2, centerY - letterSize/2, 2, letterSize, textColor, true);
+    
+    // Top horizontal line
+    GRRLIB_Rectangle(centerX - letterSize/2, centerY - letterSize/2, letterSize - 2, 2, textColor, true);
+    
+    // Middle horizontal line
+    GRRLIB_Rectangle(centerX - letterSize/2, centerY - 1, letterSize - 4, 2, textColor, true);
+    
+    // Bottom horizontal line
+    GRRLIB_Rectangle(centerX - letterSize/2, centerY + letterSize/2 - 2, letterSize - 2, 2, textColor, true);
+    
+    // Right vertical segments
+    GRRLIB_Rectangle(centerX + letterSize/2 - 4, centerY - letterSize/2 + 2, 2, letterSize/2 - 3, textColor, true);
+    GRRLIB_Rectangle(centerX + letterSize/2 - 4, centerY + 1, 2, letterSize/2 - 3, textColor, true);
+}
+
+void Renderer::drawButtonSymbolHome(int x, int y, int size, u32 textColor) {
+    if (!initialized) return;
+    
+    // Draw house symbol for HOME button
+    int centerX = x + size / 2;
+    int centerY = y + size / 2;
+    int houseSize = size / 3;
+    
+    // House base (rectangle)
+    GRRLIB_Rectangle(centerX - houseSize/2, centerY, houseSize, houseSize/2, textColor, false);
+    
+    // House roof (triangle approximation with rectangles)
+    for (int i = 0; i < houseSize/2; i++) {
+        int roofWidth = (houseSize/2 - i) * 2;
+        GRRLIB_Rectangle(centerX - roofWidth/2, centerY - houseSize/2 + i, roofWidth, 1, textColor, true);
+    }
+    
+    // Door
+    int doorWidth = houseSize / 4;
+    int doorHeight = houseSize / 3;
+    GRRLIB_Rectangle(centerX - doorWidth/2, centerY + houseSize/2 - doorHeight, doorWidth, doorHeight, textColor, true);
+}
+
+void Renderer::drawButtonSymbolPlus(int x, int y, int size, u32 textColor) {
+    if (!initialized) return;
+    
+    // Draw "+" symbol
+    int centerX = x + size / 2;
+    int centerY = y + size / 2;
+    int crossSize = size / 3;
+    int thickness = 3;
+    
+    // Horizontal line
+    GRRLIB_Rectangle(centerX - crossSize/2, centerY - thickness/2, crossSize, thickness, textColor, true);
+    
+    // Vertical line
+    GRRLIB_Rectangle(centerX - thickness/2, centerY - crossSize/2, thickness, crossSize, textColor, true);
+}
+
+void Renderer::drawButtonSymbolMinus(int x, int y, int size, u32 textColor) {
+    if (!initialized) return;
+    
+    // Draw "-" symbol
+    int centerX = x + size / 2;
+    int centerY = y + size / 2;
+    int lineSize = size / 3;
+    int thickness = 3;
+    
+    // Horizontal line
+    GRRLIB_Rectangle(centerX - lineSize/2, centerY - thickness/2, lineSize, thickness, textColor, true);
 }
