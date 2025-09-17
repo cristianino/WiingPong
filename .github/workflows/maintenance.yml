@@ -6,6 +6,12 @@ on:
     - cron: '0 2 * * 0'
   workflow_dispatch:
 
+# Add permissions for GitHub Actions
+permissions:
+  contents: read          # Read repository contents
+  issues: write           # Write to issues
+  pull-requests: write    # Write to pull requests
+
 jobs:
   check-devkitpro-updates:
     name: Check DevkitPro Updates

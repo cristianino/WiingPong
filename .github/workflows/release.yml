@@ -11,6 +11,11 @@ on:
         required: true
         type: string
 
+# Add permissions for GitHub Actions
+permissions:
+  contents: write         # Write repository contents (for releases)
+  checks: write           # Write check results
+
 env:
   DEVKITPRO: /opt/devkitpro
   DEVKITPPC: /opt/devkitpro/devkitPPC

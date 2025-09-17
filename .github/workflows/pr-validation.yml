@@ -5,6 +5,13 @@ on:
     branches: [ master, develop ]
     types: [opened, synchronize, reopened, ready_for_review]
 
+# Add permissions for GitHub Actions to write comments
+permissions:
+  contents: read          # Read repository contents
+  pull-requests: write    # Write to pull requests (for comments)
+  issues: write           # Write to issues (for comments)
+  checks: write           # Write check results
+
 env:
   DEVKITPRO: /opt/devkitpro
   DEVKITPPC: /opt/devkitpro/devkitPPC
