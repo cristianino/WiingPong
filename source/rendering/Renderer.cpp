@@ -74,12 +74,12 @@ void Renderer::renderDebugInfo(const InputManager& input) {
 #if WIINGPONG_DEBUG_ENABLED
     if (!initialized || !debugVisible) return;
 
-    // Draw debug background with enhanced styling
-    GRRLIB_Rectangle(10, 400, 620, 70, 0x000000DD, true);  // Slightly more opaque
-    GRRLIB_Rectangle(10, 400, 620, 70, 0xFFFFFFFF, false); // White border
+        // Draw debug background with enhanced styling
+    GRRLIB_Rectangle(10, 400, 700, 70, 0x000000CC, true);  // Wider background for more buttons
+    GRRLIB_Rectangle(10, 400, 700, 70, 0xFFFFFFFF, false); // White border
     
     // Add inner shadow effect
-    GRRLIB_Rectangle(11, 401, 618, 1, 0x00000066, true);   // Top inner shadow
+    GRRLIB_Rectangle(11, 401, 698, 1, 0x00000066, true);   // Top inner shadow
     GRRLIB_Rectangle(11, 401, 1, 68, 0x00000066, true);    // Left inner shadow
 
     // Show initialization status with enhanced Wii-style indicator
@@ -155,6 +155,36 @@ void Renderer::renderDebugInfo(const InputManager& input) {
     u32 textColorMinus = isMinusPressed ? 0x000000FF : 0x666666FF;
     drawButtonSymbolMinus(20 + spacing * 4, buttonY, buttonSize, textColorMinus);
     
+    // D-PAD (Cruz de flechas) - Grouped together with cross design
+    int dpadX = 20 + spacing * 5 + 10; // Extra spacing for visual separation
+    int dpadY = buttonY;
+    int dpadSize = buttonSize + 8; // Slightly larger for the D-pad
+    bool isUpPressed = (held & WPAD_BUTTON_UP) != 0;
+    bool isDownPressed = (held & WPAD_BUTTON_DOWN) != 0;
+    bool isLeftPressed = (held & WPAD_BUTTON_LEFT) != 0;
+    bool isRightPressed = (held & WPAD_BUTTON_RIGHT) != 0;
+    
+    // Draw D-pad as a cross with individual button states
+    drawDPadCross(dpadX, dpadY, dpadSize, isUpPressed, isDownPressed, isLeftPressed, isRightPressed);
+    
+    // Button 1 indicator (Number 1)
+    int btn1X = 20 + spacing * 6 + 40; // After D-pad
+    bool isButton1Pressed = (held & WPAD_BUTTON_1) != 0;
+    u32 button1_base = 0xF0F0F0FF;
+    u32 button1_active = 0x80FF80FF; // Green when pressed
+    drawWiiButton(btn1X, buttonY, buttonSize, button1_base, button1_active, isButton1Pressed, true);
+    u32 textColor1 = isButton1Pressed ? 0xFFFFFFFF : 0x000000FF;
+    drawButtonSymbol1(btn1X, buttonY, buttonSize, textColor1);
+    
+    // Button 2 indicator (Number 2)
+    int btn2X = btn1X + spacing;
+    bool isButton2Pressed = (held & WPAD_BUTTON_2) != 0;
+    u32 button2_base = 0xF0F0F0FF;
+    u32 button2_active = 0xFF8080FF; // Light red when pressed
+    drawWiiButton(btn2X, buttonY, buttonSize, button2_base, button2_active, isButton2Pressed, true);
+    u32 textColor2 = isButton2Pressed ? 0xFFFFFFFF : 0x000000FF;
+    drawButtonSymbol2(btn2X, buttonY, buttonSize, textColor2);
+    
     // Enhanced hex value representation using bars with better styling
     int bitStartX = 200;
     int bitY1 = 410; // First row (held buttons)
@@ -197,21 +227,6 @@ void Renderer::renderDebugInfo(const InputManager& input) {
         if (bitSet) {
             GRRLIB_Rectangle(bitStartX + i * bitSpacing + 1, bitY2 + 1, bitWidth - 2, 2, 0xFFFF8888, true);
         }
-    }
-    
-    // Enhanced button 1 indicator (toggle debug) - Wii-style
-    bool isButton1Pressed = (held & WPAD_BUTTON_1) != 0;
-    u32 button1_base = 0xF0F0F0FF;
-    u32 button1_active = 0x80FF80FF; // Green when pressed
-    drawWiiButton(590, 410, 12, button1_base, button1_active, isButton1Pressed, false);
-    
-    // Add small "1" indicator inside
-    if (isButton1Pressed) {
-        GRRLIB_Rectangle(593, 413, 2, 6, 0x000000FF, true); // Vertical line for "1"
-        GRRLIB_Rectangle(592, 413, 2, 2, 0x000000FF, true); // Top angled part
-    } else {
-        GRRLIB_Rectangle(593, 413, 2, 6, 0x666666FF, true); // Vertical line for "1"
-        GRRLIB_Rectangle(592, 413, 2, 2, 0x666666FF, true); // Top angled part
     }
 #endif
 }
@@ -420,4 +435,168 @@ void Renderer::drawButtonSymbolMinus(int x, int y, int size, u32 textColor) {
     
     // Horizontal line
     GRRLIB_Rectangle(centerX - lineSize/2, centerY - thickness/2, lineSize, thickness, textColor, true);
+}
+
+void Renderer::drawButtonSymbolUp(int x, int y, int size, u32 textColor) {
+    if (!initialized) return;
+    
+    // Draw up arrow (triangle pointing up)
+    int centerX = x + size / 2;
+    int centerY = y + size / 2;
+    int arrowSize = size / 3;
+    
+    // Simple triangle using rectangles
+    for (int i = 0; i < arrowSize/2; i++) {
+        int lineWidth = (i + 1) * 2;
+        GRRLIB_Rectangle(centerX - i, centerY - arrowSize/2 + i, lineWidth, 1, textColor, true);
+    }
+    
+    // Arrow stem
+    GRRLIB_Rectangle(centerX - 1, centerY, 2, arrowSize/2, textColor, true);
+}
+
+void Renderer::drawButtonSymbolDown(int x, int y, int size, u32 textColor) {
+    if (!initialized) return;
+    
+    // Draw down arrow (triangle pointing down)
+    int centerX = x + size / 2;
+    int centerY = y + size / 2;
+    int arrowSize = size / 3;
+    
+    // Arrow stem
+    GRRLIB_Rectangle(centerX - 1, centerY - arrowSize/2, 2, arrowSize/2, textColor, true);
+    
+    // Simple triangle using rectangles
+    for (int i = 0; i < arrowSize/2; i++) {
+        int lineWidth = (arrowSize/2 - i) * 2;
+        GRRLIB_Rectangle(centerX - (arrowSize/2 - i - 1), centerY + i, lineWidth, 1, textColor, true);
+    }
+}
+
+void Renderer::drawButtonSymbolLeft(int x, int y, int size, u32 textColor) {
+    if (!initialized) return;
+    
+    // Draw left arrow (triangle pointing left)
+    int centerX = x + size / 2;
+    int centerY = y + size / 2;
+    int arrowSize = size / 3;
+    
+    // Simple triangle using rectangles
+    for (int i = 0; i < arrowSize/2; i++) {
+        int lineHeight = (i + 1) * 2;
+        GRRLIB_Rectangle(centerX - arrowSize/2 + i, centerY - i, 1, lineHeight, textColor, true);
+    }
+    
+    // Arrow stem
+    GRRLIB_Rectangle(centerX, centerY - 1, arrowSize/2, 2, textColor, true);
+}
+
+void Renderer::drawButtonSymbolRight(int x, int y, int size, u32 textColor) {
+    if (!initialized) return;
+    
+    // Draw right arrow (triangle pointing right)
+    int centerX = x + size / 2;
+    int centerY = y + size / 2;
+    int arrowSize = size / 3;
+    
+    // Arrow stem
+    GRRLIB_Rectangle(centerX - arrowSize/2, centerY - 1, arrowSize/2, 2, textColor, true);
+    
+    // Simple triangle using rectangles
+    for (int i = 0; i < arrowSize/2; i++) {
+        int lineHeight = (arrowSize/2 - i) * 2;
+        GRRLIB_Rectangle(centerX + i, centerY - (arrowSize/2 - i - 1), 1, lineHeight, textColor, true);
+    }
+}
+
+void Renderer::drawButtonSymbol1(int x, int y, int size, u32 textColor) {
+    if (!initialized) return;
+    
+    // Draw number "1"
+    int centerX = x + size / 2;
+    int centerY = y + size / 2;
+    int numberSize = size / 3;
+    
+    // Vertical line for "1"
+    GRRLIB_Rectangle(centerX, centerY - numberSize/2, 2, numberSize, textColor, true);
+    
+    // Top angled part
+    GRRLIB_Rectangle(centerX - 2, centerY - numberSize/2, 2, 2, textColor, true);
+    
+    // Bottom base
+    GRRLIB_Rectangle(centerX - 3, centerY + numberSize/2 - 2, 6, 2, textColor, true);
+}
+
+void Renderer::drawButtonSymbol2(int x, int y, int size, u32 textColor) {
+    if (!initialized) return;
+    
+    // Draw number "2"
+    int centerX = x + size / 2;
+    int centerY = y + size / 2;
+    int numberSize = size / 3;
+    
+    // Top horizontal line
+    GRRLIB_Rectangle(centerX - numberSize/2, centerY - numberSize/2, numberSize, 2, textColor, true);
+    
+    // Top right vertical
+    GRRLIB_Rectangle(centerX + numberSize/2 - 2, centerY - numberSize/2, 2, numberSize/2 - 1, textColor, true);
+    
+    // Middle horizontal line
+    GRRLIB_Rectangle(centerX - numberSize/2, centerY - 1, numberSize, 2, textColor, true);
+    
+    // Bottom left vertical
+    GRRLIB_Rectangle(centerX - numberSize/2, centerY + 1, 2, numberSize/2 - 1, textColor, true);
+    
+    // Bottom horizontal line
+    GRRLIB_Rectangle(centerX - numberSize/2, centerY + numberSize/2 - 2, numberSize, 2, textColor, true);
+}
+
+void Renderer::drawDPadCross(int x, int y, int size, bool upPressed, bool downPressed, bool leftPressed, bool rightPressed) {
+    if (!initialized) return;
+    
+    // Define colors for D-pad sections
+    u32 baseColor = 0xF0F0F0FF;
+    u32 activeColor = 0xFFD700FF; // Gold color when pressed
+    u32 borderColor = 0x999999FF;
+    
+    int crossThickness = size / 3;
+    int centerX = x + size / 2;
+    int centerY = y + size / 2;
+    
+    // Draw D-pad cross background
+    // Vertical bar
+    GRRLIB_Rectangle(centerX - crossThickness/2, y, crossThickness, size, baseColor, true);
+    // Horizontal bar
+    GRRLIB_Rectangle(x, centerY - crossThickness/2, size, crossThickness, baseColor, true);
+    
+    // Draw individual button sections with state-dependent colors
+    // UP section
+    u32 upColor = upPressed ? activeColor : baseColor;
+    GRRLIB_Rectangle(centerX - crossThickness/2, y, crossThickness, size/2 - crossThickness/4, upColor, true);
+    if (upPressed) drawButtonSymbolUp(centerX - crossThickness/2, y, crossThickness, 0x000000FF);
+    
+    // DOWN section
+    u32 downColor = downPressed ? activeColor : baseColor;
+    GRRLIB_Rectangle(centerX - crossThickness/2, centerY + crossThickness/4, crossThickness, size/2 - crossThickness/4, downColor, true);
+    if (downPressed) drawButtonSymbolDown(centerX - crossThickness/2, centerY + crossThickness/4, crossThickness, 0x000000FF);
+    
+    // LEFT section
+    u32 leftColor = leftPressed ? activeColor : baseColor;
+    GRRLIB_Rectangle(x, centerY - crossThickness/2, size/2 - crossThickness/4, crossThickness, leftColor, true);
+    if (leftPressed) drawButtonSymbolLeft(x, centerY - crossThickness/2, crossThickness, 0x000000FF);
+    
+    // RIGHT section
+    u32 rightColor = rightPressed ? activeColor : baseColor;
+    GRRLIB_Rectangle(centerX + crossThickness/4, centerY - crossThickness/2, size/2 - crossThickness/4, crossThickness, rightColor, true);
+    if (rightPressed) drawButtonSymbolRight(centerX + crossThickness/4, centerY - crossThickness/2, crossThickness, 0x000000FF);
+    
+    // Draw borders for the cross
+    // Vertical borders
+    GRRLIB_Rectangle(centerX - crossThickness/2, y, crossThickness, size, borderColor, false);
+    // Horizontal borders
+    GRRLIB_Rectangle(x, centerY - crossThickness/2, size, crossThickness, borderColor, false);
+    
+    // Draw center junction
+    GRRLIB_Rectangle(centerX - crossThickness/2, centerY - crossThickness/2, crossThickness, crossThickness, 0xCCCCCCFF, true);
+    GRRLIB_Rectangle(centerX - crossThickness/2, centerY - crossThickness/2, crossThickness, crossThickness, borderColor, false);
 }

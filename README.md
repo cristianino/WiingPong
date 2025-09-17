@@ -36,7 +36,11 @@
 ### Ventana de Debug
 Cuando está activada, muestra:
 - ✅ Estado de inicialización WPAD (verde/rojo)
-- 🎯 Indicadores individuales de botones con colores
+- 🎯 Indicadores individuales de **TODOS** los botones con colores:
+  - A (azul), B (rojo), HOME (gris)
+  - PLUS/MINUS (blanco)
+  - **Cruz direccional completa** (UP/DOWN/LEFT/RIGHT en dorado)
+  - **Botones numéricos 1 y 2** (verde/rojo claro)
 - 📊 Representación hexadecimal bit a bit
 - 🔍 Estado en tiempo real de todos los controles
 
@@ -334,6 +338,7 @@ Este proyecto está bajo la Licencia MIT. Ver [LICENSE](LICENSE) para más detal
 ### Implementación
 - [🎯 Controles A+B](docs/button_controls_implementation.md) - Detalles de implementación
 - [🔧 Corrección WPAD](docs/wpad_probe_fix.md) - Solución de problemas de compilación
+- [🎮 **Actualización de Botones**](docs/debug_buttons_update.md) - **Cruz direccional y botón 2 agregados**
 
 ### Release y CI/CD
 - [📦 Manual de Release](docs/manual_release_guide.md) - Proceso de distribución

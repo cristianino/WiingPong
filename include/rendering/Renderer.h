@@ -38,4 +38,11 @@ private:
     void drawButtonSymbolHome(int x, int y, int size, u32 textColor);
     void drawButtonSymbolPlus(int x, int y, int size, u32 textColor);
     void drawButtonSymbolMinus(int x, int y, int size, u32 textColor);
+    void drawButtonSymbolUp(int x, int y, int size, u32 textColor);
+    void drawButtonSymbolDown(int x, int y, int size, u32 textColor);
+    void drawButtonSymbolLeft(int x, int y, int size, u32 textColor);
+    void drawButtonSymbolRight(int x, int y, int size, u32 textColor);
+    void drawButtonSymbol1(int x, int y, int size, u32 textColor);
+    void drawButtonSymbol2(int x, int y, int size, u32 textColor);
+    void drawDPadCross(int x, int y, int size, bool upPressed, bool downPressed, bool leftPressed, bool rightPressed);
 };
