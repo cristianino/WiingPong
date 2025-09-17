@@ -104,6 +104,8 @@ package: $(BUILD)
 	@cp $(OUTPUT).dol apps/$(TARGET)/boot.dol
 	@echo "Copying data files..."
 	@if [ -d "data" ]; then cp -r data apps/$(TARGET)/; fi
+	@echo "Copying icon..."
+	@if [ -f "icon.png" ]; then cp icon.png apps/$(TARGET)/; fi
 	@echo "Creating meta.xml..."
 	@echo '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' > apps/$(TARGET)/meta.xml
 	@echo '<app version="1">' >> apps/$(TARGET)/meta.xml
