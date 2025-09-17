@@ -7,6 +7,12 @@ on:
     branches: [ master, develop ]
   workflow_dispatch:
 
+# Add permissions for GitHub Actions
+permissions:
+  contents: read          # Read repository contents
+  checks: write           # Write check results
+  actions: read           # Read workflow actions
+
 env:
   DEVKITPRO: /opt/devkitpro
   DEVKITPPC: /opt/devkitpro/devkitPPC
