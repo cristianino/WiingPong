@@ -105,7 +105,7 @@ package: $(BUILD)
 	@echo "Copying data files..."
 	@if [ -d "data" ]; then cp -r data apps/$(TARGET)/; fi
 	@echo "Copying icon..."
-	@if [ -f "icon.png" ]; then cp icon.png apps/$(TARGET)/; fi
+	@if [ -f "icon_banner.png" ]; then cp icon_banner.png apps/$(TARGET)/icon.png; fi
 	@echo "Creating meta.xml..."
 	@echo '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' > apps/$(TARGET)/meta.xml
 	@echo '<app version="1">' >> apps/$(TARGET)/meta.xml
@@ -124,13 +124,21 @@ package: $(BUILD)
 # Create release package
 #---------------------------------------------------------------------------------
 release: package
-	@echo "Creating release package..."
+	@echo "Creating release packages..."
 	@mkdir -p release
+	@echo "Creating standard release (with apps/ folder)..."
 	@tar -czf release/$(TARGET)-$(shell date +%Y%m%d).tar.gz apps/
 	@zip -r release/$(TARGET)-$(shell date +%Y%m%d).zip apps/
+	@echo "Creating SD-ready release (direct extract to SD root)..."
+	@cd apps && tar -czf ../release/$(TARGET)-SD-ready-$(shell date +%Y%m%d).tar.gz *
+	@cd apps && zip -r ../release/$(TARGET)-SD-ready-$(shell date +%Y%m%d).zip *
 	@echo "Release packages created:"
-	@echo "  - release/$(TARGET)-$(shell date +%Y%m%d).tar.gz"
-	@echo "  - release/$(TARGET)-$(shell date +%Y%m%d).zip"
+	@echo "  Standard (with apps/ folder):"
+	@echo "    - release/$(TARGET)-$(shell date +%Y%m%d).tar.gz"
+	@echo "    - release/$(TARGET)-$(shell date +%Y%m%d).zip"
+	@echo "  SD-ready (extract directly to SD root):"
+	@echo "    - release/$(TARGET)-SD-ready-$(shell date +%Y%m%d).tar.gz"
+	@echo "    - release/$(TARGET)-SD-ready-$(shell date +%Y%m%d).zip"
 
 #---------------------------------------------------------------------------------
 # Clean rule
