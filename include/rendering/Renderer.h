@@ -30,4 +30,12 @@ private:
     void drawCourt();
     void drawScores(const PhysicsEngine& physics);
     void drawText(const char* text, int x, int y, u32 color);
+    
+    // Wii-style button rendering functions
+    void drawWiiButton(int x, int y, int size, u32 baseColor, u32 activeColor, bool isPressed, bool hasSymbol = false);
+    void drawButtonSymbolA(int x, int y, int size, u32 textColor);
+    void drawButtonSymbolB(int x, int y, int size, u32 textColor);
+    void drawButtonSymbolHome(int x, int y, int size, u32 textColor);
+    void drawButtonSymbolPlus(int x, int y, int size, u32 textColor);
+    void drawButtonSymbolMinus(int x, int y, int size, u32 textColor);
 };
