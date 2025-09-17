@@ -6,8 +6,17 @@
 #include <unistd.h>  // For usleep
 
 InputManager::InputManager() : initialized(false), heldButtons(0), pressedButtons(0), wiimoteConnected(false), 
-                               debugToggleTimer(0), wasABPressed(false) {
+                               debugToggleTimer(0), wasABPressed(false), sensorDataValid(false) {
     events.clear();
+    
+    // Initialize sensor data with default values
+    accelData.x = accelData.y = accelData.z = 0;
+    orientData.roll = orientData.pitch = orientData.yaw = 0.0f;
+    orientData.a_roll = orientData.a_pitch = 0.0f;
+    gforceData.x = gforceData.y = gforceData.z = 0.0f;
+    irData.num_dots = 0;
+    irData.raw_valid = 0;
+    irData.ax = irData.ay = irData.distance = 0.0f;
 }
 
 InputManager::~InputManager() {
@@ -42,6 +51,27 @@ void InputManager::update() {
     // Try to get button data - if we get valid data, Wiimote is connected
     heldButtons = WPAD_ButtonsHeld(0);
     pressedButtons = WPAD_ButtonsDown(0);
+    
+    // Collect sensor data if available
+    sensorDataValid = false;
+    WPADData* data = WPAD_Data(0);
+    if (data) {
+        // Copy sensor data from WPAD
+        accelData = data->accel;
+        orientData = data->orient;
+        gforceData = data->gforce;
+        irData = data->ir;
+        sensorDataValid = true;
+    } else {
+        // Initialize with default values if no data available
+        accelData.x = accelData.y = accelData.z = 0;
+        orientData.roll = orientData.pitch = orientData.yaw = 0.0f;
+        orientData.a_roll = orientData.a_pitch = 0.0f;
+        gforceData.x = gforceData.y = gforceData.z = 0.0f;
+        irData.num_dots = 0;
+        irData.raw_valid = 0;
+        irData.ax = irData.ay = irData.distance = 0.0f;
+    }
     
     // Simple connection detection: if we can read button data or if any button is pressed
     // This is a basic check - a more sophisticated approach would check for specific conditions

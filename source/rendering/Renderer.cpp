@@ -2,6 +2,7 @@
 #include "rendering/Renderer.h"
 #include <gccore.h>  // For VIDEO_Init if needed
 #include <stdio.h>   // For snprintf
+#include <math.h>    // For sqrt, cos, sin
 #include <wiiuse/wpad.h>  // For WPAD button constants
 
 Renderer::Renderer() : initialized(false), debugVisible(false), font(nullptr) {
@@ -599,4 +600,262 @@ void Renderer::drawDPadCross(int x, int y, int size, bool upPressed, bool downPr
     // Draw center junction
     GRRLIB_Rectangle(centerX - crossThickness/2, centerY - crossThickness/2, crossThickness, crossThickness, 0xCCCCCCFF, true);
     GRRLIB_Rectangle(centerX - crossThickness/2, centerY - crossThickness/2, crossThickness, crossThickness, borderColor, false);
+}
+
+// =============================================================================
+// SENSOR DEBUG RENDERING FUNCTIONS
+// =============================================================================
+
+void Renderer::renderDebugSensorInfo(const InputManager& input) {
+#if WIINGPONG_DEBUG_ENABLED
+    if (!initialized || !debugVisible || !input.hasSensorData()) return;
+
+    // Position sensor panel on the right side of the screen
+    int panelX = 450;
+    int panelY = 50;
+    int panelWidth = 180;
+    int panelHeight = 320;
+    
+    // Main sensor panel background
+    drawSensorBackground(panelX, panelY, panelWidth, panelHeight, "SENSOR DATA");
+    
+    // Get sensor data
+    const vec3w_t& accel = input.getAccelerometerData();
+    const orient_t& orient = input.getOrientationData();
+    const gforce_t& gforce = input.getGForceData();
+    const ir_t& ir = input.getIRData();
+    
+    int sectionHeight = 70;
+    int currentY = panelY + 25;
+    
+    // 1. Accelerometer section
+    drawSensorBackground(panelX + 5, currentY, panelWidth - 10, sectionHeight, "ACCEL");
+    drawAccelerometerGraph(panelX + 10, currentY + 15, panelWidth - 20, sectionHeight - 20, accel);
+    currentY += sectionHeight + 5;
+    
+    // 2. Orientation section
+    drawSensorBackground(panelX + 5, currentY, panelWidth - 10, sectionHeight, "ORIENT");
+    drawOrientationIndicator(panelX + 10, currentY + 15, sectionHeight - 20, orient);
+    currentY += sectionHeight + 5;
+    
+    // 3. G-Force section
+    drawSensorBackground(panelX + 5, currentY, panelWidth - 10, sectionHeight, "G-FORCE");
+    drawGForceIndicator(panelX + 10, currentY + 15, sectionHeight - 20, gforce);
+    currentY += sectionHeight + 5;
+    
+    // 4. IR section
+    drawSensorBackground(panelX + 5, currentY, panelWidth - 10, sectionHeight, "IR/SENSOR");
+    drawIRDots(panelX + 10, currentY + 15, panelWidth - 20, sectionHeight - 20, ir);
+#endif
+}
+
+void Renderer::drawSensorBackground(int x, int y, int width, int height, const char* title) {
+    if (!initialized) return;
+    
+    // Background with transparency
+    GRRLIB_Rectangle(x, y, width, height, 0x000000CC, true);
+    GRRLIB_Rectangle(x, y, width, height, 0x66CCFFFF, false);
+    
+    // Title bar
+    GRRLIB_Rectangle(x, y, width, 15, 0x0066CCAA, true);
+    GRRLIB_Rectangle(x, y, width, 15, 0x66CCFFFF, false);
+    
+    // Simple title text (using rectangles for now)
+    // TODO: Replace with actual text rendering when font is available
+}
+
+void Renderer::drawAccelerometerGraph(int x, int y, int width, int height, const vec3w_t& accel) {
+    if (!initialized) return;
+    
+    // Calculate center and scale values for visualization
+    int centerX = x + width / 2;
+    int centerY = y + height / 2;
+    int maxBarLength = width / 3;
+    
+    // Scale accelerometer values (typically 0-1000 range)
+    float scaleX = (float)(accel.x - 512) / 512.0f; // Center around 512
+    float scaleY = (float)(accel.y - 512) / 512.0f;
+    float scaleZ = (float)(accel.z - 512) / 512.0f;
+    
+    // Clamp values
+    if (scaleX > 1.0f) scaleX = 1.0f;
+    if (scaleX < -1.0f) scaleX = -1.0f;
+    if (scaleY > 1.0f) scaleY = 1.0f;
+    if (scaleY < -1.0f) scaleY = -1.0f;
+    if (scaleZ > 1.0f) scaleZ = 1.0f;
+    if (scaleZ < -1.0f) scaleZ = -1.0f;
+    
+    // Draw X axis (red)
+    int barX = (int)(scaleX * maxBarLength);
+    if (barX > 0) {
+        GRRLIB_Rectangle(centerX, centerY - 8, barX, 4, 0xFF0000FF, true);
+    } else {
+        GRRLIB_Rectangle(centerX + barX, centerY - 8, -barX, 4, 0xFF0000FF, true);
+    }
+    
+    // Draw Y axis (green)
+    int barY = (int)(scaleY * maxBarLength);
+    if (barY > 0) {
+        GRRLIB_Rectangle(centerX, centerY - 4, barY, 4, 0x00FF00FF, true);
+    } else {
+        GRRLIB_Rectangle(centerX + barY, centerY - 4, -barY, 4, 0x00FF00FF, true);
+    }
+    
+    // Draw Z axis (blue)
+    int barZ = (int)(scaleZ * maxBarLength);
+    if (barZ > 0) {
+        GRRLIB_Rectangle(centerX, centerY, barZ, 4, 0x0000FFFF, true);
+    } else {
+        GRRLIB_Rectangle(centerX + barZ, centerY, -barZ, 4, 0x0000FFFF, true);
+    }
+    
+    // Draw center line
+    GRRLIB_Rectangle(centerX - 1, centerY - 10, 2, 20, 0xFFFFFFFF, true);
+    
+    // Draw axis labels (simple colored squares)
+    GRRLIB_Rectangle(x + 2, y + 2, 8, 4, 0xFF0000FF, true); // X - red
+    GRRLIB_Rectangle(x + 2, y + 7, 8, 4, 0x00FF00FF, true); // Y - green
+    GRRLIB_Rectangle(x + 2, y + 12, 8, 4, 0x0000FFFF, true); // Z - blue
+}
+
+void Renderer::drawOrientationIndicator(int x, int y, int size, const orient_t& orient) {
+    if (!initialized) return;
+    
+    int centerX = x + size / 2;
+    int centerY = y + size / 2;
+    int radius = size / 3;
+    
+    // Draw orientation circle background
+    GRRLIB_Rectangle(centerX - radius, centerY - radius, radius * 2, radius * 2, 0x333333AA, true);
+    GRRLIB_Rectangle(centerX - radius, centerY - radius, radius * 2, radius * 2, 0xAAAAAAFF, false);
+    
+    // Calculate roll and pitch indicators
+    float rollRad = orient.roll * 3.14159f / 180.0f;
+    float pitchRad = orient.pitch * 3.14159f / 180.0f;
+    
+    // Roll indicator (rotation line)
+    int rollX = centerX + (int)(radius * 0.8f * cos(rollRad));
+    int rollY = centerY + (int)(radius * 0.8f * sin(rollRad));
+    GRRLIB_Rectangle(centerX - 1, centerY - 1, 2, 2, 0xFFFF00FF, true); // Center
+    GRRLIB_Rectangle(rollX - 1, rollY - 1, 2, 2, 0xFFFF00FF, true); // Roll point
+    
+    // Pitch indicator (vertical offset)
+    int pitchOffset = (int)(radius * 0.5f * sin(pitchRad));
+    GRRLIB_Rectangle(centerX - 8, centerY + pitchOffset - 1, 16, 2, 0xFF00FFFF, true);
+    
+    // Yaw indicator (simple value representation with small bars)
+    int yawBars = (int)(orient.yaw / 15.0f); // One bar per 15 degrees
+    if (yawBars > 6) yawBars = 6;
+    if (yawBars < -6) yawBars = -6;
+    
+    for (int i = 0; i < abs(yawBars); i++) {
+        int barX = centerX + (yawBars > 0 ? (radius + 5 + i * 3) : -(radius + 5 + i * 3));
+        GRRLIB_Rectangle(barX, centerY + radius - 5, 2, 8, 0x00FFFFFF, true);
+    }
+}
+
+void Renderer::drawGForceIndicator(int x, int y, int size, const gforce_t& gforce) {
+    if (!initialized) return;
+    
+    int centerX = x + size / 2;
+    int centerY = y + size / 2;
+    
+    // Draw G-force as colored bars
+    int maxLength = size / 2;
+    
+    // X G-force (horizontal red bar)
+    int gx = (int)(gforce.x * maxLength);
+    if (gx > maxLength) gx = maxLength;
+    if (gx < -maxLength) gx = -maxLength;
+    
+    if (gx > 0) {
+        GRRLIB_Rectangle(centerX, centerY - 6, gx, 4, 0xFF6666FF, true);
+    } else {
+        GRRLIB_Rectangle(centerX + gx, centerY - 6, -gx, 4, 0xFF6666FF, true);
+    }
+    
+    // Y G-force (horizontal green bar)
+    int gy = (int)(gforce.y * maxLength);
+    if (gy > maxLength) gy = maxLength;
+    if (gy < -maxLength) gy = -maxLength;
+    
+    if (gy > 0) {
+        GRRLIB_Rectangle(centerX, centerY - 2, gy, 4, 0x66FF66FF, true);
+    } else {
+        GRRLIB_Rectangle(centerX + gy, centerY - 2, -gy, 4, 0x66FF66FF, true);
+    }
+    
+    // Z G-force (horizontal blue bar)
+    int gz = (int)(gforce.z * maxLength);
+    if (gz > maxLength) gz = maxLength;
+    if (gz < -maxLength) gz = -maxLength;
+    
+    if (gz > 0) {
+        GRRLIB_Rectangle(centerX, centerY + 2, gz, 4, 0x6666FFFF, true);
+    } else {
+        GRRLIB_Rectangle(centerX + gz, centerY + 2, -gz, 4, 0x6666FFFF, true);
+    }
+    
+    // Center reference line
+    GRRLIB_Rectangle(centerX - 1, centerY - 8, 2, 16, 0xFFFFFFFF, true);
+    
+    // G-force magnitude indicator (circle size based on total force)
+    float magnitude = sqrt(gforce.x * gforce.x + gforce.y * gforce.y + gforce.z * gforce.z);
+    int magRadius = (int)(magnitude * 8);
+    if (magRadius > 15) magRadius = 15;
+    if (magRadius < 2) magRadius = 2;
+    
+    GRRLIB_Rectangle(centerX - magRadius/2, centerY + 15 - magRadius/2, magRadius, magRadius, 0xFFFF00AA, true);
+    GRRLIB_Rectangle(centerX - magRadius/2, centerY + 15 - magRadius/2, magRadius, magRadius, 0xFFFF00FF, false);
+}
+
+void Renderer::drawIRDots(int x, int y, int width, int height, const ir_t& ir) {
+    if (!initialized) return;
+    
+    // IR sensor area background (simulating Wii screen)
+    GRRLIB_Rectangle(x, y, width, height, 0x111111FF, true);
+    GRRLIB_Rectangle(x, y, width, height, 0x888888FF, false);
+    
+    // Draw detected IR dots
+    for (int i = 0; i < 4 && i < ir.num_dots; i++) {
+        if (ir.dot[i].visible) {
+            // Scale coordinates to fit our display area
+            int dotX = x + (int)((float)ir.dot[i].rx / 1024.0f * width);
+            int dotY = y + (int)((float)ir.dot[i].ry / 768.0f * height);
+            
+            // Ensure dots stay within bounds
+            if (dotX >= x && dotX < x + width && dotY >= y && dotY < y + height) {
+                // Draw dot with intensity-based size
+                int dotSize = 3 + ir.dot[i].size / 4;
+                if (dotSize > 8) dotSize = 8;
+                
+                u32 dotColor = 0xFF0000FF; // Red for IR dots
+                GRRLIB_Rectangle(dotX - dotSize/2, dotY - dotSize/2, dotSize, dotSize, dotColor, true);
+                GRRLIB_Rectangle(dotX - dotSize/2, dotY - dotSize/2, dotSize, dotSize, 0xFFFFFFFF, false);
+            }
+        }
+    }
+    
+    // Draw cursor position if valid
+    if (ir.raw_valid) {
+        int cursorX = x + (int)(ir.ax / 1024.0f * width);
+        int cursorY = y + (int)(ir.ay / 768.0f * height);
+        
+        if (cursorX >= x && cursorX < x + width && cursorY >= y && cursorY < y + height) {
+            // Draw crosshair cursor
+            GRRLIB_Rectangle(cursorX - 5, cursorY - 1, 10, 2, 0x00FF00FF, true);
+            GRRLIB_Rectangle(cursorX - 1, cursorY - 5, 2, 10, 0x00FF00FF, true);
+        }
+    }
+    
+    // Status indicators
+    if (ir.num_dots > 0) {
+        // Show number of detected dots
+        for (int i = 0; i < ir.num_dots && i < 4; i++) {
+            GRRLIB_Rectangle(x + 2 + i * 6, y + height - 8, 4, 4, 0x00FF00FF, true);
+        }
+    } else {
+        // No dots detected
+        GRRLIB_Rectangle(x + 2, y + height - 8, 4, 4, 0xFF0000FF, true);
+    }
 }
