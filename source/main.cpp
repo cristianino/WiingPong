@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <unistd.h>
 
 extern DISC_INTERFACE __io_wiisd;
 extern DISC_INTERFACE __io_usbstorage;
@@ -58,6 +59,20 @@ int main() {
     // Play intro sound
     printf("Playing intro sound...\n");
     audio.playSound(SoundID::Intro);
+    
+    // Wait a bit for intro to play
+    printf("Waiting 3 seconds...\n");
+    for (int i = 0; i < 3; i++) {
+        VIDEO_WaitVSync();
+        usleep(1000000); // 1 second
+        printf("  %d seconds elapsed\n", i+1);
+    }
+    
+    // Test all sounds
+    printf("Running comprehensive audio test...\n");
+    audio.testAllSounds();
+    
+    printf("Audio tests completed. Starting game...\n");
 
     bool running = true;
     while (running) {

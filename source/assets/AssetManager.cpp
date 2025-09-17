@@ -35,30 +35,82 @@ void AssetManager::loadAudio(AudioManager& audioManager) {
     
     printf("Loading audio assets...\n");
     
-    // Load intro.pcm from data/sounds/
-    if (audioManager.loadPCM(SoundID::Intro, "data/sounds/intro.pcm")) {
-        printf("Successfully loaded intro.pcm\n");
-    } else {
-        printf("Failed to load intro.pcm\n");
+    // Load intro.pcm from data/sounds/ (try multiple possible paths)
+    const char* introPaths[] = {
+        "sd:/apps/WiingPong/data/sounds/intro.pcm",
+        "sd:/data/sounds/intro.pcm", 
+        "data/sounds/intro.pcm",
+        "apps/WiingPong/data/sounds/intro.pcm"
+    };
+    
+    bool introLoaded = false;
+    for (int i = 0; i < 4 && !introLoaded; i++) {
+        printf("Trying to load intro from: %s\n", introPaths[i]);
+        if (audioManager.loadPCM(SoundID::Intro, introPaths[i])) {
+            printf("Successfully loaded intro.pcm from %s\n", introPaths[i]);
+            introLoaded = true;
+        }
+    }
+    if (!introLoaded) {
+        printf("Failed to load intro.pcm from any path\n");
     }
     
-    // Load sound effects
-    if (audioManager.loadPCM(SoundID::PaddleHit, "data/sounds/paddle_hit.pcm")) {
-        printf("Successfully loaded paddle_hit.pcm\n");
-    } else {
-        printf("Failed to load paddle_hit.pcm\n");
+    // Load sound effects with multiple path attempts
+    const char* paddlePaths[] = {
+        "sd:/apps/WiingPong/data/sounds/paddle_hit.pcm",
+        "sd:/data/sounds/paddle_hit.pcm",
+        "data/sounds/paddle_hit.pcm",
+        "apps/WiingPong/data/sounds/paddle_hit.pcm"
+    };
+    
+    bool paddleLoaded = false;
+    for (int i = 0; i < 4 && !paddleLoaded; i++) {
+        printf("Trying to load paddle_hit from: %s\n", paddlePaths[i]);
+        if (audioManager.loadPCM(SoundID::PaddleHit, paddlePaths[i])) {
+            printf("Successfully loaded paddle_hit.pcm from %s\n", paddlePaths[i]);
+            paddleLoaded = true;
+        }
+    }
+    if (!paddleLoaded) {
+        printf("Failed to load paddle_hit.pcm from any path\n");
     }
     
-    if (audioManager.loadPCM(SoundID::WallHit, "data/sounds/wall_hit.pcm")) {
-        printf("Successfully loaded wall_hit.pcm\n");
-    } else {
-        printf("Failed to load wall_hit.pcm\n");
+    const char* wallPaths[] = {
+        "sd:/apps/WiingPong/data/sounds/wall_hit.pcm",
+        "sd:/data/sounds/wall_hit.pcm",
+        "data/sounds/wall_hit.pcm",
+        "apps/WiingPong/data/sounds/wall_hit.pcm"
+    };
+    
+    bool wallLoaded = false;
+    for (int i = 0; i < 4 && !wallLoaded; i++) {
+        printf("Trying to load wall_hit from: %s\n", wallPaths[i]);
+        if (audioManager.loadPCM(SoundID::WallHit, wallPaths[i])) {
+            printf("Successfully loaded wall_hit.pcm from %s\n", wallPaths[i]);
+            wallLoaded = true;
+        }
+    }
+    if (!wallLoaded) {
+        printf("Failed to load wall_hit.pcm from any path\n");
     }
     
-    if (audioManager.loadPCM(SoundID::Score, "data/sounds/score.pcm")) {
-        printf("Successfully loaded score.pcm\n");
-    } else {
-        printf("Failed to load score.pcm\n");
+    const char* scorePaths[] = {
+        "sd:/apps/WiingPong/data/sounds/score.pcm",
+        "sd:/data/sounds/score.pcm",
+        "data/sounds/score.pcm",
+        "apps/WiingPong/data/sounds/score.pcm"
+    };
+    
+    bool scoreLoaded = false;
+    for (int i = 0; i < 4 && !scoreLoaded; i++) {
+        printf("Trying to load score from: %s\n", scorePaths[i]);
+        if (audioManager.loadPCM(SoundID::Score, scorePaths[i])) {
+            printf("Successfully loaded score.pcm from %s\n", scorePaths[i]);
+            scoreLoaded = true;
+        }
+    }
+    if (!scoreLoaded) {
+        printf("Failed to load score.pcm from any path\n");
     }
 }
 

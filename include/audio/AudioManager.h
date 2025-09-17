@@ -31,6 +31,10 @@ public:
     void playMusic(SoundID id, bool loop = false);
     void setVolume(float volume);  // 0.0 to 1.0
     void stopAll();
+    
+    // Debug functions
+    void testAllSounds();  // Test all loaded sounds
+    bool isInitialized() const { return initialized; }
 
 private:
     bool initialized;
@@ -40,4 +44,5 @@ private:
     AudioBuffer* getAudioBuffer(SoundID id);
     void freeAudioBuffer(SoundID id);
     int getNextVoice();          // Get next available voice for sound effects
+    void detectPCMFormat(AudioBuffer* buffer, long fileSize);  // Auto-detect PCM format
 };

@@ -11,6 +11,14 @@
 // Set to 1 to enable debug view, 0 to disable completely
 #define WIINGPONG_DEBUG_ENABLED 1
 
+// Enable/disable audio debug logging
+// Set to 1 to enable detailed audio logging, 0 for normal operation
+#define WIINGPONG_AUDIO_DEBUG 1
+
+// Enable/disable audio system entirely
+// Set to 1 to enable audio, 0 to disable completely (for debugging)
+#define WIINGPONG_AUDIO_ENABLED 1
+
 // Debug toggle method (when WIINGPONG_DEBUG_ENABLED = 1)
 // 0 = Single button press (Button 1)
 // 1 = A+B hold for specified duration
