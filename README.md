@@ -36,9 +36,21 @@
 ### Ventana de Debug
 Cuando está activada, muestra:
 - ✅ Estado de inicialización WPAD (verde/rojo)
-- 🎯 Indicadores individuales de botones con colores
+- 🎯 Indicadores individuales de **TODOS** los botones con colores:
+  - A (azul), B (rojo), HOME (gris)
+  - PLUS/MINUS (blanco)
+  - **Cruz direccional completa** (UP/DOWN/LEFT/RIGHT en dorado)
+  - **Botones numéricos 1 y 2** (verde/rojo claro)
 - 📊 Representación hexadecimal bit a bit
 - 🔍 Estado en tiempo real de todos los controles
+
+### 🔬 **Panel de Sensores** (NUEVO)
+Información completa de sensores del Wiimote en tiempo real:
+- **🎯 Acelerómetro**: Fuerzas X/Y/Z con barras de colores
+- **🧭 Orientación**: Roll, pitch, yaw con indicadores visuales
+- **⚡ G-Force**: Magnitud de fuerzas con medidor dinámico
+- **📡 Sensor IR**: Puntos detectados y posición del cursor
+- **Panel lateral**: Aparece a la derecha cuando debug está activo
 
 ## 🚀 Instalación Rápida
 
@@ -334,6 +346,8 @@ Este proyecto está bajo la Licencia MIT. Ver [LICENSE](LICENSE) para más detal
 ### Implementación
 - [🎯 Controles A+B](docs/button_controls_implementation.md) - Detalles de implementación
 - [🔧 Corrección WPAD](docs/wpad_probe_fix.md) - Solución de problemas de compilación
+- [🎮 **Actualización de Botones**](docs/debug_buttons_update.md) - **Cruz direccional y botón 2 agregados**
+- [🔬 **Sensores del Wiimote**](docs/sensor_debug_implementation.md) - **Panel completo de sensores en tiempo real**
 
 ### Release y CI/CD
 - [📦 Manual de Release](docs/manual_release_guide.md) - Proceso de distribución

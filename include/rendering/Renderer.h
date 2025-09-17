@@ -16,6 +16,7 @@ public:
     void init();
     void render(const PhysicsEngine& physics);  // Draw from physics components
     void renderDebugInfo(const InputManager& input);  // Debug overlay
+    void renderDebugSensorInfo(const InputManager& input);  // Sensor debug overlay
     void renderDebugToggleProgress(const InputManager& input); // Debug toggle progress indicator (A+B or PLUS+MINUS)
     void setDebugVisible(bool visible) { debugVisible = visible; }
     bool isDebugVisible() const { return debugVisible; }
@@ -38,4 +39,18 @@ private:
     void drawButtonSymbolHome(int x, int y, int size, u32 textColor);
     void drawButtonSymbolPlus(int x, int y, int size, u32 textColor);
     void drawButtonSymbolMinus(int x, int y, int size, u32 textColor);
+    void drawButtonSymbolUp(int x, int y, int size, u32 textColor);
+    void drawButtonSymbolDown(int x, int y, int size, u32 textColor);
+    void drawButtonSymbolLeft(int x, int y, int size, u32 textColor);
+    void drawButtonSymbolRight(int x, int y, int size, u32 textColor);
+    void drawButtonSymbol1(int x, int y, int size, u32 textColor);
+    void drawButtonSymbol2(int x, int y, int size, u32 textColor);
+    void drawDPadCross(int x, int y, int size, bool upPressed, bool downPressed, bool leftPressed, bool rightPressed);
+    
+    // Sensor visualization functions
+    void drawAccelerometerGraph(int x, int y, int width, int height, const vec3w_t& accel);
+    void drawOrientationIndicator(int x, int y, int size, const orient_t& orient);
+    void drawGForceIndicator(int x, int y, int size, const gforce_t& gforce);
+    void drawIRDots(int x, int y, int width, int height, const ir_t& ir);
+    void drawSensorBackground(int x, int y, int width, int height, const char* title);
 };

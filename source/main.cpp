@@ -122,6 +122,9 @@ int main() {
         // Render debug info if enabled
         renderer.renderDebugInfo(input);
         
+        // Render sensor debug info if enabled and sensor data is available
+        renderer.renderDebugSensorInfo(input);
+        
         // Always render debug toggle progress (A+B or PLUS+MINUS indicator based on method)
         renderer.renderDebugToggleProgress(input);
         
