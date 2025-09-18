@@ -6,6 +6,7 @@
 #include "../physics/Components.h"
 #include "../input/InputManager.h"
 #include "../gamestate/GameStateManager.h"
+#include "../assets/AssetManager.h"
 #include "../config.h"
 
 // Renderer class for drawing game elements using GRRLIB

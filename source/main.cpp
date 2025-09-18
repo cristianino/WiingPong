@@ -51,6 +51,10 @@ int main() {
     printf("Loading audio...\n");
     assets.loadAudio(audio);
     
+    // Load texture assets
+    printf("Loading textures...\n");
+    assets.loadTextures();
+    
     // Load Wiimote audio assets
     printf("Loading Wiimote audio...\n");
     assets.loadWiimoteAudio(wiimote);
