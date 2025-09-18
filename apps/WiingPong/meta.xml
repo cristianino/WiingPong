@@ -3,7 +3,7 @@
   <name>WiingPong</name>
   <coder>cristianino</coder>
   <version>1.0.0</version>
-  <release_date>20250917</release_date>
+  <release_date>20250918</release_date>
   <short_description>Pong game for Nintendo Wii</short_description>
   <long_description>A classic Pong game implementation for Nintendo Wii using Wiimote controls.</long_description>
   <ahb_access/>
