@@ -76,6 +76,7 @@ main.o: /home/cristian/Documentos/WiingPong/source/main.cpp \
  /opt/devkitpro/portlibs/wii/include/grrlib/GRRLIB_pixel.h \
  /opt/devkitpro/portlibs/wii/include/grrlib/GRRLIB_settings.h \
  /opt/devkitpro/portlibs/wii/include/grrlib/GRRLIB_texSetup.h \
+ /home/cristian/Documentos/WiingPong/include/rendering/../gamestate/GameStateManager.h \
  /home/cristian/Documentos/WiingPong/include/audio/AudioManager.h \
  /home/cristian/Documentos/WiingPong/include/assets/AssetManager.h \
  /home/cristian/Documentos/WiingPong/include/WiimoteManager.h
@@ -157,6 +158,7 @@ main.o: /home/cristian/Documentos/WiingPong/source/main.cpp \
 /opt/devkitpro/portlibs/wii/include/grrlib/GRRLIB_pixel.h:
 /opt/devkitpro/portlibs/wii/include/grrlib/GRRLIB_settings.h:
 /opt/devkitpro/portlibs/wii/include/grrlib/GRRLIB_texSetup.h:
+/home/cristian/Documentos/WiingPong/include/rendering/../gamestate/GameStateManager.h:
 /home/cristian/Documentos/WiingPong/include/audio/AudioManager.h:
 /home/cristian/Documentos/WiingPong/include/assets/AssetManager.h:
 /home/cristian/Documentos/WiingPong/include/WiimoteManager.h:

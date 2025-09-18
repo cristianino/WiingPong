@@ -16,6 +16,7 @@ extern DISC_INTERFACE __io_gcsdb;
 #include "rendering/Renderer.h"
 #include "audio/AudioManager.h"
 #include "assets/AssetManager.h"
+#include "gamestate/GameStateManager.h"
 #include "WiimoteManager.h"
 
 int main() {
@@ -28,6 +29,7 @@ int main() {
     Renderer renderer;
     AudioManager audio;
     WiimoteManager wiimote;
+    GameStateManager gameState;
     AssetManager& assets = AssetManager::getInstance();
 
     // Initialize modules
@@ -39,6 +41,7 @@ int main() {
     renderer.init();
     audio.init();
     wiimote.init();
+    gameState.init();
 
     // Connect audio and Wiimote to physics engine for sound effects
     physics.setAudioManager(&audio);
@@ -74,52 +77,79 @@ int main() {
     
     printf("Audio tests completed. Starting game...\n");
 
-    bool running = true;
-    while (running) {
+    while (gameState.isRunning) {
         // Update input
         input.update();
         auto events = input.getEvents();
 
-        // Process input events for player movement
-        bool paddleUp = false;
-        bool paddleDown = false;
-        for (const auto& event : events) {
-            if (event.type == InputEventType::PaddleUp) {
-                paddleUp = true;
-                printf("[MAIN] PaddleUp event processed - paddleUp = true\n");
-            } else if (event.type == InputEventType::PaddleDown) {
-                paddleDown = true;
-                printf("[MAIN] PaddleDown event processed - paddleDown = true\n");
-            } else if (event.type == InputEventType::Home) {
-                running = false;
-                break;
-#if WIINGPONG_DEBUG_ENABLED
-            } else if (event.type == InputEventType::ToggleDebug) {
-                // Toggle debug visibility
-                renderer.setDebugVisible(!renderer.isDebugVisible());
-                printf("Debug view %s\n", renderer.isDebugVisible() ? "enabled" : "disabled");
-#endif
+        // Update game state
+        gameState.update();
+
+        // Process input events based on current game state
+        if (gameState.getCurrentState() == GameStateType::Menu) {
+            // Handle menu navigation
+            for (const auto& event : events) {
+                if (event.type == InputEventType::MenuUp) {
+                    gameState.menuNavigateUp();
+                } else if (event.type == InputEventType::MenuDown) {
+                    gameState.menuNavigateDown();
+                } else if (event.type == InputEventType::MenuSelect) {
+                    gameState.menuSelect();
+                } else if (event.type == InputEventType::Home) {
+                    gameState.isRunning = false;
+                    break;
+                }
             }
+            
+            // Render menu
+            renderer.renderMenu(gameState);
+            
+        } else if (gameState.getCurrentState() == GameStateType::Play) {
+            // Handle game events
+            bool paddleUp = false;
+            bool paddleDown = false;
+            for (const auto& event : events) {
+                if (event.type == InputEventType::PaddleUp) {
+                    paddleUp = true;
+                    printf("[MAIN] PaddleUp event processed - paddleUp = true\n");
+                } else if (event.type == InputEventType::PaddleDown) {
+                    paddleDown = true;
+                    printf("[MAIN] PaddleDown event processed - paddleDown = true\n");
+                } else if (event.type == InputEventType::Home) {
+                    gameState.isRunning = false;
+                    break;
+#if WIINGPONG_DEBUG_ENABLED
+                } else if (event.type == InputEventType::ToggleDebug) {
+                    // Toggle debug visibility
+                    renderer.setDebugVisible(!renderer.isDebugVisible());
+                    printf("Debug view %s\n", renderer.isDebugVisible() ? "enabled" : "disabled");
+#endif
+                }
+            }
+
+            // Apply player movement to physics
+            if (paddleUp) {
+                physics.velocities[PLAYER_PADDLE].dy = -WIINGPONG_PADDLE_SPEED;  // Use config
+                printf("[MAIN] Applied paddleUp - velocity.dy = %d\n", -WIINGPONG_PADDLE_SPEED);
+            } else if (paddleDown) {
+                physics.velocities[PLAYER_PADDLE].dy = WIINGPONG_PADDLE_SPEED;
+                printf("[MAIN] Applied paddleDown - velocity.dy = %d\n", WIINGPONG_PADDLE_SPEED);
+            } else {
+                physics.velocities[PLAYER_PADDLE].dy = 0;
+            }
+
+            // Update physics (includes AI, ball, collisions)
+            physics.update();
+
+            // Update scores in game state
+            gameState.playerScore = physics.playerScore;
+            gameState.cpuScore = physics.cpuScore;
+
+            // Render game
+            renderer.render(physics);
         }
-
-        // Apply player movement to physics
-        if (paddleUp) {
-            physics.velocities[PLAYER_PADDLE].dy = -WIINGPONG_PADDLE_SPEED;  // Use config
-            printf("[MAIN] Applied paddleUp - velocity.dy = %d\n", -WIINGPONG_PADDLE_SPEED);
-        } else if (paddleDown) {
-            physics.velocities[PLAYER_PADDLE].dy = WIINGPONG_PADDLE_SPEED;
-            printf("[MAIN] Applied paddleDown - velocity.dy = %d\n", WIINGPONG_PADDLE_SPEED);
-        } else {
-            physics.velocities[PLAYER_PADDLE].dy = 0;
-        }
-
-        // Update physics (includes AI, ball, collisions)
-        physics.update();
-
-        // Render
-        renderer.render(physics);
         
-        // Render debug info if enabled
+        // Render debug info if enabled (for any state)
         renderer.renderDebugInfo(input);
         
         // Render sensor debug info if enabled and sensor data is available

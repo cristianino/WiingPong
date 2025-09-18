@@ -181,6 +181,17 @@ void InputManager::update() {
     }
 #endif
 
+    // Menu navigation events (work in any state)
+    if (pressedButtons & WPAD_BUTTON_UP) {
+        events.push_back({InputEventType::MenuUp});
+    }
+    if (pressedButtons & WPAD_BUTTON_DOWN) {
+        events.push_back({InputEventType::MenuDown});
+    }
+    if (pressedButtons & WPAD_BUTTON_1) {
+        events.push_back({InputEventType::MenuSelect});
+    }
+
     // Home for exit (pressed once)
     if (pressedButtons & WPAD_BUTTON_HOME) {
         events.push_back({InputEventType::Home});
