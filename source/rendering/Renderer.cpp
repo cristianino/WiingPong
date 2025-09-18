@@ -43,6 +43,75 @@ void Renderer::render(const PhysicsEngine& physics) {
     drawScores(physics);
 }
 
+void Renderer::renderMenu(const GameStateManager& gameState) {
+    if (!initialized) return;
+
+    // Clear screen with dark blue background for menu
+    GRRLIB_FillScreen(0x001133FF);
+    
+    // Draw background decorations
+    drawMenuBackground();
+    
+    // Try to get and draw the banner
+    AssetManager& assets = AssetManager::getInstance();
+    GRRLIB_texImg* banner = assets.getTexture("banner");
+    
+    if (banner) {
+        // Center the banner at the top
+        int bannerX = (640 - banner->w) / 2;
+        int bannerY = 50;
+        GRRLIB_DrawImg(bannerX, bannerY, banner, 0, 1, 1, 0xFFFFFFFF);
+        
+        // Menu items positioned lower to make room for banner
+        const char* menuItems[] = {"Iniciar Juego", "Salir"};
+        int startY = bannerY + banner->h + 50;
+        int itemHeight = 60;
+        
+        for (int i = 0; i < gameState.getMenuItemCount(); i++) {
+            int y = startY + i * itemHeight;
+            bool selected = (i == gameState.getMenuSelectedIndex());
+            drawMenuItem(menuItems[i], 320, y, selected);
+        }
+    } else {
+        // Fallback: text-based title if banner doesn't load
+        GRRLIB_Rectangle(220, 100, 200, 50, 0x4444AAFF, true);
+        GRRLIB_Rectangle(225, 105, 190, 40, 0x6666CCFF, true);
+        
+        // Menu items
+        const char* menuItems[] = {"Iniciar Juego", "Salir"};
+        int startY = 200;
+        int itemHeight = 60;
+        
+        for (int i = 0; i < gameState.getMenuItemCount(); i++) {
+            int y = startY + i * itemHeight;
+            bool selected = (i == gameState.getMenuSelectedIndex());
+            drawMenuItem(menuItems[i], 320, y, selected);
+        }
+    }
+    
+    // Instructions at bottom with visual indicators
+    int instructY = 400;
+    GRRLIB_Rectangle(100, instructY, 440, 50, 0x333366FF, true);
+    GRRLIB_Rectangle(105, instructY + 5, 430, 40, 0x555588FF, true);
+    
+    // Draw control indicators
+    // D-Pad up/down arrows
+    int iconY = instructY + 15;
+    GRRLIB_Rectangle(120, iconY - 5, 15, 3, 0xFFFFFFFF, true); // Up arrow
+    GRRLIB_Rectangle(125, iconY - 8, 5, 9, 0xFFFFFFFF, true);
+    
+    GRRLIB_Rectangle(120, iconY + 15, 15, 3, 0xFFFFFFFF, true); // Down arrow  
+    GRRLIB_Rectangle(125, iconY + 12, 5, 9, 0xFFFFFFFF, true);
+    
+    // A button indicator
+    GRRLIB_Rectangle(300, iconY, 20, 20, 0x00AA00FF, true);
+    GRRLIB_Rectangle(305, iconY + 5, 10, 10, 0x00FF00FF, true);
+    
+    // Text placeholders (simple rectangles since we don't have font rendering)
+    GRRLIB_Rectangle(150, iconY + 2, 80, 8, 0xAAAAAAFF, true); // "Navigate"
+    GRRLIB_Rectangle(330, iconY + 2, 60, 8, 0xAAAAAAFF, true); // "Select"
+}
+
 void Renderer::drawPaddle(const Position& pos, const Size& size, u32 color) {
     GRRLIB_Rectangle(pos.x, pos.y, size.width, size.height, color, true);
 }
@@ -857,5 +926,54 @@ void Renderer::drawIRDots(int x, int y, int width, int height, const ir_t& ir) {
     } else {
         // No dots detected
         GRRLIB_Rectangle(x + 2, y + height - 8, 4, 4, 0xFF0000FF, true);
+    }
+}
+
+void Renderer::drawMenuItem(const char* text, int x, int y, bool selected) {
+    u32 backgroundColor = selected ? 0x6666CCFF : 0x333366FF;
+    u32 borderColor = selected ? 0xFFFFFFFF : 0x666699FF;
+    u32 textColor = selected ? 0xFFFFFFFF : 0xAAAAAAFF;
+    
+    // Draw menu item background
+    int width = 200;
+    int height = 40;
+    int itemX = x - width / 2;
+    int itemY = y - height / 2;
+    
+    GRRLIB_Rectangle(itemX, itemY, width, height, backgroundColor, true);
+    GRRLIB_Rectangle(itemX, itemY, width, height, borderColor, false);
+    
+    // Since we don't have text rendering, draw simple symbols/indicators
+    // For "Iniciar Juego" - draw play triangle
+    // For "Salir" - draw X
+    if (text && text[0] == 'I') { // "Iniciar Juego"
+        // Draw play triangle
+        int triX = x - 10;
+        int triY = y;
+        GRRLIB_Rectangle(triX - 8, triY - 8, 4, 16, textColor, true);
+        GRRLIB_Rectangle(triX - 4, triY - 6, 4, 12, textColor, true);
+        GRRLIB_Rectangle(triX, triY - 4, 4, 8, textColor, true);
+        GRRLIB_Rectangle(triX + 4, triY - 2, 4, 4, textColor, true);
+    } else { // "Salir" - draw X
+        int xSize = 12;
+        for (int i = 0; i < xSize; i++) {
+            GRRLIB_Rectangle(x - xSize/2 + i, y - xSize/2 + i, 2, 2, textColor, true);
+            GRRLIB_Rectangle(x - xSize/2 + i, y + xSize/2 - i, 2, 2, textColor, true);
+        }
+    }
+}
+
+void Renderer::drawMenuBackground() {
+    // Draw some decorative elements for the menu background
+    // Top border
+    GRRLIB_Rectangle(0, 0, 640, 10, 0x4444AAFF, true);
+    // Bottom border
+    GRRLIB_Rectangle(0, 470, 640, 10, 0x4444AAFF, true);
+    
+    // Side decorations
+    for (int i = 0; i < 10; i++) {
+        int y = 50 + i * 40;
+        GRRLIB_Rectangle(20, y, 10, 20, 0x2222AAFF, true);
+        GRRLIB_Rectangle(610, y, 10, 20, 0x2222AAFF, true);
     }
 }

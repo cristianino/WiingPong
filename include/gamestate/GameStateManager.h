@@ -19,14 +19,25 @@ public:
 
     GameStateType getCurrentState() const { return currentState; }
     void setState(GameStateType newState);
+    
+    // Menu navigation methods
+    void menuNavigateUp();
+    void menuNavigateDown();
+    void menuSelect();
+    int getMenuSelectedIndex() const { return menuSelectedIndex; }
+    int getMenuItemCount() const { return menuItemCount; }
 
     // Game data (scores; expand for high scores, etc.)
+    GameStateType currentState;
     int playerScore;
     int cpuScore;
     bool isRunning;
+    
+    // Menu data
+    int menuSelectedIndex;
+    int menuItemCount;
 
 private:
-    GameStateType currentState;
     void enterState(GameStateType state);
     void exitState(GameStateType state);
 };

@@ -15,7 +15,13 @@ AssetManager::AssetManager() : initialized(false) {
 }
 
 AssetManager::~AssetManager() {
-    // Cleanup assets if loaded
+    // Cleanup loaded textures
+    for (auto& pair : textures) {
+        if (pair.second) {
+            GRRLIB_FreeTexture(pair.second);
+        }
+    }
+    textures.clear();
 }
 
 void AssetManager::init() {
@@ -26,8 +32,35 @@ void AssetManager::init() {
 }
 
 void AssetManager::loadAllAssets() {
-    // Stub: Load textures, fonts from /assets/ on SD
-    // Audio is loaded separately via loadAudio()
+    // Load textures first
+    loadTextures();
+}
+
+void AssetManager::loadTextures() {
+    if (!initialized) return;
+    
+    printf("Loading texture assets...\n");
+    
+    // Load banner image with multiple path attempts
+    const char* bannerPaths[] = {
+        "sd:/apps/WiingPong/data/img/wiipong-banner.png",
+        "sd:/data/img/wiipong-banner.png",
+        "data/img/wiipong-banner.png",
+        "apps/WiingPong/data/img/wiipong-banner.png"
+    };
+    
+    GRRLIB_texImg* bannerTexture = nullptr;
+    for (int i = 0; i < 4 && !bannerTexture; i++) {
+        printf("Trying to load banner from: %s\n", bannerPaths[i]);
+        bannerTexture = GRRLIB_LoadTextureFromFile(bannerPaths[i]);
+        if (bannerTexture) {
+            printf("Successfully loaded banner from %s\n", bannerPaths[i]);
+            textures["banner"] = bannerTexture;
+        }
+    }
+    if (!bannerTexture) {
+        printf("Failed to load banner from any path\n");
+    }
 }
 
 void AssetManager::loadAudio(AudioManager& audioManager) {
@@ -140,8 +173,10 @@ void AssetManager::loadWiimoteAudio(WiimoteManager& wiimoteManager) {
 }
 
 GRRLIB_texImg* AssetManager::getTexture(const char* name) const {
-    // Stub: Return nullptr; rendering uses primitives
-    (void)name; // Suppress unused parameter warning
+    auto it = textures.find(name);
+    if (it != textures.end()) {
+        return it->second;
+    }
     return nullptr;
 }
 

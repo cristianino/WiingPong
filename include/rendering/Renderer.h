@@ -5,6 +5,8 @@
 #include "../physics/PhysicsEngine.h"
 #include "../physics/Components.h"
 #include "../input/InputManager.h"
+#include "../gamestate/GameStateManager.h"
+#include "../assets/AssetManager.h"
 #include "../config.h"
 
 // Renderer class for drawing game elements using GRRLIB
@@ -15,6 +17,7 @@ public:
 
     void init();
     void render(const PhysicsEngine& physics);  // Draw from physics components
+    void renderMenu(const GameStateManager& gameState);  // Draw menu screen
     void renderDebugInfo(const InputManager& input);  // Debug overlay
     void renderDebugSensorInfo(const InputManager& input);  // Sensor debug overlay
     void renderDebugToggleProgress(const InputManager& input); // Debug toggle progress indicator (A+B or PLUS+MINUS)
@@ -31,6 +34,8 @@ private:
     void drawCourt();
     void drawScores(const PhysicsEngine& physics);
     void drawText(const char* text, int x, int y, u32 color);
+    void drawMenuItem(const char* text, int x, int y, bool selected);
+    void drawMenuBackground();
     
     // Wii-style button rendering functions
     void drawWiiButton(int x, int y, int size, u32 baseColor, u32 activeColor, bool isPressed, bool hasSymbol = false);

@@ -1,7 +1,7 @@
 // source/gamestate/GameStateManager.cpp
 #include "gamestate/GameStateManager.h"
 
-GameStateManager::GameStateManager() : playerScore(0), cpuScore(0), isRunning(true), currentState(GameStateType::Play) {
+GameStateManager::GameStateManager() : currentState(GameStateType::Menu), playerScore(0), cpuScore(0), isRunning(true), menuSelectedIndex(0), menuItemCount(2) {
 }
 
 GameStateManager::~GameStateManager() {
@@ -61,5 +61,31 @@ void GameStateManager::exitState(GameStateType state) {
             break;
         default:
             break;
+    }
+}
+
+// Menu navigation methods
+void GameStateManager::menuNavigateUp() {
+    if (currentState == GameStateType::Menu) {
+        menuSelectedIndex = (menuSelectedIndex - 1 + menuItemCount) % menuItemCount;
+    }
+}
+
+void GameStateManager::menuNavigateDown() {
+    if (currentState == GameStateType::Menu) {
+        menuSelectedIndex = (menuSelectedIndex + 1) % menuItemCount;
+    }
+}
+
+void GameStateManager::menuSelect() {
+    if (currentState == GameStateType::Menu) {
+        switch (menuSelectedIndex) {
+            case 0: // Start Game
+                setState(GameStateType::Play);
+                break;
+            case 1: // Exit
+                isRunning = false;
+                break;
+        }
     }
 }

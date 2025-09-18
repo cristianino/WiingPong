@@ -74,7 +74,11 @@ Renderer.o: \
  /opt/devkitpro/libogc/include/wiiuse/wiiuse.h \
  /opt/devkitpro/libogc/include/bte/bte.h \
  /opt/devkitpro/libogc/include/bte/bd_addr.h \
- /home/cristian/Documentos/WiingPong/include/rendering/../input/../config.h
+ /home/cristian/Documentos/WiingPong/include/rendering/../input/../config.h \
+ /home/cristian/Documentos/WiingPong/include/rendering/../gamestate/GameStateManager.h \
+ /home/cristian/Documentos/WiingPong/include/rendering/../assets/AssetManager.h \
+ /opt/devkitpro/libogc/include/fat.h /opt/devkitpro/libogc/include/dvm.h \
+ /home/cristian/Documentos/WiingPong/include/audio/AudioManager.h
 /home/cristian/Documentos/WiingPong/include/rendering/Renderer.h:
 /opt/devkitpro/portlibs/wii/include/grrlib.h:
 /opt/devkitpro/libogc/include/gccore.h:
@@ -150,3 +154,8 @@ Renderer.o: \
 /opt/devkitpro/libogc/include/bte/bte.h:
 /opt/devkitpro/libogc/include/bte/bd_addr.h:
 /home/cristian/Documentos/WiingPong/include/rendering/../input/../config.h:
+/home/cristian/Documentos/WiingPong/include/rendering/../gamestate/GameStateManager.h:
+/home/cristian/Documentos/WiingPong/include/rendering/../assets/AssetManager.h:
+/opt/devkitpro/libogc/include/fat.h:
+/opt/devkitpro/libogc/include/dvm.h:
+/home/cristian/Documentos/WiingPong/include/audio/AudioManager.h:

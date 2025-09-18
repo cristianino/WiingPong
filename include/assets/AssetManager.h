@@ -3,6 +3,8 @@
 #include <grrlib.h>
 #include <fat.h>
 #include "audio/AudioManager.h"
+#include <map>
+#include <string>
 
 // Forward declaration
 class WiimoteManager;
@@ -16,6 +18,7 @@ public:
 
     void init();
     void loadAllAssets();  // Preload game assets
+    void loadTextures();   // Load texture assets
     void loadAudio(AudioManager& audioManager);  // Load audio assets
     void loadWiimoteAudio(WiimoteManager& wiimoteManager);  // Load Wiimote audio assets
 
@@ -32,4 +35,5 @@ private:
     AssetManager& operator=(const AssetManager&) = delete;
 
     bool initialized;
+    std::map<std::string, GRRLIB_texImg*> textures;  // Store loaded textures
 };

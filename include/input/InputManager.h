@@ -11,6 +11,9 @@ enum class InputEventType {
     PaddleDown,    // B button held for player movement down
     Home,          // HOME button pressed to exit/pause
     ToggleDebug,   // A+B held for 4 seconds to toggle debug view
+    MenuUp,        // Navigate menu up (UP on d-pad)
+    MenuDown,      // Navigate menu down (DOWN on d-pad)
+    MenuSelect,    // Select menu item (A button or 1 button)
     None
 };
 
