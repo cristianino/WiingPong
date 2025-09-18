@@ -1,4 +1,10 @@
 // source/rendering/Renderer.cpp
+// Enhanced with modern textures and visual effects:
+// - Ball: 3D sphere with glow and highlight effects
+// - Paddles: Gradient textures with themed colors and 3D depth
+// - Court: Modern design with center circle and enhanced boundaries
+// - Background: Subtle gradient for better visual appeal
+
 #include "rendering/Renderer.h"
 #include <gccore.h>  // For VIDEO_Init if needed
 #include <stdio.h>   // For snprintf
@@ -25,17 +31,24 @@ void Renderer::init() {
 void Renderer::render(const PhysicsEngine& physics) {
     if (!initialized) return;
 
-    // Clear screen (black background)
-    GRRLIB_FillScreen(0x000000FF);
+    // Clear screen with modern gradient background
+    GRRLIB_FillScreen(0x001122FF); // Dark blue base
+    
+    // Add subtle gradient effect
+    for (int y = 0; y < 480; y += 20) {
+        u8 intensity = 0x11 + (y * 0x11) / 480;
+        u32 gradientColor = (intensity << 16) | (intensity << 8) | 0x22FF;
+        GRRLIB_Rectangle(0, y, 640, 20, gradientColor, true);
+    }
 
     // Draw court line
     drawCourt();
 
     // Draw entities
-    // Player paddle
-    drawPaddle(physics.positions[PLAYER_PADDLE], physics.sizes[PLAYER_PADDLE], 0xFFFFFFFF);
-    // CPU paddle
-    drawPaddle(physics.positions[CPU_PADDLE], physics.sizes[CPU_PADDLE], 0xFFFFFFFF);
+    // Player paddle (blue tint)
+    drawPaddle(physics.positions[PLAYER_PADDLE], physics.sizes[PLAYER_PADDLE], 0x4488FFFF);
+    // CPU paddle (red tint)
+    drawPaddle(physics.positions[CPU_PADDLE], physics.sizes[CPU_PADDLE], 0xFF4488FF);
     // Ball
     drawBall(physics.positions[BALL], physics.sizes[BALL], 0xFFFFFFFF);
 
@@ -113,15 +126,93 @@ void Renderer::renderMenu(const GameStateManager& gameState) {
 }
 
 void Renderer::drawPaddle(const Position& pos, const Size& size, u32 color) {
-    GRRLIB_Rectangle(pos.x, pos.y, size.width, size.height, color, true);
+    // Draw modern paddle with gradient and 3D effect
+    int x = pos.x;
+    int y = pos.y;
+    int w = size.width;
+    int h = size.height;
+    
+    // Extract RGB components from color parameter for themed coloring
+    u8 r = (color >> 24) & 0xFF;
+    u8 g = (color >> 16) & 0xFF;
+    u8 b = (color >> 8) & 0xFF;
+    
+    // Draw outer glow with theme color
+    u32 glowColor = ((r/3) << 24) | ((g/3) << 16) | ((b/3) << 8) | 0x30;
+    GRRLIB_Rectangle(x - 2, y - 2, w + 4, h + 4, glowColor, true);
+    
+    // Draw main paddle body with themed base color
+    u32 baseColor = ((r/2) << 24) | ((g/2) << 16) | ((b/2) << 8) | 0xFF;
+    GRRLIB_Rectangle(x, y, w, h, baseColor, true);
+    
+    // Gradient layers for depth with theme color
+    for (int i = 0; i < w/4; i++) {
+        u8 alpha = 255 - (i * 40);
+        u8 gradR = r/2 + (r/4) * i / (w/4);
+        u8 gradG = g/2 + (g/4) * i / (w/4);
+        u8 gradB = b/2 + (b/4) * i / (w/4);
+        u32 gradientColor = (gradR << 24) | (gradG << 16) | (gradB << 8) | alpha;
+        GRRLIB_Rectangle(x + i, y, 2, h, gradientColor, true);
+    }
+    
+    // Highlight on left edge for 3D effect
+    GRRLIB_Rectangle(x, y, 2, h, 0xFFFFFFBB, true);
+    
+    // Shadow on right edge
+    GRRLIB_Rectangle(x + w - 2, y, 2, h, 0x00000060, true);
+    
+    // Add subtle pattern/texture lines
+    for (int i = y + 5; i < y + h - 5; i += 8) {
+        u32 lineColor = ((r*3/4) << 24) | ((g*3/4) << 16) | ((b*3/4) << 8) | 0xAA;
+        GRRLIB_Line(x + 2, i, x + w - 4, i, lineColor);
+    }
+    
+    // Corner highlights for extra polish
+    GRRLIB_Rectangle(x + 1, y + 1, 3, 3, 0xFFFFFF80, true);
+    GRRLIB_Rectangle(x + 1, y + h - 4, 3, 3, 0xFFFFFF80, true);
 }
 
 void Renderer::drawBall(const Position& pos, const Size& size, u32 color) {
-    GRRLIB_Rectangle(pos.x, pos.y, size.width, size.height, color, true);
+    // Draw a modern-looking ball with gradient and glow effect
+    float centerX = pos.x + size.width / 2.0f;
+    float centerY = pos.y + size.height / 2.0f;
+    float radius = size.width / 2.0f;
+    
+    // Draw outer glow (larger, more transparent)
+    GRRLIB_Circle(centerX, centerY, radius + 4, 0x00FFFF30, true);
+    GRRLIB_Circle(centerX, centerY, radius + 2, 0x00FFFF60, true);
+    
+    // Draw main ball with gradient effect
+    GRRLIB_Circle(centerX, centerY, radius, 0xFFFFFFFF, true);
+    
+    // Add highlight for 3D effect (smaller white circle offset)
+    GRRLIB_Circle(centerX - radius/3, centerY - radius/3, radius/3, 0xFFFFFFCC, true);
+    
+    // Add subtle inner shadow for depth
+    GRRLIB_Circle(centerX + radius/4, centerY + radius/4, radius/4, 0x00000040, true);
 }
 
 void Renderer::drawCourt() {
-    GRRLIB_Line(320, 0, 320, 480, 0xFFFFFFFF);
+    // Draw modern court with enhanced center line and effects
+    
+    // Draw subtle court boundaries
+    GRRLIB_Rectangle(0, 0, 640, 4, 0x444444FF, true); // Top boundary
+    GRRLIB_Rectangle(0, 476, 640, 4, 0x444444FF, true); // Bottom boundary
+    
+    // Draw center line with glow effect
+    GRRLIB_Line(320, 0, 320, 480, 0x00FFFF60); // Glow
+    GRRLIB_Line(319, 0, 319, 480, 0xFFFFFFFF); // Main line
+    GRRLIB_Line(321, 0, 321, 480, 0xFFFFFFFF); // Main line (double width)
+    
+    // Draw center circle
+    GRRLIB_Circle(320, 240, 50, 0xFFFFFF80, false);
+    GRRLIB_Circle(320, 240, 48, 0x00FFFF40, false);
+    
+    // Draw corner indicators
+    GRRLIB_Rectangle(0, 0, 20, 20, 0x00FFFF60, true);
+    GRRLIB_Rectangle(620, 0, 20, 20, 0x00FFFF60, true);
+    GRRLIB_Rectangle(0, 460, 20, 20, 0x00FFFF60, true);
+    GRRLIB_Rectangle(620, 460, 20, 20, 0x00FFFF60, true);
 }
 
 void Renderer::drawScores(const PhysicsEngine& physics) {
