@@ -42,20 +42,35 @@ void AssetManager::loadTextures() {
     printf("Loading texture assets...\n");
     
     // Load banner image with multiple path attempts
+    // Try icon_banner.png first (perfect size for menu), then fallback to other banners
     const char* bannerPaths[] = {
-        "sd:/apps/WiingPong/data/img/wiipong-banner.png",
-        "sd:/data/img/wiipong-banner.png",
-        "data/img/wiipong-banner.png",
-        "apps/WiingPong/data/img/wiipong-banner.png"
+        "./icon_banner_fixed.png",                             // RGBA version first (for development)
+        "icon_banner_fixed.png",                               // RGBA version relative path
+        "./icon_banner.png",                                    // Current directory (for development)
+        "icon_banner.png",                                      // Relative path
+        "sd:/icon_banner_fixed.png",                           // RGBA version on SD card root
+        "sd:/icon_banner.png",                                  // SD card root
+        "sd:/apps/WiingPong/icon_banner_fixed.png",            // RGBA version on SD card apps folder
+        "sd:/apps/WiingPong/icon_banner.png",                  // SD card apps folder
+        "apps/WiingPong/icon_banner_fixed.png",                // RGBA version in local apps folder
+        "apps/WiingPong/icon_banner.png",                      // Local apps folder
+        "./apps/WiingPong/icon_banner_fixed.png",              // RGBA version in local apps folder with ./
+        "./apps/WiingPong/icon_banner.png",                    // Local apps folder with ./
+        "sd:/apps/WiingPong/data/img/wiipong-banner.png",      // Fallback: large banner on SD
+        "sd:/data/img/wiipong-banner.png",                     // Fallback: large banner on SD
+        "data/img/wiipong-banner.png",                         // Fallback: large banner local
+        "apps/WiingPong/data/img/wiipong-banner.png"           // Fallback: large banner apps folder
     };
     
     GRRLIB_texImg* bannerTexture = nullptr;
-    for (int i = 0; i < 4 && !bannerTexture; i++) {
+    for (int i = 0; i < 16 && !bannerTexture; i++) {
         printf("Trying to load banner from: %s\n", bannerPaths[i]);
         bannerTexture = GRRLIB_LoadTextureFromFile(bannerPaths[i]);
         if (bannerTexture) {
-            printf("Successfully loaded banner from %s\n", bannerPaths[i]);
+            printf("Successfully loaded banner from %s (size: %dx%d)\n", bannerPaths[i], bannerTexture->w, bannerTexture->h);
             textures["banner"] = bannerTexture;
+        } else {
+            printf("Failed to load from: %s\n", bannerPaths[i]);
         }
     }
     if (!bannerTexture) {

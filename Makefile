@@ -105,7 +105,7 @@ package: $(BUILD)
 	@echo "Copying data files..."
 	@if [ -d "data" ]; then cp -r data apps/$(TARGET)/; fi
 	@echo "Copying icon..."
-	@if [ -f "icon_banner.png" ]; then cp icon_banner.png apps/$(TARGET)/icon.png; fi
+	@if [ -f "icon.png" ]; then cp icon.png apps/$(TARGET)/icon.png; elif [ -f "icon_banner.png" ]; then cp icon_banner.png apps/$(TARGET)/icon.png; fi
 	@echo "Creating meta.xml..."
 	@echo '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' > apps/$(TARGET)/meta.xml
 	@echo '<app version="1">' >> apps/$(TARGET)/meta.xml
