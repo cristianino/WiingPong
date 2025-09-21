@@ -70,14 +70,27 @@ void Renderer::renderMenu(const GameStateManager& gameState) {
     GRRLIB_texImg* banner = assets.getTexture("banner");
     
     if (banner) {
-        // Center the banner at the top
-        int bannerX = (640 - banner->w) / 2;
-        int bannerY = 50;
-        GRRLIB_DrawImg(bannerX, bannerY, banner, 0, 1, 1, 0xFFFFFFFF);
+        printf("Banner loaded successfully! Size: %dx%d\n", banner->w, banner->h);
+        // Center the banner at the top - scale down if it's too big
+        int bannerX, bannerY;
+        float scaleX = 1.0f, scaleY = 1.0f;
+        
+        // If banner is too wide (> 400px), scale it down
+        if (banner->w > 400) {
+            scaleX = 400.0f / banner->w;
+            scaleY = scaleX; // Keep aspect ratio
+        }
+        
+        int displayWidth = banner->w * scaleX;
+        int displayHeight = banner->h * scaleY;
+        bannerX = (640 - displayWidth) / 2;
+        bannerY = 50;
+        
+        GRRLIB_DrawImg(bannerX, bannerY, banner, 0, scaleX, scaleY, 0xFFFFFFFF);
         
         // Menu items positioned lower to make room for banner
         const char* menuItems[] = {"Iniciar Juego", "Salir"};
-        int startY = bannerY + banner->h + 50;
+        int startY = bannerY + displayHeight + 50;
         int itemHeight = 60;
         
         for (int i = 0; i < gameState.getMenuItemCount(); i++) {
@@ -86,6 +99,7 @@ void Renderer::renderMenu(const GameStateManager& gameState) {
             drawMenuItem(menuItems[i], 320, y, selected);
         }
     } else {
+        printf("Banner NOT loaded - using fallback rectangles\n");
         // Fallback: text-based title if banner doesn't load
         GRRLIB_Rectangle(220, 100, 200, 50, 0x4444AAFF, true);
         GRRLIB_Rectangle(225, 105, 190, 40, 0x6666CCFF, true);
