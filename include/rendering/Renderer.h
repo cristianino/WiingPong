@@ -46,6 +46,96 @@ struct EffectConfig
                      glowIntensity(0.0f) {}
 };
 
+// Particle for impact effects
+struct Particle
+{
+    float x, y;     // Current position
+    float vx, vy;   // Velocity
+    float life;     // Remaining life (0.0 to 1.0)
+    float maxLife;  // Maximum life duration
+    float size;     // Current size
+    float rotation; // Current rotation
+    u32 color;      // Current color
+
+    Particle() : x(0), y(0), vx(0), vy(0), life(0), maxLife(1.0f),
+                 size(1.0f), rotation(0), color(0xFFFFFFFF) {}
+
+    bool isAlive() const { return life > 0.0f; }
+    void update(float deltaTime);
+};
+
+// Camera shake effect
+struct CameraShake
+{
+    float intensity;        // Shake intensity
+    float duration;         // Total duration
+    float timeLeft;         // Time remaining
+    float frequency;        // Shake frequency
+    float offsetX, offsetY; // Current offset
+
+    CameraShake() : intensity(0), duration(0), timeLeft(0), frequency(15.0f),
+                    offsetX(0), offsetY(0) {}
+
+    void start(float newIntensity, float newDuration);
+    void update(float deltaTime);
+    bool isActive() const { return timeLeft > 0.0f; }
+};
+
+// Fade transition effect
+struct FadeTransition
+{
+    enum FadeType
+    {
+        None,
+        FadeIn,
+        FadeOut,
+        FadeInOut
+    };
+
+    FadeType type;
+    float duration; // Total duration
+    float timeLeft; // Time remaining
+    float alpha;    // Current alpha value
+    u32 color;      // Fade color
+
+    FadeTransition() : type(None), duration(0), timeLeft(0), alpha(0), color(0x000000FF) {}
+
+    void startFadeIn(float newDuration, u32 fadeColor = 0x000000FF);
+    void startFadeOut(float newDuration, u32 fadeColor = 0x000000FF);
+    void startFadeInOut(float newDuration, u32 fadeColor = 0x000000FF);
+    void update(float deltaTime);
+    bool isActive() const { return type != None && timeLeft > 0.0f; }
+    float getCurrentAlpha() const;
+};
+
+// UI Animation system
+struct UIAnimation
+{
+    enum AnimType
+    {
+        Slide,
+        Scale,
+        Rotate,
+        Pulse
+    };
+
+    AnimType type;
+    float duration;
+    float timeLeft;
+    float startValue;
+    float endValue;
+    float currentValue;
+    bool looping;
+
+    UIAnimation() : type(Slide), duration(0), timeLeft(0), startValue(0),
+                    endValue(0), currentValue(0), looping(false) {}
+
+    void start(AnimType animType, float animDuration, float start, float end, bool loop = false);
+    void update(float deltaTime);
+    bool isActive() const { return timeLeft > 0.0f; }
+    float getValue() const { return currentValue; }
+};
+
 // Renderer class for drawing game elements using GRRLIB
 class Renderer
 {
@@ -63,6 +153,15 @@ public:
     void setDebugVisible(bool visible) { debugVisible = visible; }
     bool isDebugVisible() const { return debugVisible; }
 
+    // Animation and transition system public API
+    void startScreenFadeIn(float duration = 1.0f, u32 color = 0x000000FF);
+    void startScreenFadeOut(float duration = 1.0f, u32 color = 0x000000FF);
+    void startScreenFadeInOut(float duration = 2.0f, u32 color = 0x000000FF);
+    void triggerCameraShake(float intensity = 5.0f, float duration = 0.5f);
+    void spawnImpactParticles(float x, float y, u32 color = 0xFFFFFFFF, int count = 5);
+    bool isTransitionActive() const;
+    void resetAllAnimations();
+
 private:
     bool initialized;
     bool debugVisible;                   // Control debug visibility
@@ -74,6 +173,12 @@ private:
     EffectConfig normalEffects;             // Effects config for normal atlas
     EffectConfig intenseEffects;            // Effects config for intense atlas
     float currentTime;                      // Current time for effect calculations
+
+    // Animation system variables
+    std::vector<Particle> particles;       // Active particle effects
+    CameraShake cameraShake;               // Current camera shake effect
+    FadeTransition fadeTransition;         // Current fade transition
+    std::vector<UIAnimation> uiAnimations; // Active UI animations
 
     void drawPaddle(const Position &pos, const Size &size, u32 color);
     void drawBall(const Position &pos, const Size &size, u32 color);
@@ -98,6 +203,14 @@ private:
     void drawGlowEffect(const Position &pos, const Size &size, const EffectConfig &config, u32 glowColor);
     EffectConfig getCurrentEffectConfig(AtlasType currentAtlas) const;
     void setupEffectConfigurations();
+
+    // Animation system private methods
+    void updateParticles(float deltaTime);
+    void updateCameraShake(float deltaTime);
+    void updateFadeTransition(float deltaTime);
+    void updateUIAnimations(float deltaTime);
+    void renderParticles();
+    void renderFadeTransition();
 
     // Wii-style button rendering functions
     void drawWiiButton(int x, int y, int size, u32 baseColor, u32 activeColor, bool isPressed, bool hasSymbol = false);

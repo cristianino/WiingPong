@@ -14,6 +14,19 @@
 
 Renderer::Renderer() : initialized(false), debugVisible(false), font(nullptr), currentTime(0.0f)
 {
+    // Initialize animation system variables
+    cameraShake.intensity = 0.0f;
+    cameraShake.duration = 0.0f;
+    cameraShake.timeLeft = 0.0f;
+    cameraShake.frequency = 15.0f;
+    cameraShake.offsetX = 0.0f;
+    cameraShake.offsetY = 0.0f;
+
+    fadeTransition.type = FadeTransition::None;
+    fadeTransition.duration = 0.0f;
+    fadeTransition.timeLeft = 0.0f;
+    fadeTransition.alpha = 0.0f;
+    fadeTransition.color = 0x000000FF;
 }
 
 Renderer::~Renderer()
@@ -54,6 +67,12 @@ void Renderer::update(float deltaTime, const PhysicsEngine &physics)
 
     // Update ball trail
     updateBallTrail(physics.positions[BALL], physics.velocities[BALL]);
+
+    // Update animation systems
+    updateParticles(deltaTime);
+    updateCameraShake(deltaTime);
+    updateFadeTransition(deltaTime);
+    updateUIAnimations(deltaTime);
 }
 
 void Renderer::render(const PhysicsEngine &physics)
@@ -165,6 +184,19 @@ void Renderer::render(const PhysicsEngine &physics)
         // Draw scores (placeholder bars)
         drawScores(physics);
     }
+
+    // Apply camera shake offset if active
+    if (cameraShake.timeLeft > 0.0f)
+    {
+        // Apply shake offset to all subsequent rendering
+        // This would typically be done at the beginning, but for simplicity we note it here
+    }
+
+    // Render particles (overlay on top of everything)
+    renderParticles();
+
+    // Render fade transition (final overlay)
+    renderFadeTransition();
 }
 
 void Renderer::renderMenu(const GameStateManager &gameState)
@@ -1695,4 +1727,328 @@ void Renderer::drawGlowEffect(const Position &pos, const Size &size, const Effec
         assets.drawSprite(SpriteID::Ball, drawX, drawY,
                           scaleX * layerScale, scaleY * layerScale, layerColor);
     }
+}
+
+// Animation system implementation
+
+void Renderer::updateParticles(float deltaTime)
+{
+    // Update existing particles
+    for (auto it = particles.begin(); it != particles.end();)
+    {
+        Particle &p = *it;
+        p.life -= deltaTime;
+
+        if (p.life <= 0.0f)
+        {
+            it = particles.erase(it);
+        }
+        else
+        {
+            // Update position
+            p.x += p.vx * deltaTime;
+            p.y += p.vy * deltaTime;
+
+            // Update rotation
+            p.rotation += 180.0f * deltaTime; // Rotate 180 degrees per second
+
+            // Fade out over time
+            float lifeRatio = p.life / p.maxLife;
+            p.color = (p.color & 0x00FFFFFF) | ((u8)(lifeRatio * 255.0f) << 24);
+
+            ++it;
+        }
+    }
+}
+
+void Renderer::updateCameraShake(float deltaTime)
+{
+    if (cameraShake.timeLeft > 0.0f)
+    {
+        cameraShake.timeLeft -= deltaTime;
+
+        if (cameraShake.timeLeft <= 0.0f)
+        {
+            // Shake finished
+            cameraShake.offsetX = 0.0f;
+            cameraShake.offsetY = 0.0f;
+        }
+        else
+        {
+            // Calculate shake offset
+            float time = currentTime * cameraShake.frequency;
+            cameraShake.offsetX = sin(time) * cameraShake.intensity;
+            cameraShake.offsetY = cos(time * 1.5f) * cameraShake.intensity;
+        }
+    }
+}
+
+void Renderer::updateFadeTransition(float deltaTime)
+{
+    if (fadeTransition.timeLeft > 0.0f)
+    {
+        fadeTransition.timeLeft -= deltaTime;
+
+        float progress = 1.0f - (fadeTransition.timeLeft / fadeTransition.duration);
+
+        switch (fadeTransition.type)
+        {
+        case FadeTransition::FadeIn:
+            fadeTransition.alpha = 1.0f - progress;
+            break;
+        case FadeTransition::FadeOut:
+            fadeTransition.alpha = progress;
+            break;
+        case FadeTransition::FadeInOut:
+            if (progress < 0.5f)
+                fadeTransition.alpha = progress * 2.0f;
+            else
+                fadeTransition.alpha = (1.0f - progress) * 2.0f;
+            break;
+        case FadeTransition::None:
+            fadeTransition.alpha = 0.0f;
+            break;
+        }
+
+        if (fadeTransition.timeLeft <= 0.0f)
+        {
+            fadeTransition.type = FadeTransition::None;
+            fadeTransition.alpha = 0.0f;
+        }
+    }
+}
+
+void Renderer::updateUIAnimations(float deltaTime)
+{
+    for (auto it = uiAnimations.begin(); it != uiAnimations.end();)
+    {
+        UIAnimation &anim = *it;
+        anim.timeLeft -= deltaTime;
+
+        if (anim.timeLeft <= 0.0f)
+        {
+            it = uiAnimations.erase(it);
+        }
+        else
+        {
+            float progress = 1.0f - (anim.timeLeft / anim.duration);
+
+            switch (anim.type)
+            {
+            case UIAnimation::Slide:
+                anim.currentValue = anim.startValue + (progress * (anim.endValue - anim.startValue));
+                break;
+            case UIAnimation::Scale:
+                anim.currentValue = anim.startValue + (progress * (anim.endValue - anim.startValue));
+                break;
+            case UIAnimation::Rotate:
+                anim.currentValue = anim.startValue + (progress * (anim.endValue - anim.startValue));
+                break;
+            case UIAnimation::Pulse:
+                anim.currentValue = anim.startValue + sin(progress * 3.14159f * 2.0f) * anim.endValue;
+                break;
+            }
+
+            ++it;
+        }
+    }
+}
+
+// Public API implementations
+
+void Renderer::startScreenFadeIn(float duration, u32 color)
+{
+    fadeTransition.startFadeIn(duration, color);
+}
+
+void Renderer::startScreenFadeOut(float duration, u32 color)
+{
+    fadeTransition.startFadeOut(duration, color);
+}
+
+void Renderer::startScreenFadeInOut(float duration, u32 color)
+{
+    fadeTransition.startFadeInOut(duration, color);
+}
+
+void Renderer::triggerCameraShake(float intensity, float duration)
+{
+    cameraShake.start(intensity, duration);
+}
+
+void Renderer::spawnImpactParticles(float x, float y, u32 color, int count)
+{
+    for (int i = 0; i < count; i++)
+    {
+        Particle p;
+        p.x = x;
+        p.y = y;
+
+        // Random velocity in circle
+        float angle = (float)(rand() % 360) * 3.14159f / 180.0f;
+        float speed = 50.0f + (rand() % 100); // 50-150 pixels per second
+        p.vx = cos(angle) * speed;
+        p.vy = sin(angle) * speed;
+
+        p.life = 0.5f + (float)(rand() % 50) / 100.0f; // 0.5-1.0 seconds
+        p.maxLife = p.life;
+        p.size = 2.0f + (float)(rand() % 4); // 2-6 pixels
+        p.rotation = (float)(rand() % 360);
+        p.color = color;
+
+        particles.push_back(p);
+    }
+}
+
+bool Renderer::isTransitionActive() const
+{
+    return fadeTransition.isActive() || cameraShake.isActive() || !particles.empty() || !uiAnimations.empty();
+}
+
+void Renderer::resetAllAnimations()
+{
+    particles.clear();
+    uiAnimations.clear();
+    cameraShake = CameraShake();
+    fadeTransition = FadeTransition();
+}
+
+// Rendering methods for animation system
+
+void Renderer::renderParticles()
+{
+    for (const Particle &p : particles)
+    {
+        // Draw simple colored rectangles for particles
+        GRRLIB_Rectangle((int)(p.x - p.size / 2), (int)(p.y - p.size / 2),
+                         (int)p.size, (int)p.size, p.color, true);
+    }
+}
+
+void Renderer::renderFadeTransition()
+{
+    if (fadeTransition.isActive())
+    {
+        u8 alpha = (u8)(fadeTransition.getCurrentAlpha() * 255.0f);
+        u32 fadeColor = (alpha << 24) | (fadeTransition.color & 0x00FFFFFF);
+
+        // Draw full screen overlay
+        GRRLIB_Rectangle(0, 0, 640, 480, fadeColor, true);
+    }
+}
+
+// Structure method implementations
+
+void Particle::update(float deltaTime)
+{
+    // Update position
+    x += vx * deltaTime;
+    y += vy * deltaTime;
+
+    // Update life
+    life -= deltaTime;
+
+    // Fade color based on life remaining
+    if (maxLife > 0.0f)
+    {
+        float lifeRatio = life / maxLife;
+        color = (color & 0x00FFFFFF) | ((u8)(lifeRatio * 255.0f) << 24);
+    }
+}
+
+void CameraShake::start(float newIntensity, float newDuration)
+{
+    intensity = newIntensity;
+    duration = newDuration;
+    timeLeft = newDuration;
+    offsetX = 0.0f;
+    offsetY = 0.0f;
+}
+
+void CameraShake::update(float deltaTime)
+{
+    if (timeLeft > 0.0f)
+    {
+        timeLeft -= deltaTime;
+
+        if (timeLeft <= 0.0f)
+        {
+            offsetX = 0.0f;
+            offsetY = 0.0f;
+        }
+        else
+        {
+            // Calculate shake offset using time
+            float time = (duration - timeLeft) * frequency;
+            offsetX = sin(time) * intensity;
+            offsetY = cos(time * 1.5f) * intensity;
+        }
+    }
+}
+
+void FadeTransition::startFadeIn(float newDuration, u32 fadeColor)
+{
+    type = FadeIn;
+    duration = newDuration;
+    timeLeft = newDuration;
+    color = fadeColor;
+    alpha = 1.0f;
+}
+
+void FadeTransition::startFadeOut(float newDuration, u32 fadeColor)
+{
+    type = FadeOut;
+    duration = newDuration;
+    timeLeft = newDuration;
+    color = fadeColor;
+    alpha = 0.0f;
+}
+
+void FadeTransition::startFadeInOut(float newDuration, u32 fadeColor)
+{
+    type = FadeInOut;
+    duration = newDuration;
+    timeLeft = newDuration;
+    color = fadeColor;
+    alpha = 0.0f;
+}
+
+void FadeTransition::update(float deltaTime)
+{
+    if (timeLeft > 0.0f)
+    {
+        timeLeft -= deltaTime;
+
+        float progress = 1.0f - (timeLeft / duration);
+
+        switch (type)
+        {
+        case FadeIn:
+            alpha = 1.0f - progress;
+            break;
+        case FadeOut:
+            alpha = progress;
+            break;
+        case FadeInOut:
+            if (progress < 0.5f)
+                alpha = progress * 2.0f;
+            else
+                alpha = (1.0f - progress) * 2.0f;
+            break;
+        case None:
+            alpha = 0.0f;
+            break;
+        }
+
+        if (timeLeft <= 0.0f)
+        {
+            type = None;
+            alpha = 0.0f;
+        }
+    }
+}
+
+float FadeTransition::getCurrentAlpha() const
+{
+    return alpha;
 }
