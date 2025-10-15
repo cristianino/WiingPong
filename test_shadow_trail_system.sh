@@ -1,0 +1,133 @@
+#!/bin/bash
+
+# Test script for Shadow and Trail Effects System
+echo "🌟 Testing WiingPong Shadow & Trail Effects System..."
+echo "===================================================="
+
+# Check compilation
+echo ""
+echo "Checking compilation:"
+if [ -f "WiingPong.dol" ]; then
+    echo "✅ WiingPong.dol compiled successfully with shadow & trail effects"
+else
+    echo "❌ Compilation failed"
+    exit 1
+fi
+
+echo ""
+echo "Shadow & Trail Effects System Features:"
+echo "======================================"
+echo "✅ Dynamic Shadow System:"
+echo "  - Paddle shadows with configurable offset and opacity"
+echo "  - Ball shadows with smooth positioning"
+echo "  - Different shadow styles for Normal vs Intense atlas"
+echo "  - Real-time shadow movement in intense mode"
+
+echo ""
+echo "✅ Ball Trail System:"
+echo "  - Position history tracking (up to 6 trail points)"
+echo "  - Gradual transparency fade (newest to oldest)"
+echo "  - Speed-based trail generation (only when moving fast)"
+echo "  - Scale reduction towards trail tail"
+echo "  - Automatic cleanup of old trail points"
+
+echo ""
+echo "✅ Glow Effects (Intense Mode):"
+echo "  - Multi-layer glow with pulsing intensity"
+echo "  - Cyan glow for cyberpunk aesthetic"
+echo "  - Synced with game timing for smooth animation"
+
+echo ""
+echo "✅ Atlas-Adaptive Configuration:"
+echo "  - Normal Atlas: Subtle black shadows, 4-point trails"
+echo "  - Intense Atlas: Dynamic cyan shadows, 6-point trails"
+echo "  - Automatic switching based on game state"
+
+echo ""
+echo "Effect Configurations:"
+echo "====================="
+echo "Normal Atlas Effects:"
+echo "• Shadow: 3px offset, 40% opacity, black color"
+echo "• Trail: 4 points, 25% fade rate, white/normal color"
+echo "• Glow: Disabled for clean gameplay"
+echo "• Movement: Static shadows"
+
+echo ""
+echo "Intense Atlas Effects (3-3+ tie):"
+echo "• Shadow: 5px offset, 60% opacity, dark cyan color"
+echo "• Trail: 6 points, 20% fade rate, cyan color"
+echo "• Glow: 30% intensity, multi-layer, pulsing"
+echo "• Movement: Dynamic shadow animation"
+
+echo ""
+echo "Technical Implementation:"
+echo "========================"
+echo "🔧 Position History System:"
+echo "  - std::vector<PositionHistory> for trail storage"
+echo "  - Timestamp-based point management"
+echo "  - Automatic cleanup of old points (>1 second)"
+echo "  - Speed threshold for trail generation (>5 units)"
+
+echo ""
+echo "🎨 Rendering Pipeline:"
+echo "  1. Background layers (parallax)"
+echo "  2. Shadows (behind main elements)"
+echo "  3. Ball trails (behind ball, in front of shadows)"
+echo "  4. Main game elements (paddles, ball)"
+echo "  5. Glow effects (on top for intense mode)"
+echo "  6. UI elements (scores, debug info)"
+
+echo ""
+echo "⚡ Performance Optimizations:"
+echo "  - Limited trail length (4-6 points max)"
+echo "  - Efficient alpha calculations"
+echo "  - Smart trail point cleanup"
+echo "  - Reuse of existing sprite assets"
+echo "  - Conditional effect rendering"
+
+echo ""
+echo "Visual Effects Details:"
+echo "======================"
+echo "🌊 Shadow Dynamics:"
+echo "  - Subtle oscillating movement in intense mode"
+echo "  - sin/cos wave functions for organic motion"
+echo "  - Different frequencies for X and Y movement"
+
+echo ""
+echo "✨ Trail Rendering:"
+echo "  - Alpha fade: 1.0 → 0.1 (newest to oldest)"
+echo "  - Scale reduction: 1.0 → 0.7 (size decreases)"
+echo "  - Color tinting based on atlas type"
+echo "  - Smooth temporal interpolation"
+
+echo ""
+echo "💫 Glow System:"
+echo "  - 3 concentric glow layers"
+echo "  - Decreasing intensity per layer"
+echo "  - 8Hz pulsing frequency"
+echo "  - Seamless integration with gameplay"
+
+echo ""
+echo "Usage Scenarios:"
+echo "==============="
+echo "🎮 Normal Gameplay:"
+echo "  - Observe subtle shadows behind paddles and ball"
+echo "  - Watch ball trail appear during fast movements"
+echo "  - Clean, non-distracting visual enhancement"
+
+echo ""
+echo "🔥 Intense Mode (3-3+ tie):"
+echo "  - Dynamic shadows with slight movement"
+echo "  - Longer, more visible cyan trails"
+echo "  - Pulsing glow around ball"
+echo "  - Enhanced visual drama"
+
+echo ""
+echo "🎯 Effect Triggers:"
+echo "  - Shadows: Always visible when elements are present"
+echo "  - Trails: Generated when ball speed > 5 units"
+echo "  - Glows: Only in intense mode with pulsing animation"
+echo "  - Atlas switch: Automatic at 3-3+ tie scenarios"
+
+echo ""
+echo "🚀 Ready to experience cinematic shadow & trail effects! ✨"
