@@ -30,7 +30,20 @@ void Renderer::init()
 
     VIDEO_Init();
     GRRLIB_Init();
+
+    // Initialize background manager
+    backgroundManager.init();
+
     initialized = true;
+}
+
+void Renderer::update(float deltaTime, const PhysicsEngine &physics)
+{
+    if (!initialized)
+        return;
+
+    // Update background animations
+    backgroundManager.update(deltaTime, physics);
 }
 
 void Renderer::render(const PhysicsEngine &physics)
@@ -53,7 +66,7 @@ void Renderer::render(const PhysicsEngine &physics)
 
     if (spritesheet)
     {
-        // Use spritesheet for rendering
+        // Use spritesheet for rendering with parallax backgrounds
 
         // Clear screen with color based on atlas type
         if (assets.getCurrentAtlas() == AtlasType::Intense)
@@ -67,8 +80,8 @@ void Renderer::render(const PhysicsEngine &physics)
             GRRLIB_FillScreen(0x001122FF);
         }
 
-        // Draw background from spritesheet
-        drawCourtSprite();
+        // Draw parallax background layers instead of static background
+        backgroundManager.render(assets.getCurrentAtlas());
 
         // Draw entities using sprites
         drawPaddleSprite(physics.positions[PLAYER_PADDLE], physics.sizes[PLAYER_PADDLE], true);

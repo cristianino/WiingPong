@@ -7,6 +7,7 @@
 #include "../input/InputManager.h"
 #include "../gamestate/GameStateManager.h"
 #include "../assets/AssetManager.h"
+#include "../background/BackgroundManager.h"
 #include "../config.h"
 
 // Renderer class for drawing game elements using GRRLIB
@@ -17,18 +18,20 @@ public:
     ~Renderer();
 
     void init();
-    void render(const PhysicsEngine &physics);                 // Draw from physics components
-    void renderMenu(const GameStateManager &gameState);        // Draw menu screen
-    void renderDebugInfo(const InputManager &input);           // Debug overlay
-    void renderDebugSensorInfo(const InputManager &input);     // Sensor debug overlay
-    void renderDebugToggleProgress(const InputManager &input); // Debug toggle progress indicator (A+B or PLUS+MINUS)
+    void update(float deltaTime, const PhysicsEngine &physics); // Update animations
+    void render(const PhysicsEngine &physics);                  // Draw from physics components
+    void renderMenu(const GameStateManager &gameState);         // Draw menu screen
+    void renderDebugInfo(const InputManager &input);            // Debug overlay
+    void renderDebugSensorInfo(const InputManager &input);      // Sensor debug overlay
+    void renderDebugToggleProgress(const InputManager &input);  // Debug toggle progress indicator (A+B or PLUS+MINUS)
     void setDebugVisible(bool visible) { debugVisible = visible; }
     bool isDebugVisible() const { return debugVisible; }
 
 private:
     bool initialized;
-    bool debugVisible;   // Control debug visibility
-    GRRLIB_texImg *font; // For future text; placeholder for now
+    bool debugVisible;                   // Control debug visibility
+    GRRLIB_texImg *font;                 // For future text; placeholder for now
+    BackgroundManager backgroundManager; // Parallax background system
 
     void drawPaddle(const Position &pos, const Size &size, u32 color);
     void drawBall(const Position &pos, const Size &size, u32 color);

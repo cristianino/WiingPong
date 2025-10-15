@@ -79,6 +79,7 @@ main.o: /home/cristian/Documentos/WiingPong/source/main.cpp \
  /home/cristian/Documentos/WiingPong/include/rendering/../gamestate/GameStateManager.h \
  /home/cristian/Documentos/WiingPong/include/rendering/../assets/AssetManager.h \
  /home/cristian/Documentos/WiingPong/include/audio/AudioManager.h \
+ /home/cristian/Documentos/WiingPong/include/rendering/../background/BackgroundManager.h \
  /home/cristian/Documentos/WiingPong/include/WiimoteManager.h
 /opt/devkitpro/libogc/include/fat.h:
 /opt/devkitpro/libogc/include/dvm.h:
@@ -161,4 +162,5 @@ main.o: /home/cristian/Documentos/WiingPong/source/main.cpp \
 /home/cristian/Documentos/WiingPong/include/rendering/../gamestate/GameStateManager.h:
 /home/cristian/Documentos/WiingPong/include/rendering/../assets/AssetManager.h:
 /home/cristian/Documentos/WiingPong/include/audio/AudioManager.h:
+/home/cristian/Documentos/WiingPong/include/rendering/../background/BackgroundManager.h:
 /home/cristian/Documentos/WiingPong/include/WiimoteManager.h:

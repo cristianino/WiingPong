@@ -46,6 +46,32 @@ enum class AtlasType
     Intense // Intense/tied game atlas (atlas_2.png)
 };
 
+// Enum for background layer types
+enum class BackgroundLayer
+{
+    FarBackground,  // Slowest moving layer (distant background)
+    MidBackground,  // Medium speed layer (middle ground)
+    NearBackground, // Fastest moving layer (close to playing field)
+    PlayingField    // The main court/field (static or minimal movement)
+};
+
+// Structure for parallax layer configuration
+struct ParallaxLayer
+{
+    SpriteID spriteId;      // Which sprite to use for this layer
+    float scrollSpeedX;     // Horizontal scroll speed multiplier
+    float scrollSpeedY;     // Vertical scroll speed multiplier
+    float opacity;          // Layer opacity (0.0 to 1.0)
+    bool wrapHorizontal;    // Whether to wrap horizontally
+    bool wrapVertical;      // Whether to wrap vertically
+    float pulseSpeed;       // Speed of pulsing effect (0 = no pulse)
+    float vibrateIntensity; // Intensity of vibration effect (0 = no vibration)
+
+    ParallaxLayer() : spriteId(SpriteID::Background), scrollSpeedX(0.0f), scrollSpeedY(0.0f),
+                      opacity(1.0f), wrapHorizontal(false), wrapVertical(false),
+                      pulseSpeed(0.0f), vibrateIntensity(0.0f) {}
+};
+
 // Simple singleton for asset management
 // Load textures, sounds, fonts from SD card via fat.h
 

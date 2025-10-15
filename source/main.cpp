@@ -19,7 +19,8 @@ extern DISC_INTERFACE __io_gcsdb;
 #include "gamestate/GameStateManager.h"
 #include "WiimoteManager.h"
 
-int main() {
+int main()
+{
     fatInitDefault();
     srand((unsigned)time(NULL));
 
@@ -30,11 +31,11 @@ int main() {
     AudioManager audio;
     WiimoteManager wiimote;
     GameStateManager gameState;
-    AssetManager& assets = AssetManager::getInstance();
+    AssetManager &assets = AssetManager::getInstance();
 
     // Initialize modules
     printf("Initializing WiingPong...\n");
-    
+
     assets.init();
     input.init();
     physics.init();
@@ -50,38 +51,40 @@ int main() {
     // Load audio assets
     printf("Loading audio...\n");
     assets.loadAudio(audio);
-    
+
     // Load texture assets
     printf("Loading textures...\n");
     assets.loadTextures();
-    
+
     // Load Wiimote audio assets
     printf("Loading Wiimote audio...\n");
     assets.loadWiimoteAudio(wiimote);
-    
+
     // Initialize Wiimote speaker
     printf("Initializing Wiimote speaker...\n");
     wiimote.initSpeaker(0);
-    
+
     // Play intro sound
     printf("Playing intro sound...\n");
     audio.playSound(SoundID::Intro);
-    
+
     // Wait a bit for intro to play
     printf("Waiting 3 seconds...\n");
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < 3; i++)
+    {
         VIDEO_WaitVSync();
         usleep(1000000); // 1 second
-        printf("  %d seconds elapsed\n", i+1);
+        printf("  %d seconds elapsed\n", i + 1);
     }
-    
+
     // Test all sounds
     printf("Running comprehensive audio test...\n");
     audio.testAllSounds();
-    
+
     printf("Audio tests completed. Starting game...\n");
 
-    while (gameState.isRunning) {
+    while (gameState.isRunning)
+    {
         // Update input
         input.update();
         auto events = input.getEvents();
@@ -90,40 +93,58 @@ int main() {
         gameState.update();
 
         // Process input events based on current game state
-        if (gameState.getCurrentState() == GameStateType::Menu) {
+        if (gameState.getCurrentState() == GameStateType::Menu)
+        {
             // Handle menu navigation
-            for (const auto& event : events) {
-                if (event.type == InputEventType::MenuUp) {
+            for (const auto &event : events)
+            {
+                if (event.type == InputEventType::MenuUp)
+                {
                     gameState.menuNavigateUp();
-                } else if (event.type == InputEventType::MenuDown) {
+                }
+                else if (event.type == InputEventType::MenuDown)
+                {
                     gameState.menuNavigateDown();
-                } else if (event.type == InputEventType::MenuSelect) {
+                }
+                else if (event.type == InputEventType::MenuSelect)
+                {
                     gameState.menuSelect();
-                } else if (event.type == InputEventType::Home) {
+                }
+                else if (event.type == InputEventType::Home)
+                {
                     gameState.isRunning = false;
                     break;
                 }
             }
-            
+
             // Render menu
             renderer.renderMenu(gameState);
-            
-        } else if (gameState.getCurrentState() == GameStateType::Play) {
+        }
+        else if (gameState.getCurrentState() == GameStateType::Play)
+        {
             // Handle game events
             bool paddleUp = false;
             bool paddleDown = false;
-            for (const auto& event : events) {
-                if (event.type == InputEventType::PaddleUp) {
+            for (const auto &event : events)
+            {
+                if (event.type == InputEventType::PaddleUp)
+                {
                     paddleUp = true;
                     printf("[MAIN] PaddleUp event processed - paddleUp = true\n");
-                } else if (event.type == InputEventType::PaddleDown) {
+                }
+                else if (event.type == InputEventType::PaddleDown)
+                {
                     paddleDown = true;
                     printf("[MAIN] PaddleDown event processed - paddleDown = true\n");
-                } else if (event.type == InputEventType::Home) {
+                }
+                else if (event.type == InputEventType::Home)
+                {
                     gameState.isRunning = false;
                     break;
 #if WIINGPONG_DEBUG_ENABLED
-                } else if (event.type == InputEventType::ToggleDebug) {
+                }
+                else if (event.type == InputEventType::ToggleDebug)
+                {
                     // Toggle debug visibility
                     renderer.setDebugVisible(!renderer.isDebugVisible());
                     printf("Debug view %s\n", renderer.isDebugVisible() ? "enabled" : "disabled");
@@ -132,13 +153,18 @@ int main() {
             }
 
             // Apply player movement to physics
-            if (paddleUp) {
-                physics.velocities[PLAYER_PADDLE].dy = -WIINGPONG_PADDLE_SPEED;  // Use config
+            if (paddleUp)
+            {
+                physics.velocities[PLAYER_PADDLE].dy = -WIINGPONG_PADDLE_SPEED; // Use config
                 printf("[MAIN] Applied paddleUp - velocity.dy = %d\n", -WIINGPONG_PADDLE_SPEED);
-            } else if (paddleDown) {
+            }
+            else if (paddleDown)
+            {
                 physics.velocities[PLAYER_PADDLE].dy = WIINGPONG_PADDLE_SPEED;
                 printf("[MAIN] Applied paddleDown - velocity.dy = %d\n", WIINGPONG_PADDLE_SPEED);
-            } else {
+            }
+            else
+            {
                 physics.velocities[PLAYER_PADDLE].dy = 0;
             }
 
@@ -149,19 +175,22 @@ int main() {
             gameState.playerScore = physics.playerScore;
             gameState.cpuScore = physics.cpuScore;
 
+            // Update renderer animations (parallax, effects)
+            renderer.update(1.0f / 60.0f, physics); // Assume 60 FPS
+
             // Render game
             renderer.render(physics);
         }
-        
+
         // Render debug info if enabled (for any state)
         renderer.renderDebugInfo(input);
-        
+
         // Render sensor debug info if enabled and sensor data is available
         renderer.renderDebugSensorInfo(input);
-        
+
         // Always render debug toggle progress (A+B or PLUS+MINUS indicator based on method)
         renderer.renderDebugToggleProgress(input);
-        
+
         GRRLIB_Render();
     }
 

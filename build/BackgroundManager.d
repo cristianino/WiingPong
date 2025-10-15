@@ -1,6 +1,6 @@
-Renderer.o: \
- /home/cristian/Documentos/WiingPong/source/rendering/Renderer.cpp \
- /home/cristian/Documentos/WiingPong/include/rendering/Renderer.h \
+BackgroundManager.o: \
+ /home/cristian/Documentos/WiingPong/source/background/BackgroundManager.cpp \
+ /home/cristian/Documentos/WiingPong/include/background/BackgroundManager.h \
  /opt/devkitpro/portlibs/wii/include/grrlib.h \
  /opt/devkitpro/libogc/include/gccore.h \
  /opt/devkitpro/libogc/include/ogc/dsp.h \
@@ -67,20 +67,12 @@ Renderer.o: \
  /opt/devkitpro/portlibs/wii/include/grrlib/GRRLIB_pixel.h \
  /opt/devkitpro/portlibs/wii/include/grrlib/GRRLIB_settings.h \
  /opt/devkitpro/portlibs/wii/include/grrlib/GRRLIB_texSetup.h \
- /home/cristian/Documentos/WiingPong/include/rendering/../physics/PhysicsEngine.h \
- /home/cristian/Documentos/WiingPong/include/rendering/../physics/Components.h \
- /home/cristian/Documentos/WiingPong/include/rendering/../input/InputManager.h \
- /opt/devkitpro/libogc/include/wiiuse/wpad.h \
- /opt/devkitpro/libogc/include/wiiuse/wiiuse.h \
- /opt/devkitpro/libogc/include/bte/bte.h \
- /opt/devkitpro/libogc/include/bte/bd_addr.h \
- /home/cristian/Documentos/WiingPong/include/rendering/../input/../config.h \
- /home/cristian/Documentos/WiingPong/include/rendering/../gamestate/GameStateManager.h \
- /home/cristian/Documentos/WiingPong/include/rendering/../assets/AssetManager.h \
+ /home/cristian/Documentos/WiingPong/include/assets/AssetManager.h \
  /opt/devkitpro/libogc/include/fat.h /opt/devkitpro/libogc/include/dvm.h \
  /home/cristian/Documentos/WiingPong/include/audio/AudioManager.h \
- /home/cristian/Documentos/WiingPong/include/rendering/../background/BackgroundManager.h
-/home/cristian/Documentos/WiingPong/include/rendering/Renderer.h:
+ /home/cristian/Documentos/WiingPong/include/physics/PhysicsEngine.h \
+ /home/cristian/Documentos/WiingPong/include/physics/Components.h
+/home/cristian/Documentos/WiingPong/include/background/BackgroundManager.h:
 /opt/devkitpro/portlibs/wii/include/grrlib.h:
 /opt/devkitpro/libogc/include/gccore.h:
 /opt/devkitpro/libogc/include/ogc/dsp.h:
@@ -147,17 +139,9 @@ Renderer.o: \
 /opt/devkitpro/portlibs/wii/include/grrlib/GRRLIB_pixel.h:
 /opt/devkitpro/portlibs/wii/include/grrlib/GRRLIB_settings.h:
 /opt/devkitpro/portlibs/wii/include/grrlib/GRRLIB_texSetup.h:
-/home/cristian/Documentos/WiingPong/include/rendering/../physics/PhysicsEngine.h:
-/home/cristian/Documentos/WiingPong/include/rendering/../physics/Components.h:
-/home/cristian/Documentos/WiingPong/include/rendering/../input/InputManager.h:
-/opt/devkitpro/libogc/include/wiiuse/wpad.h:
-/opt/devkitpro/libogc/include/wiiuse/wiiuse.h:
-/opt/devkitpro/libogc/include/bte/bte.h:
-/opt/devkitpro/libogc/include/bte/bd_addr.h:
-/home/cristian/Documentos/WiingPong/include/rendering/../input/../config.h:
-/home/cristian/Documentos/WiingPong/include/rendering/../gamestate/GameStateManager.h:
-/home/cristian/Documentos/WiingPong/include/rendering/../assets/AssetManager.h:
+/home/cristian/Documentos/WiingPong/include/assets/AssetManager.h:
 /opt/devkitpro/libogc/include/fat.h:
 /opt/devkitpro/libogc/include/dvm.h:
 /home/cristian/Documentos/WiingPong/include/audio/AudioManager.h:
-/home/cristian/Documentos/WiingPong/include/rendering/../background/BackgroundManager.h:
+/home/cristian/Documentos/WiingPong/include/physics/PhysicsEngine.h:
+/home/cristian/Documentos/WiingPong/include/physics/Components.h:
