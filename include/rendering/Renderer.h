@@ -37,6 +37,7 @@ private:
     void drawText(const char *text, int x, int y, u32 color);
     void drawMenuItem(const char *text, int x, int y, bool selected);
     void drawMenuBackground();
+    void drawIntenseEffects(); // Special effects for intense atlas mode
 
     // New sprite-based drawing methods
     void drawPaddleSprite(const Position &pos, const Size &size, bool isLeftPaddle);

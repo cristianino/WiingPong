@@ -12,7 +12,7 @@ AssetManager &AssetManager::getInstance()
     return instance;
 }
 
-AssetManager::AssetManager() : initialized(false), spritesheet(nullptr)
+AssetManager::AssetManager() : initialized(false), spritesheet(nullptr), currentAtlasType(AtlasType::Normal)
 {
 }
 
@@ -34,6 +34,16 @@ AssetManager::~AssetManager()
         GRRLIB_FreeTexture(spritesheet);
         spritesheet = nullptr;
     }
+
+    // Cleanup multiple atlases
+    for (auto &pair : atlases)
+    {
+        if (pair.second)
+        {
+            GRRLIB_FreeTexture(pair.second);
+        }
+    }
+    atlases.clear();
 }
 
 void AssetManager::init()
@@ -49,8 +59,10 @@ void AssetManager::loadAllAssets()
 {
     // Load textures first
     loadTextures();
-    // Load spritesheet
+    // Load spritesheet (legacy)
     loadSpritesheet();
+    // Load multiple atlases
+    loadMultipleAtlases();
 }
 
 void AssetManager::loadTextures()
@@ -338,7 +350,9 @@ void AssetManager::initializeSpriteDefinitions()
 
 GRRLIB_texImg *AssetManager::getSpritesheet() const
 {
-    return spritesheet;
+    // Return current active atlas, fallback to legacy spritesheet
+    GRRLIB_texImg *currentTexture = getAtlas(currentAtlasType);
+    return currentTexture ? currentTexture : spritesheet;
 }
 
 SpriteInfo AssetManager::getSprite(SpriteID spriteId) const
@@ -353,14 +367,135 @@ SpriteInfo AssetManager::getSprite(SpriteID spriteId) const
 
 void AssetManager::drawSprite(SpriteID spriteId, int x, int y, float scaleX, float scaleY, u32 color) const
 {
-    if (!spritesheet)
+    // Use current active atlas, fallback to legacy spritesheet
+    GRRLIB_texImg *currentTexture = getAtlas(currentAtlasType);
+    if (!currentTexture)
+    {
+        currentTexture = spritesheet;
+    }
+
+    if (!currentTexture)
         return;
 
     SpriteInfo sprite = getSprite(spriteId);
     if (sprite.width == 0 || sprite.height == 0)
         return;
 
-    // Use GRRLIB_DrawPart to draw a portion of the spritesheet
+    // Use GRRLIB_DrawPart to draw a portion of the current atlas
     GRRLIB_DrawPart(x, y, sprite.x, sprite.y, sprite.width, sprite.height,
-                    spritesheet, 0, scaleX, scaleY, color);
+                    currentTexture, 0, scaleX, scaleY, color);
+}
+
+void AssetManager::loadMultipleAtlases()
+{
+    if (!initialized)
+        return;
+
+    printf("Loading multiple atlases...\n");
+
+    // Load normal atlas (atlas.png)
+    const char *normalAtlasPaths[] = {
+        "sd:/apps/WiingPong/data/img/atlas.png",
+        "sd:/data/img/atlas.png",
+        "data/img/atlas.png",
+        "apps/WiingPong/data/img/atlas.png",
+        "./data/img/atlas.png",
+        "./apps/WiingPong/data/img/atlas.png",
+        // Fallback to spritesheet.png
+        "sd:/apps/WiingPong/data/img/spritesheet.png",
+        "sd:/data/img/spritesheet.png",
+        "data/img/spritesheet.png",
+        "apps/WiingPong/data/img/spritesheet.png"};
+
+    GRRLIB_texImg *normalAtlas = nullptr;
+    for (int i = 0; i < 10 && !normalAtlas; i++)
+    {
+        printf("Trying to load normal atlas from: %s\n", normalAtlasPaths[i]);
+        normalAtlas = GRRLIB_LoadTextureFromFile(normalAtlasPaths[i]);
+        if (normalAtlas)
+        {
+            printf("Successfully loaded normal atlas from %s (size: %dx%d)\n",
+                   normalAtlasPaths[i], normalAtlas->w, normalAtlas->h);
+            atlases[AtlasType::Normal] = normalAtlas;
+            break;
+        }
+    }
+
+    // Load intense atlas (atlas_2.png)
+    const char *intenseAtlasPaths[] = {
+        "sd:/apps/WiingPong/data/img/atlas_2.png",
+        "sd:/data/img/atlas_2.png",
+        "data/img/atlas_2.png",
+        "apps/WiingPong/data/img/atlas_2.png",
+        "./data/img/atlas_2.png",
+        "./apps/WiingPong/data/img/atlas_2.png"};
+
+    GRRLIB_texImg *intenseAtlas = nullptr;
+    for (int i = 0; i < 6 && !intenseAtlas; i++)
+    {
+        printf("Trying to load intense atlas from: %s\n", intenseAtlasPaths[i]);
+        intenseAtlas = GRRLIB_LoadTextureFromFile(intenseAtlasPaths[i]);
+        if (intenseAtlas)
+        {
+            printf("Successfully loaded intense atlas from %s (size: %dx%d)\n",
+                   intenseAtlasPaths[i], intenseAtlas->w, intenseAtlas->h);
+            atlases[AtlasType::Intense] = intenseAtlas;
+            break;
+        }
+    }
+
+    if (!normalAtlas)
+    {
+        printf("WARNING: Failed to load normal atlas from any path\n");
+    }
+    if (!intenseAtlas)
+    {
+        printf("WARNING: Failed to load intense atlas from any path\n");
+    }
+
+    printf("Atlas loading complete. Normal: %s, Intense: %s\n",
+           normalAtlas ? "✓" : "✗",
+           intenseAtlas ? "✓" : "✗");
+}
+
+void AssetManager::setCurrentAtlas(AtlasType atlasType)
+{
+    // Only switch if the requested atlas exists
+    if (atlases.find(atlasType) != atlases.end() && atlases[atlasType])
+    {
+        currentAtlasType = atlasType;
+        printf("Switched to %s atlas\n",
+               atlasType == AtlasType::Normal ? "Normal" : "Intense");
+    }
+    else
+    {
+        printf("WARNING: Requested atlas type not available, staying with current\n");
+    }
+}
+
+AtlasType AssetManager::getCurrentAtlas() const
+{
+    return currentAtlasType;
+}
+
+AtlasType AssetManager::determineAtlasForScores(int playerScore, int cpuScore) const
+{
+    // Use intense atlas when both players have 3+ points and are tied
+    if (playerScore >= 3 && cpuScore >= 3 && playerScore == cpuScore)
+    {
+        return AtlasType::Intense;
+    }
+
+    // Use normal atlas for all other cases
+    return AtlasType::Normal;
+}
+
+GRRLIB_texImg *AssetManager::getAtlas(AtlasType atlasType) const
+{
+    auto it = atlases.find(atlasType);
+    if (it != atlases.end())
+    {
+        return it->second;
+    }
+    return nullptr;
 }

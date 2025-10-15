@@ -39,14 +39,33 @@ void Renderer::render(const PhysicsEngine &physics)
         return;
 
     AssetManager &assets = AssetManager::getInstance();
+
+    // Determine and set the appropriate atlas based on scores
+    AtlasType requiredAtlas = assets.determineAtlasForScores(physics.playerScore, physics.cpuScore);
+    if (requiredAtlas != assets.getCurrentAtlas())
+    {
+        assets.setCurrentAtlas(requiredAtlas);
+        printf("Atlas switched due to score change: Player %d - CPU %d\n",
+               physics.playerScore, physics.cpuScore);
+    }
+
     GRRLIB_texImg *spritesheet = assets.getSpritesheet();
 
     if (spritesheet)
     {
         // Use spritesheet for rendering
 
-        // Clear screen with dark color
-        GRRLIB_FillScreen(0x001122FF);
+        // Clear screen with color based on atlas type
+        if (assets.getCurrentAtlas() == AtlasType::Intense)
+        {
+            // Darker, more intense background for tied intense games
+            GRRLIB_FillScreen(0x000a1aFF);
+        }
+        else
+        {
+            // Regular background
+            GRRLIB_FillScreen(0x001122FF);
+        }
 
         // Draw background from spritesheet
         drawCourtSprite();
@@ -65,6 +84,12 @@ void Renderer::render(const PhysicsEngine &physics)
         if (physics.cpuScore < 10)
         {
             drawScoreDigitSprite(physics.cpuScore, 360, 50);
+        }
+
+        // Add special effects for intense mode
+        if (assets.getCurrentAtlas() == AtlasType::Intense)
+        {
+            drawIntenseEffects();
         }
     }
     else
@@ -1368,4 +1393,37 @@ void Renderer::drawScoreDigitSprite(int digit, int x, int y)
     }
 
     assets.drawSprite(spriteId, x, y, 1.0f, 1.0f, 0xFFFFFFFF);
+}
+
+void Renderer::drawIntenseEffects()
+{
+    // Add pulsing border effect for intense mode
+    static int pulseCounter = 0;
+    pulseCounter++;
+
+    // Create pulsing cyan border
+    u8 intensity = 0x88 + (sin(pulseCounter * 0.1f) + 1.0f) * 0x40;
+    u32 pulseColor = (intensity << 16) | (0xFF << 8) | 0xFFFF; // Cyan pulsing
+
+    // Top and bottom borders
+    GRRLIB_Rectangle(0, 0, 640, 8, pulseColor, true);
+    GRRLIB_Rectangle(0, 472, 640, 8, pulseColor, true);
+
+    // Side borders
+    GRRLIB_Rectangle(0, 0, 8, 480, pulseColor, true);
+    GRRLIB_Rectangle(632, 0, 8, 480, pulseColor, true);
+
+    // Add corner glow effects
+    int glowSize = 30 + sin(pulseCounter * 0.15f) * 10;
+    u32 glowColor = (0x44 << 24) | (0xFF << 16) | (0xFF << 8) | 0xFF; // Semi-transparent cyan
+
+    // Corner glows
+    GRRLIB_Rectangle(0, 0, glowSize, glowSize, glowColor, true);
+    GRRLIB_Rectangle(640 - glowSize, 0, glowSize, glowSize, glowColor, true);
+    GRRLIB_Rectangle(0, 480 - glowSize, glowSize, glowSize, glowColor, true);
+    GRRLIB_Rectangle(640 - glowSize, 480 - glowSize, glowSize, glowSize, glowColor, true);
+
+    // Add center line glow effect
+    u32 centerGlow = (0x66 << 24) | (0x00 << 16) | (0xFF << 8) | 0xFF; // Semi-transparent cyan
+    GRRLIB_Rectangle(316, 0, 8, 480, centerGlow, true);
 }
