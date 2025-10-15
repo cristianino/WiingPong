@@ -34,7 +34,7 @@ void Renderer::init()
 
     // Initialize background manager
     backgroundManager.init();
-    
+
     // Setup effect configurations
     setupEffectConfigurations();
 
@@ -51,7 +51,7 @@ void Renderer::update(float deltaTime, const PhysicsEngine &physics)
 
     // Update background animations
     backgroundManager.update(deltaTime, physics);
-    
+
     // Update ball trail
     updateBallTrail(physics.positions[BALL], physics.velocities[BALL]);
 }
@@ -102,7 +102,8 @@ void Renderer::render(const PhysicsEngine &physics)
         drawBallShadow(physics.positions[BALL], physics.sizes[BALL], effectConfig);
 
         // Draw ball trail (behind ball but in front of shadows)
-        if (effectConfig.enableTrails) {
+        if (effectConfig.enableTrails)
+        {
             drawBallTrail(physics.sizes[BALL], effectConfig);
         }
 
@@ -112,7 +113,8 @@ void Renderer::render(const PhysicsEngine &physics)
         drawBallSprite(physics.positions[BALL], physics.sizes[BALL]);
 
         // Draw glow effects (on top of main elements for intense mode)
-        if (effectConfig.glowIntensity > 0.0f) {
+        if (effectConfig.glowIntensity > 0.0f)
+        {
             u32 glowColor = (assets.getCurrentAtlas() == AtlasType::Intense) ? 0x00FFFFFF : 0xFFFFFFFF;
             drawGlowEffect(physics.positions[BALL], physics.sizes[BALL], effectConfig, glowColor);
         }
@@ -1478,19 +1480,19 @@ void Renderer::setupEffectConfigurations()
     normalEffects.shadowOffsetX = 3.0f;
     normalEffects.shadowOffsetY = 3.0f;
     normalEffects.shadowOpacity = 0.4f;
-    normalEffects.shadowColor = 0x000000FF;  // Black shadow
+    normalEffects.shadowColor = 0x000000FF; // Black shadow
     normalEffects.maxTrailLength = 4;
     normalEffects.trailFadeRate = 0.25f;
     normalEffects.trailSpacing = 0.7f;
     normalEffects.enableTrails = true;
     normalEffects.intensityBasedEffects = false;
     normalEffects.glowIntensity = 0.0f;
-    
+
     // Intense atlas effects - dramatic and dynamic
     intenseEffects.shadowOffsetX = 5.0f;
     intenseEffects.shadowOffsetY = 4.0f;
     intenseEffects.shadowOpacity = 0.6f;
-    intenseEffects.shadowColor = 0x004444FF;  // Dark cyan shadow
+    intenseEffects.shadowColor = 0x004444FF; // Dark cyan shadow
     intenseEffects.maxTrailLength = 6;
     intenseEffects.trailFadeRate = 0.2f;
     intenseEffects.trailSpacing = 0.5f;
@@ -1508,173 +1510,189 @@ void Renderer::updateBallTrail(const Position &ballPos, const Velocity &ballVel)
 {
     // Calculate ball speed to determine if we should add trail points
     float speed = sqrt(ballVel.dx * ballVel.dx + ballVel.dy * ballVel.dy);
-    
+
     // Only add trail points when ball is moving significantly
-    if (speed > 5.0f) {
+    if (speed > 5.0f)
+    {
         // Add current position to trail
         ballTrail.insert(ballTrail.begin(), PositionHistory(ballPos.x, ballPos.y, currentTime));
-        
+
         // Limit trail length based on current effect config
         EffectConfig config = getCurrentEffectConfig(AssetManager::getInstance().getCurrentAtlas());
-        if ((int)ballTrail.size() > config.maxTrailLength) {
+        if ((int)ballTrail.size() > config.maxTrailLength)
+        {
             ballTrail.resize(config.maxTrailLength);
         }
     }
-    
+
     // Remove old trail points (older than 1 second)
     ballTrail.erase(
-        std::remove_if(ballTrail.begin(), ballTrail.end(), 
-                      [this](const PositionHistory& point) {
-                          return (currentTime - point.timestamp) > 1.0f;
-                      }),
-        ballTrail.end()
-    );
+        std::remove_if(ballTrail.begin(), ballTrail.end(),
+                       [this](const PositionHistory &point)
+                       {
+                           return (currentTime - point.timestamp) > 1.0f;
+                       }),
+        ballTrail.end());
 }
 
 void Renderer::drawPaddleShadow(const Position &pos, const Size &size, bool isLeftPaddle, const EffectConfig &config)
 {
-    AssetManager& assets = AssetManager::getInstance();
-    
+    AssetManager &assets = AssetManager::getInstance();
+
     // Calculate shadow offset with slight variation for realism
     float shadowX = pos.x + config.shadowOffsetX;
     float shadowY = pos.y + config.shadowOffsetY;
-    
+
     // Add subtle movement to shadow in intense mode
-    if (config.intensityBasedEffects) {
+    if (config.intensityBasedEffects)
+    {
         shadowX += sin(currentTime * 3.0f) * 1.0f;
         shadowY += cos(currentTime * 2.5f) * 0.5f;
     }
-    
+
     // Calculate shadow alpha
     u8 shadowAlpha = (u8)(config.shadowOpacity * 255.0f);
     u32 shadowColor = (shadowAlpha << 24) | (config.shadowColor & 0x00FFFFFF);
-    
+
     // Calculate scale to fit the paddle size
     SpriteInfo paddleSprite = assets.getSprite(SpriteID::LeftPaddle);
-    if (paddleSprite.width == 0) return;
-    
+    if (paddleSprite.width == 0)
+        return;
+
     float scaleX = size.width / (float)paddleSprite.width;
     float scaleY = size.height / (float)paddleSprite.height;
-    
+
     // For right paddle, flip horizontally
-    if (!isLeftPaddle) {
+    if (!isLeftPaddle)
+    {
         scaleX = -scaleX;
     }
-    
+
     // Draw shadow sprite
     assets.drawSprite(SpriteID::LeftPaddle, (int)shadowX, (int)shadowY, scaleX, scaleY, shadowColor);
 }
 
 void Renderer::drawBallShadow(const Position &pos, const Size &size, const EffectConfig &config)
 {
-    AssetManager& assets = AssetManager::getInstance();
-    
+    AssetManager &assets = AssetManager::getInstance();
+
     // Calculate shadow offset
     float shadowX = pos.x + config.shadowOffsetX;
     float shadowY = pos.y + config.shadowOffsetY;
-    
+
     // Add dynamic movement in intense mode
-    if (config.intensityBasedEffects) {
+    if (config.intensityBasedEffects)
+    {
         shadowX += sin(currentTime * 4.0f) * 1.5f;
         shadowY += cos(currentTime * 3.0f) * 1.0f;
     }
-    
+
     // Calculate shadow alpha
     u8 shadowAlpha = (u8)(config.shadowOpacity * 255.0f);
     u32 shadowColor = (shadowAlpha << 24) | (config.shadowColor & 0x00FFFFFF);
-    
+
     SpriteInfo ballSprite = assets.getSprite(SpriteID::Ball);
-    if (ballSprite.width == 0) return;
-    
+    if (ballSprite.width == 0)
+        return;
+
     float scaleX = size.width / (float)ballSprite.width;
     float scaleY = size.height / (float)ballSprite.height;
-    
+
     // Center the shadow sprite
     int drawX = (int)(shadowX - (ballSprite.width * scaleX) / 2);
     int drawY = (int)(shadowY - (ballSprite.height * scaleY) / 2);
-    
+
     // Draw shadow sprite
     assets.drawSprite(SpriteID::Ball, drawX, drawY, scaleX, scaleY, shadowColor);
 }
 
 void Renderer::drawBallTrail(const Size &ballSize, const EffectConfig &config)
 {
-    if (ballTrail.empty()) return;
-    
-    AssetManager& assets = AssetManager::getInstance();
+    if (ballTrail.empty())
+        return;
+
+    AssetManager &assets = AssetManager::getInstance();
     SpriteInfo ballSprite = assets.getSprite(SpriteID::Ball);
-    if (ballSprite.width == 0) return;
-    
+    if (ballSprite.width == 0)
+        return;
+
     float scaleX = ballSize.width / (float)ballSprite.width;
     float scaleY = ballSize.height / (float)ballSprite.height;
-    
+
     // Draw trail points from oldest to newest (back to front)
-    for (int i = (int)ballTrail.size() - 1; i >= 0; i--) {
-        const PositionHistory& point = ballTrail[i];
-        
+    for (int i = (int)ballTrail.size() - 1; i >= 0; i--)
+    {
+        const PositionHistory &point = ballTrail[i];
+
         // Calculate alpha based on position in trail and time
         float ageRatio = (float)i / (float)ballTrail.size();
         float timeRatio = (currentTime - point.timestamp);
-        
+
         // Base alpha decreases with distance from current position
         float alpha = 1.0f - (ageRatio * config.trailFadeRate);
-        
+
         // Also fade based on time
         alpha *= (1.0f - (timeRatio * 0.5f));
-        alpha = fmax(alpha, 0.1f);  // Minimum visibility
-        
+        alpha = fmax(alpha, 0.1f); // Minimum visibility
+
         // Calculate trail color
         u32 trailColor;
-        if (config.intensityBasedEffects) {
+        if (config.intensityBasedEffects)
+        {
             // Cyan trail for intense mode
             u8 alphaValue = (u8)(alpha * 255.0f);
             trailColor = (alphaValue << 24) | (0x44 << 16) | (0xFF << 8) | 0xFF;
-        } else {
+        }
+        else
+        {
             // White/normal trail for regular mode
             u8 alphaValue = (u8)(alpha * 255.0f);
             trailColor = (alphaValue << 24) | (0xFF << 16) | (0xFF << 8) | 0xFF;
         }
-        
+
         // Calculate scale reduction for trail (smaller towards the back)
-        float trailScale = 0.7f + (ageRatio * 0.3f);  // Scale from 0.7 to 1.0
-        
+        float trailScale = 0.7f + (ageRatio * 0.3f); // Scale from 0.7 to 1.0
+
         // Center the trail sprite
         int drawX = (int)(point.x - (ballSprite.width * scaleX * trailScale) / 2);
         int drawY = (int)(point.y - (ballSprite.height * scaleY * trailScale) / 2);
-        
+
         // Draw trail sprite
-        assets.drawSprite(SpriteID::Ball, drawX, drawY, 
-                         scaleX * trailScale, scaleY * trailScale, trailColor);
+        assets.drawSprite(SpriteID::Ball, drawX, drawY,
+                          scaleX * trailScale, scaleY * trailScale, trailColor);
     }
 }
 
 void Renderer::drawGlowEffect(const Position &pos, const Size &size, const EffectConfig &config, u32 glowColor)
 {
-    if (config.glowIntensity <= 0.0f) return;
-    
-    AssetManager& assets = AssetManager::getInstance();
+    if (config.glowIntensity <= 0.0f)
+        return;
+
+    AssetManager &assets = AssetManager::getInstance();
     SpriteInfo ballSprite = assets.getSprite(SpriteID::Ball);
-    if (ballSprite.width == 0) return;
-    
+    if (ballSprite.width == 0)
+        return;
+
     // Calculate pulsing glow intensity
-    float pulseIntensity = (sin(currentTime * 8.0f) + 1.0f) * 0.5f;  // 0 to 1
+    float pulseIntensity = (sin(currentTime * 8.0f) + 1.0f) * 0.5f; // 0 to 1
     float currentIntensity = config.glowIntensity * (0.5f + pulseIntensity * 0.5f);
-    
+
     float scaleX = size.width / (float)ballSprite.width;
     float scaleY = size.height / (float)ballSprite.height;
-    
+
     // Draw multiple glow layers for better effect
-    for (int layer = 0; layer < 3; layer++) {
-        float layerScale = 1.0f + (layer * 0.3f);  // Increasingly larger
-        float layerAlpha = currentIntensity / (layer + 1);  // Decreasing intensity
-        
+    for (int layer = 0; layer < 3; layer++)
+    {
+        float layerScale = 1.0f + (layer * 0.3f);          // Increasingly larger
+        float layerAlpha = currentIntensity / (layer + 1); // Decreasing intensity
+
         u8 layerAlphaValue = (u8)(layerAlpha * 255.0f);
         u32 layerColor = (layerAlphaValue << 24) | (glowColor & 0x00FFFFFF);
-        
+
         int drawX = (int)(pos.x - (ballSprite.width * scaleX * layerScale) / 2);
         int drawY = (int)(pos.y - (ballSprite.height * scaleY * layerScale) / 2);
-        
-        assets.drawSprite(SpriteID::Ball, drawX, drawY, 
-                         scaleX * layerScale, scaleY * layerScale, layerColor);
+
+        assets.drawSprite(SpriteID::Ball, drawX, drawY,
+                          scaleX * layerScale, scaleY * layerScale, layerColor);
     }
 }

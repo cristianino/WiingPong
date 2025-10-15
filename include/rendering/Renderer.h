@@ -16,7 +16,7 @@ struct PositionHistory
 {
     float x, y;
     float timestamp;
-    
+
     PositionHistory() : x(0), y(0), timestamp(0) {}
     PositionHistory(float px, float py, float t) : x(px), y(py), timestamp(t) {}
 };
@@ -29,18 +29,18 @@ struct EffectConfig
     float shadowOffsetY;
     float shadowOpacity;
     u32 shadowColor;
-    
+
     // Trail settings
     int maxTrailLength;
     float trailFadeRate;
     float trailSpacing;
     bool enableTrails;
-    
+
     // Dynamic effects
     bool intensityBasedEffects;
     float glowIntensity;
-    
-    EffectConfig() : shadowOffsetX(3.0f), shadowOffsetY(3.0f), shadowOpacity(0.4f), 
+
+    EffectConfig() : shadowOffsetX(3.0f), shadowOffsetY(3.0f), shadowOpacity(0.4f),
                      shadowColor(0x000000FF), maxTrailLength(5), trailFadeRate(0.3f),
                      trailSpacing(0.5f), enableTrails(true), intensityBasedEffects(true),
                      glowIntensity(0.0f) {}
@@ -68,12 +68,12 @@ private:
     bool debugVisible;                   // Control debug visibility
     GRRLIB_texImg *font;                 // For future text; placeholder for now
     BackgroundManager backgroundManager; // Parallax background system
-    
+
     // Shadow and trail effect system
-    std::vector<PositionHistory> ballTrail;  // Ball position history for trails
-    EffectConfig normalEffects;              // Effects config for normal atlas
-    EffectConfig intenseEffects;             // Effects config for intense atlas
-    float currentTime;                       // Current time for effect calculations
+    std::vector<PositionHistory> ballTrail; // Ball position history for trails
+    EffectConfig normalEffects;             // Effects config for normal atlas
+    EffectConfig intenseEffects;            // Effects config for intense atlas
+    float currentTime;                      // Current time for effect calculations
 
     void drawPaddle(const Position &pos, const Size &size, u32 color);
     void drawBall(const Position &pos, const Size &size, u32 color);
@@ -89,7 +89,7 @@ private:
     void drawBallSprite(const Position &pos, const Size &size);
     void drawCourtSprite();
     void drawScoreDigitSprite(int digit, int x, int y);
-    
+
     // Shadow and trail effect methods
     void updateBallTrail(const Position &ballPos, const Velocity &ballVel);
     void drawPaddleShadow(const Position &pos, const Size &size, bool isLeftPaddle, const EffectConfig &config);
