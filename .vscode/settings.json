@@ -1,0 +1,62 @@
+{
+    // === CONFIGURACIÓN ESPECÍFICA PARA WIINGPONG ===
+    // Configuración C/C++
+    "C_Cpp.default.cppStandard": "c++17",
+    "C_Cpp.default.cStandard": "c11",
+    "C_Cpp.default.compilerPath": "/usr/bin/g++",
+    "C_Cpp.default.intelliSenseMode": "linux-gcc-x64",
+    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+    // Configuración de archivos y carpetas
+    "files.associations": {
+        "*.h": "c",
+        "*.hpp": "cpp",
+        "*.cpp": "cpp",
+        "*.c": "c",
+        "*.dol": "plaintext",
+        "*.elf": "plaintext"
+    },
+    // Explorador de archivos - ocultar archivos generados
+    "files.exclude": {
+        "**/build": true,
+        "**/*.o": true,
+        "**/*.d": true,
+        "**/*.dol": false, // Mantener visible (es tu ejecutable final)
+        "**/*.elf": false // Mantener visible (es tu ejecutable)
+    },
+    // Configuración CMake
+    "cmake.buildDirectory": "${workspaceFolder}/build",
+    "cmake.configureOnOpen": true,
+    "cmake.generator": "Unix Makefiles",
+    // Configuración del editor para C++
+    "editor.tabSize": 4,
+    "editor.insertSpaces": true,
+    "editor.detectIndentation": false,
+    "editor.formatOnSave": true,
+    // Terminal por defecto
+    "terminal.integrated.defaultProfile.linux": "bash",
+    "terminal.integrated.cwd": "${workspaceFolder}",
+    // Git
+    "git.ignoreLimitWarning": true,
+    // Búsqueda - excluir carpetas de build
+    "search.exclude": {
+        "**/build": true,
+        "**/release": true,
+        "**/*.o": true,
+        "**/*.d": true
+    },
+    // Observador de archivos - excluir archivos temporales
+    "files.watcherExclude": {
+        "**/build/**": true,
+        "**/*.o": true,
+        "**/*.d": true
+    },
+    // IntelliCode específico para C++
+    "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrideDefaultValue",
+    // Copilot específico para este proyecto
+    "github.copilot.enable": {
+        "*": true,
+        "plaintext": false,
+        "markdown": true,
+        "scminput": false
+    }
+}
