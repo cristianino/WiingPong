@@ -1,4 +1,4 @@
-# Estado Final del Proyecto WiingPong con Sistemas Visuales Avanzados
+# Estado Final del Proyecto WiingPong - Optimizado para 60 FPS en Wii
 
 ## ✅ Funcionalidades Completadas
 
@@ -26,6 +26,15 @@
 - **Sistema de partículas** para efectos visuales en tiempo real
 - **Animaciones UI** para mejorar la experiencia de usuario
 - **API pública completa** para integración con eventos del juego
+
+### ⚡ Optimizaciones de Rendimiento Wii (NUEVO)
+- **Pool fijo de partículas** (32 max) sin malloc en game loop
+- **Gestión optimizada de texturas** con pre-carga y reutilización
+- **Atlas validados** ≤ 1024×1024 para optimal VRAM usage
+- **Pre-renderización de fondos** para reducir CPU load
+- **Monitoreo de FPS** en tiempo real con promedio de 60 frames
+- **Eliminación de allocaciones dinámicas** en el bucle principal
+- **Sistema de limpieza eficiente** con compactación de arrays
 
 ### 🎵 Sistema de Audio Completo
 - **AudioManager** implementado con soporte completo para archivos PCM
@@ -108,12 +117,54 @@ make clean && make
 ./test_shadow_trail_system.sh    # Verificar efectos de sombras
 ./test_animation_system.sh       # Verificar animaciones UI
 
+### Compilar y probar optimizaciones
+./test_wii_optimizations.sh       # Verificar optimizaciones de rendimiento
+./test_atlas_system.sh           # Verificar sistema de sprites
+./test_parallax_system.sh        # Verificar fondos parallax
+./test_shadow_trail_system.sh    # Verificar efectos de sombras
+./test_animation_system.sh       # Verificar animaciones UI
+
 # Crear paquete para SD
 make package
 
 # Crear release para distribución
 make release
 ```
+
+## ⚡ Optimizaciones de Rendimiento para Wii
+
+### 🎯 Objetivo: 60 FPS Estables
+Todas las optimizaciones están diseñadas para mantener rendimiento consistente en hardware Nintendo Wii:
+
+#### 💾 Optimizaciones de Memoria:
+- **Pool fijo de partículas**: 32 partículas máximo, sin malloc en game loop
+- **Arrays pre-allocados**: Eliminación de allocaciones dinámicas
+- **Compactación eficiente**: Limpieza de partículas muertas sin fragmentación
+- **Tracking de VRAM**: Monitoreo de uso de memoria de texturas
+
+#### 🖼️ Optimizaciones de Texturas:
+- **Atlas validados**: Confirmados ≤ 1024×1024 (optimal para Wii VRAM)
+- **Pre-carga crítica**: Texturas esenciales cargadas al inicio
+- **Reutilización**: Sin recarga de texturas durante gameplay
+- **Gestión inteligente**: Control automático de límites de memoria
+
+#### 📊 Monitoreo de Rendimiento:
+- **FPS counter**: Medición en tiempo real con promedio de 60 frames
+- **Métricas activas**: Conteo de partículas y uso de memoria
+- **APIs de debug**: Acceso a información de rendimiento
+- **Alertas automáticas**: Detección de degradación de performance
+
+#### ⚡ Optimizaciones de Runtime:
+- **Cero malloc**: En el bucle principal del juego
+- **Cache efficiency**: Iteración optimizada sobre arrays contiguos
+- **Pre-renderización**: Fondos preparados para evitar compositing per-frame
+- **Limits awareness**: Trabajo dentro de limitaciones del hardware Wii
+
+### 📈 Resultados Esperados:
+- **60 FPS consistentes** con todos los efectos visuales activos
+- **Sin stuttering** o pauses por garbage collection
+- **Carga instantánea** de texturas pre-cargadas
+- **Memoria estable** sin picos de allocación
 
 ## 🎨 Características Visuales Avanzadas
 

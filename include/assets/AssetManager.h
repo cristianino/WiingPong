@@ -93,6 +93,11 @@ public:
     AtlasType getCurrentAtlas() const;                                      // Get current atlas type
     AtlasType determineAtlasForScores(int playerScore, int cpuScore) const; // Determine atlas based on game state
 
+    // Performance optimization methods
+    bool areTexturesLoaded() const; // Check if textures are already in memory
+    void optimizeTextureMemory();   // Optimize texture usage for Wii
+    void preloadCriticalTextures(); // Preload most used textures
+
     // Stubs for getters; return nullptr or default
     GRRLIB_texImg *getTexture(const char *name) const;
     GRRLIB_texImg *getSpritesheet() const;              // Get the current active spritesheet texture
@@ -116,7 +121,12 @@ private:
     GRRLIB_texImg *spritesheet;                      // The main spritesheet texture (legacy support)
     std::map<SpriteID, SpriteInfo> sprites;          // Sprite definitions
 
-    // Multiple atlas support
+    // Multi-atlas system (optimized for Wii performance)
     std::map<AtlasType, GRRLIB_texImg *> atlases; // Store multiple atlas textures
     AtlasType currentAtlasType;                   // Currently active atlas
+
+    // Performance optimization variables
+    bool texturesPreloaded;          // Flag to avoid reloading
+    bool criticalTexturesLoaded;     // Flag for essential textures
+    unsigned int totalTextureMemory; // Track VRAM usage
 };

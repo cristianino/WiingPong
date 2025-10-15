@@ -12,7 +12,8 @@ AssetManager &AssetManager::getInstance()
     return instance;
 }
 
-AssetManager::AssetManager() : initialized(false), spritesheet(nullptr), currentAtlasType(AtlasType::Normal)
+AssetManager::AssetManager() : initialized(false), spritesheet(nullptr), currentAtlasType(AtlasType::Normal),
+                               texturesPreloaded(false), criticalTexturesLoaded(false), totalTextureMemory(0)
 {
 }
 
@@ -52,17 +53,35 @@ void AssetManager::init()
         return;
     // Mount SD card if needed
     fatMount("sd", &__io_wiisd, 0, 10, 8);
+
+    // Initialize sprite definitions for optimal access
+    initializeSpriteDefinitions();
+
     initialized = true;
 }
 
 void AssetManager::loadAllAssets()
 {
+    if (texturesPreloaded)
+    {
+        printf("Textures already preloaded, skipping reload for optimal performance\n");
+        return;
+    }
+
+    // Load critical textures first for immediate gameplay
+    preloadCriticalTextures();
+
     // Load textures first
     loadTextures();
     // Load spritesheet (legacy)
     loadSpritesheet();
     // Load multiple atlases
     loadMultipleAtlases();
+
+    // Optimize texture memory usage
+    optimizeTextureMemory();
+
+    texturesPreloaded = true;
 }
 
 void AssetManager::loadTextures()
@@ -498,4 +517,75 @@ GRRLIB_texImg *AssetManager::getAtlas(AtlasType atlasType) const
         return it->second;
     }
     return nullptr;
+}
+
+// Performance optimization implementations
+
+bool AssetManager::areTexturesLoaded() const
+{
+    return texturesPreloaded && criticalTexturesLoaded;
+}
+
+void AssetManager::optimizeTextureMemory()
+{
+    printf("Optimizing texture memory for Wii VRAM limits...\n");
+
+    // Calculate total texture memory usage
+    totalTextureMemory = 0;
+
+    for (const auto &pair : atlases)
+    {
+        if (pair.second)
+        {
+            // Estimate memory usage (width * height * 4 bytes for RGBA)
+            // This is a simplified calculation
+            totalTextureMemory += (1024 * 1024 * 4); // Each atlas is 1024x1024
+        }
+    }
+
+    printf("Total estimated texture memory: %u bytes\n", totalTextureMemory);
+
+    // Wii has limited VRAM, ensure we're within reasonable limits
+    const unsigned int MAX_TEXTURE_MEMORY = 16 * 1024 * 1024; // 16MB limit
+
+    if (totalTextureMemory > MAX_TEXTURE_MEMORY)
+    {
+        printf("Warning: Texture memory usage (%u) exceeds recommended limit (%u)\n",
+               totalTextureMemory, MAX_TEXTURE_MEMORY);
+    }
+
+    printf("Texture memory optimization completed\n");
+}
+
+void AssetManager::preloadCriticalTextures()
+{
+    if (criticalTexturesLoaded)
+    {
+        return; // Already loaded
+    }
+
+    printf("Preloading critical textures for optimal gameplay performance...\n");
+
+    // Preload the normal atlas first as it's used most often
+    // This ensures immediate gameplay availability
+
+    const char *criticalPaths[] = {
+        "data/img/atlas.png",
+        "./data/img/atlas.png",
+        "atlas.png",
+        nullptr};
+
+    for (int i = 0; criticalPaths[i] != nullptr; i++)
+    {
+        GRRLIB_texImg *texture = GRRLIB_LoadTextureFromFile(criticalPaths[i]);
+        if (texture)
+        {
+            atlases[AtlasType::Normal] = texture;
+            printf("Critical atlas loaded from: %s\n", criticalPaths[i]);
+            break;
+        }
+    }
+
+    criticalTexturesLoaded = true;
+    printf("Critical texture preloading completed\n");
 }

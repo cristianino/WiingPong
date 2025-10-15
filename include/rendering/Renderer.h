@@ -162,6 +162,11 @@ public:
     bool isTransitionActive() const;
     void resetAllAnimations();
 
+    // Performance monitoring API
+    float getCurrentFPS() const { return averageFPS; }
+    int getActiveParticleCount() const { return activeParticles; }
+    bool areBackgroundsPrerendered() const { return backgroundsPrerendered; }
+
 private:
     bool initialized;
     bool debugVisible;                   // Control debug visibility
@@ -174,11 +179,20 @@ private:
     EffectConfig intenseEffects;            // Effects config for intense atlas
     float currentTime;                      // Current time for effect calculations
 
-    // Animation system variables
-    std::vector<Particle> particles;       // Active particle effects
+    // Animation system variables - optimized for Wii performance
+    static const int MAX_PARTICLES = 32;   // Fixed pool size to avoid malloc
+    Particle particlePool[MAX_PARTICLES];  // Pre-allocated particle pool
+    int activeParticles;                   // Count of active particles
     CameraShake cameraShake;               // Current camera shake effect
     FadeTransition fadeTransition;         // Current fade transition
     std::vector<UIAnimation> uiAnimations; // Active UI animations
+
+    // Performance optimization variables
+    GRRLIB_texImg *prerenderedBackground[2]; // Pre-rendered backgrounds [Normal/Intense]
+    bool backgroundsPrerendered;             // Flag to check if backgrounds are ready
+    float lastFrameTime;                     // For FPS calculation
+    int frameCount;                          // Frame counter for profiling
+    float averageFPS;                        // Running average FPS
 
     void drawPaddle(const Position &pos, const Size &size, u32 color);
     void drawBall(const Position &pos, const Size &size, u32 color);
@@ -211,6 +225,14 @@ private:
     void updateUIAnimations(float deltaTime);
     void renderParticles();
     void renderFadeTransition();
+
+    // Performance optimization methods
+    void prerenderBackgrounds();            // Pre-render background layers to textures
+    void updateFPSCounter(float deltaTime); // Calculate and track FPS
+    void spawnParticleFromPool(float x, float y, float vx, float vy,
+                               float life, float size, u32 color); // Use particle pool
+    void clearDeadParticles();                                     // Efficiently remove dead particles
+    int findFreeParticleSlot();                                    // Find available slot in pool
 
     // Wii-style button rendering functions
     void drawWiiButton(int x, int y, int size, u32 baseColor, u32 activeColor, bool isPressed, bool hasSymbol = false);
