@@ -127,7 +127,7 @@ jobs:
         tar -czf release-artifacts/WiingPong-$(date +%Y%m%d)-$(git rev-parse --short HEAD).tar.gz WiingPong.dol apps/
         
     - name: Upload Build Artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name: wiingpong-build-${{ github.sha }}
         path: |
@@ -138,7 +138,7 @@ jobs:
 
     - name: Upload Release Artifacts
       if: github.ref == 'refs/heads/master'
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name: wiingpong-release-${{ github.sha }}
         path: release-artifacts/
