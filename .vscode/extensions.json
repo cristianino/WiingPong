@@ -1,0 +1,50 @@
+{
+    "recommendations": [
+        // === EXTENSIONES ESENCIALES PARA WIINGPONG ===
+        // C/C++ Development (CRÍTICAS)
+        "ms-vscode.cpptools",
+        "ms-vscode.cpptools-extension-pack",
+        "ms-vscode.cpptools-themes",
+        // Build System (CRÍTICAS)
+        "ms-vscode.cmake-tools",
+        "ms-vscode.makefile-tools",
+        // Productividad y IA (MUY ÚTILES)
+        "github.copilot",
+        "github.copilot-chat",
+        "visualstudioexptteam.vscodeintellicode",
+        // Control de Versiones (ÚTILES)
+        "github.vscode-github-actions"
+    ],
+    "unwantedRecommendations": [
+        // === EXTENSIONES INNECESARIAS PARA WIINGPONG ===
+        // Desarrollo Web
+        "vue.volar",
+        "astro-build.astro-vscode",
+        // Python/Data Science
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "ms-python.debugpy",
+        "ms-python.vscode-python-envs",
+        // Jupyter Notebooks
+        "ms-toolsai.jupyter",
+        "ms-toolsai.jupyter-keymap",
+        "ms-toolsai.jupyter-renderers",
+        "ms-toolsai.vscode-jupyter-cell-tags",
+        "ms-toolsai.vscode-jupyter-slideshow",
+        // Java Development
+        "redhat.java",
+        "vscjava.vscode-java-pack",
+        "vscjava.vscode-java-debug",
+        "vscjava.vscode-gradle",
+        "vscjava.vscode-maven",
+        "vscjava.vscode-java-dependency",
+        "vscjava.vscode-java-test",
+        // Contenedores (opcional - quita si los usas)
+        "docker.docker",
+        "ms-azuretools.vscode-docker",
+        "ms-azuretools.vscode-containers",
+        "ms-vscode-remote.remote-containers",
+        // Otros lenguajes
+        "golang.go"
+    ]
+}

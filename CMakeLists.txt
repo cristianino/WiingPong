@@ -30,6 +30,7 @@ add_subdirectory(source/core)
 add_subdirectory(source/input)
 add_subdirectory(source/physics)
 add_subdirectory(source/rendering)
+add_subdirectory(source/background)
 add_subdirectory(source/audio)
 add_subdirectory(source/ui)
 add_subdirectory(source/gamestate)
@@ -47,6 +48,7 @@ target_link_libraries(WiingPong
     input
     physics
     rendering
+    background
     audio
     ui
     gamestate
